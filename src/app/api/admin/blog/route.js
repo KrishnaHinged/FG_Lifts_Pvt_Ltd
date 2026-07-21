@@ -1,15 +1,9 @@
 import { NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
-import BlogPost from '@/models/BlogPost'
-import { verifyToken, COOKIE_NAME } from '@/lib/auth'
+import { getAdmin } from '@/lib/auth'
+import { getAllPostsAdmin, createPost } from '@/services/blog.service'
+import { createAuditLog } from '@/services/audit.service'
 import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
-import { createLog } from '@/repositories/auditLog.repository'
-
-function getAdmin(req) {
-  const token = req.cookies.get(COOKIE_NAME)?.value
-  return token ? verifyToken(token) : null
-}
 
 export async function GET(req) {
   try {
@@ -18,12 +12,11 @@ export async function GET(req) {
       return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
     }
 
-    await connectDB()
-    const posts = await BlogPost.find().sort({ createdAt: -1 }).lean()
+    const posts = await getAllPostsAdmin()
     return NextResponse.json({ success: true, posts })
   } catch (err) {
-    console.error('Fetch blog posts error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    console.error('Fetch blog posts admin API error:', err)
+    return NextResponse.json({ error: err.error || 'Server error' }, { status: err.status || 500 })
   }
 }
 
@@ -35,34 +28,28 @@ export async function POST(req) {
     }
 
     const body = await req.json()
-    const { slug, title } = body
-
-    if (!slug || !title) {
-      return NextResponse.json({ error: 'Slug and title are required' }, { status: 400 })
-    }
-
-    await connectDB()
-    const existing = await BlogPost.findOne({ slug: slug.toLowerCase() })
-    if (existing) {
-      return NextResponse.json({ error: 'Post slug already exists' }, { status: 409 })
-    }
-
-    // Save with Mongoose constructor so the readTime pre-save hook runs
-    const post = new BlogPost(body)
-    await post.save()
+    const post = await createPost(body)
 
     // Log action
-    await createLog({
-      action: 'blog_created',
-      performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-      targetId: post._id.toString(),
-      targetType: 'BlogPost',
-      details: { title: post.title, slug: post.slug }
-    })
+    try {
+      await createAuditLog({
+        action: 'blog_created',
+        performedBy: admin,
+        targetId: post.id,
+        targetType: 'BlogPost',
+        details: { title: post.title, slug: post.slug },
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+      })
+    } catch (logErr) {
+      console.error('Failed to log blog creation audit trail:', logErr)
+    }
 
     return NextResponse.json({ success: true, post }, { status: 201 })
   } catch (err) {
-    console.error('Create post error:', err)
-    return NextResponse.json({ error: 'Server error: ' + err.message }, { status: 500 })
+    if (err.status === 400) {
+      return NextResponse.json({ error: Object.values(err.errors)[0] || err.error }, { status: 400 })
+    }
+    console.error('Create blog post API error:', err)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

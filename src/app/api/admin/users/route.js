@@ -1,16 +1,9 @@
 import { NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
-import { getAllAdmins, createAdmin } from '@/repositories/admin.repository'
-import { verifyToken, COOKIE_NAME } from '@/lib/auth'
+import { getAdmin } from '@/lib/auth'
+import { getAllAdmins, createAdmin } from '@/services/admin.service'
+import { createAuditLog } from '@/services/audit.service'
 import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
-import { createLog } from '@/repositories/auditLog.repository'
-import Admin from '@/models/Admin'
-
-function getAdmin(req) {
-  const token = req.cookies.get(COOKIE_NAME)?.value
-  return token ? verifyToken(token) : null
-}
 
 export async function GET(req) {
   try {
@@ -22,8 +15,8 @@ export async function GET(req) {
     const users = await getAllAdmins()
     return NextResponse.json({ success: true, users })
   } catch (err) {
-    console.error('Fetch users error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    console.error('Fetch users admin API error:', err)
+    return NextResponse.json({ error: err.error || 'Server error' }, { status: err.status || 500 })
   }
 }
 
@@ -34,45 +27,39 @@ export async function POST(req) {
       return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
     }
 
-    const { name, email, password, role } = await req.json()
-    if (!name || !email || !password || !role) {
-      return NextResponse.json({ error: 'All fields are required' }, { status: 400 })
-    }
+    const body = await req.json()
+    const { role } = body
 
     // Role restrictions: only SUPER_ADMIN can assign SUPER_ADMIN role
     if (role === 'SUPER_ADMIN' && admin.role !== 'SUPER_ADMIN') {
       return NextResponse.json({ error: '403 Forbidden — Cannot assign Super Admin role' }, { status: 403 })
     }
 
-    await connectDB()
-    const existing = await Admin.findOne({ email: email.toLowerCase() })
-    if (existing) {
-      return NextResponse.json({ error: 'Email already in use' }, { status: 409 })
-    }
-
-    const newUser = await createAdmin({
-      name,
-      email,
-      password,
-      role,
-      createdBy: admin.id
-    })
+    const newUser = await createAdmin(body, admin)
 
     // Log action
-    await createLog({
-      action: 'user_created',
-      performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-      targetId: newUser._id.toString(),
-      targetType: 'Admin',
-      details: { name: newUser.name, email: newUser.email, role: newUser.role }
-    })
+    try {
+      await createAuditLog({
+        action: 'user_created',
+        performedBy: admin,
+        targetId: newUser.id,
+        targetType: 'Admin',
+        details: { name: newUser.name, email: newUser.email, role: newUser.role },
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+      })
+    } catch (logErr) {
+      console.error('Failed to log user creation audit trail:', logErr)
+    }
 
     return NextResponse.json({
       success: true,
-      user: { id: newUser._id, name: newUser.name, email: newUser.email, role: newUser.role }
+      user: newUser
     }, { status: 201 })
   } catch (err) {
-    console.error('Create user error:', err)
-    return NextResponse.json({ error: 'Server error: ' + err.message }, { status: 500 })
+    if (err.status === 400) {
+      return NextResponse.json({ error: Object.values(err.errors)[0] || err.error }, { status: 400 })
+    }
+    console.error('Create user API error:', err)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

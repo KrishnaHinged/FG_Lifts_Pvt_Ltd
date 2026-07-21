@@ -42,3 +42,34 @@ export async function getAllCategories() {
   await connectDB()
   return BlogPost.distinct('category', { isPublished: true })
 }
+
+// Admin database queries
+export async function getAllPostsAdmin() {
+  await connectDB()
+  return BlogPost.find().sort({ createdAt: -1 }).lean()
+}
+
+export async function getPostById(id) {
+  await connectDB()
+  return BlogPost.findById(id).lean()
+}
+
+export async function createPost(data) {
+  await connectDB()
+  return BlogPost.create(data)
+}
+
+export async function updatePost(id, data) {
+  await connectDB()
+  return BlogPost.findByIdAndUpdate(id, data, { new: true }).lean()
+}
+
+export async function deletePost(id) {
+  await connectDB()
+  return BlogPost.findByIdAndDelete(id).lean()
+}
+
+export async function countPosts(query = {}) {
+  await connectDB()
+  return BlogPost.countDocuments(query)
+}

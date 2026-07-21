@@ -3,17 +3,28 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Loader2, CheckCircle } from 'lucide-react'
+import Section from '@/components/layouts/Section'
+import Container from '@/components/layouts/Container'
+import Field from '@/components/forms/Field'
+import Input from '@/components/forms/Input'
+import Textarea from '@/components/forms/Textarea'
+import Select from '@/components/forms/Select'
 
 const elevatorTypes = [
-  'Passenger Lift',
-  'Goods / Freight Lift',
-  'Capsule / Glass Lift',
-  'Home / Villa Lift',
-  'Hospital / Stretcher Lift',
-  'Panoramic Lift',
+  { value: 'Passenger Lift', label: 'Passenger Lift' },
+  { value: 'Goods / Freight Lift', label: 'Goods / Freight Lift' },
+  { value: 'Capsule / Glass Lift', label: 'Capsule / Glass Lift' },
+  { value: 'Home / Villa Lift', label: 'Home / Villa Lift' },
+  { value: 'Hospital / Stretcher Lift', label: 'Hospital / Stretcher Lift' },
+  { value: 'Panoramic Lift', label: 'Panoramic Lift' },
 ]
 
-const floorOptions = ['2–5 Floors', '6–10 Floors', '11–20 Floors', '20+ Floors']
+const floorOptions = [
+  { value: '2–5 Floors', label: '2–5 Floors' },
+  { value: '6–10 Floors', label: '6–10 Floors' },
+  { value: '11–20 Floors', label: '11–20 Floors' },
+  { value: '20+ Floors', label: '20+ Floors' },
+]
 
 const initialForm = {
   name: '',
@@ -89,32 +100,19 @@ export default function ContactSection() {
     }
   }
 
-  const labelClasses = "font-mono text-[9px] tracking-widest text-white/50 uppercase font-bold mb-2 block"
-  const inputClasses = (field) =>
-    `w-full bg-[#252525] border ${errors[field] ? 'border-[#D72638]' : 'border-white/5'
-    } rounded-2xl px-5 py-4 text-white text-sm placeholder-white/20 outline-none transition-colors duration-300 focus:border-[#E8A840] focus:ring-1 focus:ring-[#E8A840]`
-
-  const selectClasses = (field) =>
-    `w-full bg-[#252525] border ${errors[field] ? 'border-[#D72638]' : 'border-white/5'
-    } rounded-2xl px-5 py-4 text-white text-sm outline-none transition-colors duration-300 focus:border-[#E8A840] focus:ring-1 focus:ring-[#E8A840] appearance-none cursor-pointer`
+  // Visual classes specifically crafted to preserve the dark form container aesthetics
+  const inputClass = "w-full !bg-[#252525] !border-white/10 rounded-2xl px-5 py-4 !text-white text-sm !placeholder-white/40 outline-none transition-colors duration-300 focus:!border-[#0797CE] focus:ring-1 focus:ring-[#0797CE]"
 
   return (
-    <section id="contact" className="bg-[#F5F0EB] py-[120px] sm:py-[180px] select-none relative overflow-hidden">
-
-      {/* Background Glowing Balls */}
+    <Section id="contact" background="cream" size="none" className="py-[120px] sm:py-[180px] select-none relative overflow-hidden">
       <div className="absolute top-[10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-[radial-gradient(circle,rgba(165,124,240,0.12)_0%,transparent_70%)] blur-[100px] pointer-events-none z-0" />
       <div className="absolute bottom-[10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[radial-gradient(circle,rgba(168,230,120,0.15)_0%,transparent_70%)] blur-[100px] pointer-events-none z-0" />
 
-      <div className="relative z-10 max-w-[1380px] mx-auto px-6 lg:px-8">
-
+      <Container className="relative z-10 max-w-[1380px]">
         {/* Header Block */}
         <div className="flex flex-col items-center text-center gap-4 mb-16 max-w-3xl mx-auto">
-          {/* <span className="font-mono text-[9px] tracking-[0.25em] text-[#D72638] uppercase font-bold">
-            // 09 / Get In Touch
-          </span> */}
           <h2 className="font-sans text-4xl sm:text-5xl lg:text-[4rem] font-bold tracking-tight uppercase leading-[1.05] text-[#111111] m-0">
             Get in
-            {/* Custom SVG Clicking Pointer Hand outline */}
             <svg viewBox="0 0 24 24" width="40" height="40" stroke="#0797CE" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" className="inline-block mx-3 sm:mx-4 -translate-y-1 sm:-translate-y-2">
               <path d="M10 11V6a2 2 0 0 1 4 0v5" />
               <path d="M14 10.5a2 2 0 0 1 4 0v.5" />
@@ -163,24 +161,20 @@ export default function ContactSection() {
               >
                 {/* Grid 1: Name & Email */}
                 <div className="grid sm:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="contact-name" className={labelClasses}>Full Name *</label>
-                    <input
+                  <Field label="Full Name *" error={errors.name} id="contact-name">
+                    <Input
                       id="contact-name"
                       name="name"
-                      type="text"
                       placeholder="Enter your name"
                       value={formData.name}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      autoComplete="name"
-                      className={inputClasses('name')}
+                      error={!!errors.name}
+                      className={inputClass}
                     />
-                    {errors.name && <p className="text-[#D72638] text-xs mt-2 font-mono">{errors.name}</p>}
-                  </div>
-                  <div>
-                    <label htmlFor="contact-email" className={labelClasses}>Email *</label>
-                    <input
+                  </Field>
+                  <Field label="Email *" error={errors.email} id="contact-email">
+                    <Input
                       id="contact-email"
                       name="email"
                       type="email"
@@ -188,18 +182,16 @@ export default function ContactSection() {
                       value={formData.email}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      autoComplete="email"
-                      className={inputClasses('email')}
+                      error={!!errors.email}
+                      className={inputClass}
                     />
-                    {errors.email && <p className="text-[#D72638] text-xs mt-2 font-mono">{errors.email}</p>}
-                  </div>
+                  </Field>
                 </div>
 
                 {/* Grid 2: Phone & Company */}
                 <div className="grid sm:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="contact-phone" className={labelClasses}>Phone *</label>
-                    <input
+                  <Field label="Phone *" error={errors.phone} id="contact-phone">
+                    <Input
                       id="contact-phone"
                       name="phone"
                       type="tel"
@@ -207,89 +199,63 @@ export default function ContactSection() {
                       value={formData.phone}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      autoComplete="tel"
-                      className={inputClasses('phone')}
+                      error={!!errors.phone}
+                      className={inputClass}
                     />
-                    {errors.phone && <p className="text-[#D72638] text-xs mt-2 font-mono">{errors.phone}</p>}
-                  </div>
-                  <div>
-                    <label htmlFor="contact-company" className={labelClasses}>Company</label>
-                    <input
+                  </Field>
+                  <Field label="Company" id="contact-company">
+                    <Input
                       id="contact-company"
                       name="company"
-                      type="text"
                       placeholder="Enter your company name"
                       value={formData.company}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      autoComplete="organization"
-                      className={inputClasses('company')}
+                      className={inputClass}
                     />
-                  </div>
+                  </Field>
                 </div>
 
                 {/* Grid 3: City, Elevator Type & Floors */}
                 <div className="grid sm:grid-cols-3 gap-6">
-                  <div>
-                    <label htmlFor="contact-city" className={labelClasses}>City</label>
-                    <input
+                  <Field label="City" id="contact-city">
+                    <Input
                       id="contact-city"
                       name="city"
-                      type="text"
                       placeholder="Enter city"
                       value={formData.city}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      autoComplete="street-address"
-                      className={inputClasses('city')}
+                      className={inputClass}
                     />
-                  </div>
-                  <div className="relative">
-                    <label htmlFor="contact-elevator-type" className={labelClasses}>Elevator Type</label>
-                    <select
+                  </Field>
+                  <Field label="Elevator Type" id="contact-elevator-type">
+                    <Select
                       id="contact-elevator-type"
                       name="elevatorType"
                       value={formData.elevatorType}
                       onChange={handleChange}
-                      className={selectClasses('elevatorType')}
-                    >
-                      <option value="" className="bg-[#1A1A1A]">Select type</option>
-                      {elevatorTypes.map((t) => (
-                        <option key={t} value={t} className="bg-[#1A1A1A]">{t}</option>
-                      ))}
-                    </select>
-                    <div className="absolute right-4 bottom-5 pointer-events-none text-white/40">
-                      <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="relative">
-                    <label htmlFor="contact-floor-count" className={labelClasses}>Floors</label>
-                    <select
+                      options={elevatorTypes}
+                      placeholder="Select type"
+                      className="w-full !bg-[#252525] !border-white/10 rounded-2xl px-5 py-4 !text-white text-sm outline-none transition-colors duration-300 focus:!border-[#0797CE] focus:ring-1 focus:ring-[#0797CE] appearance-none cursor-pointer"
+                    />
+                  </Field>
+                  <Field label="Floors" id="contact-floor-count">
+                    <Select
                       id="contact-floor-count"
                       name="floorCount"
                       value={formData.floorCount}
                       onChange={handleChange}
-                      className={selectClasses('floorCount')}
-                    >
-                      <option value="" className="bg-[#1A1A1A]">Select range</option>
-                      {floorOptions.map((f) => (
-                        <option key={f} value={f} className="bg-[#1A1A1A]">{f}</option>
-                      ))}
-                    </select>
-                    <div className="absolute right-4 bottom-5 pointer-events-none text-white/40">
-                      <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                  </div>
+                      options={floorOptions}
+                      placeholder="Select range"
+                      className="w-full !bg-[#252525] !border-white/10 rounded-2xl px-5 py-4 !text-white text-sm outline-none transition-colors duration-300 focus:!border-[#0797CE] focus:ring-1 focus:ring-[#0797CE] appearance-none cursor-pointer"
+                    />
+                  </Field>
                 </div>
 
                 {/* Message */}
-                <div>
-                  <label htmlFor="contact-message" className={labelClasses}>Message</label>
-                  <textarea
+                <Field label="Message" id="contact-message">
+                  <Textarea
                     id="contact-message"
                     name="message"
                     rows={4}
@@ -297,9 +263,9 @@ export default function ContactSection() {
                     value={formData.message}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`${inputClasses('message')} resize-none h-36`}
+                    className="w-full !bg-[#252525] !border-white/10 rounded-2xl px-5 py-4 !text-white text-sm !placeholder-white/40 outline-none transition-colors duration-300 focus:!border-[#0797CE] focus:ring-1 focus:ring-[#0797CE] resize-none h-36"
                   />
-                </div>
+                </Field>
 
                 {status === 'error' && (
                   <p className="text-[#D72638] text-xs font-mono">
@@ -307,12 +273,12 @@ export default function ContactSection() {
                   </p>
                 )}
 
-                {/* Submit Pill Button (Zestate layout matching gold theme) */}
+                {/* Submit Pill Button */}
                 <div className="pt-4">
                   <button
                     type="submit"
                     disabled={status === 'loading'}
-                    className="w-full sm:w-auto min-w-[160px] bg-[#0797CE] text-black py-4 px-10 rounded-full font-bold text-xs uppercase tracking-wider transition-all duration-300 hover:bg-[#3263d5] hover:scale-105 disabled:opacity-60 cursor-pointer border-none flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E8A840] focus-visible:ring-offset-2"
+                    className="w-full sm:w-auto min-w-[160px] bg-[#0797CE] text-black py-4 px-10 rounded-full font-bold text-xs uppercase tracking-wider transition-all duration-300 hover:bg-[#3263d5] hover:scale-105 disabled:opacity-60 cursor-pointer border-none flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0797CE] focus-visible:ring-offset-2"
                   >
                     {status === 'loading' ? (
                       <>
@@ -328,8 +294,7 @@ export default function ContactSection() {
             )}
           </AnimatePresence>
         </div>
-
-      </div>
-    </section>
+      </Container>
+    </Section>
   )
 }

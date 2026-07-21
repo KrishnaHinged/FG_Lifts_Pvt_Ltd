@@ -3,6 +3,8 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Building2, Sparkles, Users } from 'lucide-react'
+import Section from '@/components/layouts/Section'
+import Container from '@/components/layouts/Container'
 
 const items = [
   { type: 'word', text: 'When' },
@@ -76,15 +78,17 @@ export default function BenefitsText() {
   })
 
   return (
-    <section
+    <Section
       ref={containerRef}
-      className="relative bg-[#F5F0EB] py-[120px] sm:py-[180px] overflow-hidden select-none border-b border-[#E8E2DA]"
+      background="cream"
+      size="default"
+      className="select-none border-b border-[#E8E2DA]"
     >
       {/* Soft Zestate-style Glowing Gradient Balls */}
       <div className="absolute top-[10%] left-[-15%] w-[60vw] h-[60vw] rounded-full bg-[radial-gradient(circle,rgba(168,230,120,0.18)_0%,transparent_70%)] blur-[80px] pointer-events-none z-0" />
       <div className="absolute bottom-[10%] right-[-15%] w-[60vw] h-[60vw] rounded-full bg-[radial-gradient(circle,rgba(165,124,240,0.15)_0%,transparent_70%)] blur-[80px] pointer-events-none z-0" />
 
-      <div className="relative z-10 max-w-[1380px] mx-auto px-6 lg:px-8">
+      <Container className="relative z-10 max-w-[1380px] mx-auto">
         <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-start">
           {items.map((item, idx) => (
             <ScrollItem
@@ -95,7 +99,7 @@ export default function BenefitsText() {
             />
           ))}
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   )
 }

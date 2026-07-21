@@ -1,0 +1,9 @@
+export const socialsConfig = {
+  facebook: 'https://facebook.com',
+  instagram: 'https://instagram.com',
+  linkedin: 'https://linkedin.com',
+  twitter: 'https://twitter.com',
+  youtube: 'https://youtube.com'
+}
+
+export default socialsConfig

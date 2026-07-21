@@ -3,6 +3,9 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
+import Section from '@/components/layouts/Section'
+import Container from '@/components/layouts/Container'
+import Grid from '@/components/layouts/Grid'
 
 const row1Images = [
   '/images/elevator-gold.jpg',
@@ -34,16 +37,18 @@ export default function GalleryMarquee() {
   const x2 = useTransform(scrollYProgress, [0, 1], [100, -100])
 
   return (
-    <section
+    <Section
       ref={containerRef}
-      className="bg-[#111111] py-[120px] select-none text-white overflow-hidden relative border-b border-white/5"
+      background="dark"
+      size="none"
+      className="py-[120px] select-none text-white overflow-hidden relative border-b border-white/5"
     >
       {/* Ambient Glows */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(14,79,179,0.06),transparent_60%)] pointer-events-none" />
 
-      <div className="max-w-[1380px] mx-auto px-6 lg:px-8 relative z-10 mb-16">
-        {/* Header - Replicating Zestate Bold Uppercase Heading */}
-        <div className="grid grid-cols-12 gap-6 items-end">
+      <Container className="max-w-[1380px] relative z-10 mb-16">
+        {/* Header */}
+        <Grid cols="12" className="gap-6 items-end">
           <div className="col-span-12 md:col-span-8 flex flex-col gap-4">
             <h2 className="font-sans text-4xl sm:text-5xl lg:text-[4rem] font-bold tracking-tight uppercase leading-[1.05] text-white m-0">
               Explore our <br />
@@ -71,12 +76,11 @@ export default function GalleryMarquee() {
               </div>
             </a>
           </div>
-        </div>
-      </div>
+        </Grid>
+      </Container>
 
       {/* Sliding Marquee Rows */}
       <div className="flex flex-col gap-8 w-[150vw] ml-[-25vw]">
-
         {/* Row 1: Slides Left */}
         <motion.div style={{ x: x1 }} className="flex gap-8">
           {row1Images.map((src, i) => (
@@ -112,8 +116,7 @@ export default function GalleryMarquee() {
             </div>
           ))}
         </motion.div>
-
       </div>
-    </section>
+    </Section>
   )
 }

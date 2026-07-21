@@ -1,14 +1,8 @@
 import { NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
-import { getLogs } from '@/repositories/auditLog.repository'
-import { verifyToken, COOKIE_NAME } from '@/lib/auth'
+import { getAdmin } from '@/lib/auth'
+import { getAuditLogs } from '@/services/audit.service'
 import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
-
-function getAdmin(req) {
-  const token = req.cookies.get(COOKIE_NAME)?.value
-  return token ? verifyToken(token) : null
-}
 
 export async function GET(req) {
   try {
@@ -18,16 +12,15 @@ export async function GET(req) {
     }
 
     const { searchParams } = new URL(req.url)
-    const page = parseInt(searchParams.get('page')) || 1
-    const limit = parseInt(searchParams.get('limit')) || 50
+    const page = parseInt(searchParams.get('page'), 10) || 1
+    const limit = parseInt(searchParams.get('limit'), 10) || 50
     const action = searchParams.get('action') || null
     const adminId = searchParams.get('adminId') || null
 
-    await connectDB()
-    const result = await getLogs({ page, limit, action, adminId })
+    const result = await getAuditLogs({ page, limit, action, adminId })
     return NextResponse.json({ success: true, ...result })
   } catch (err) {
-    console.error('Fetch logs error:', err)
+    console.error('Fetch logs API error:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

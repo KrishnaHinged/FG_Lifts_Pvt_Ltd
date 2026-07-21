@@ -1,40 +1,23 @@
 import { NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
-import Inquiry from '@/models/Inquiry'
-import Admin from '@/models/Admin'
-import { verifyToken, COOKIE_NAME } from '@/lib/auth'
+import { getAdmin } from '@/lib/auth'
+import { getLeadById, addLeadNote, updateLeadStatus, assignLead, deleteLead } from '@/services/inquiry.service'
+import { createAuditLog } from '@/services/audit.service'
 import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
-import { createLog } from '@/repositories/auditLog.repository'
-
-function getAdmin(req) {
-  const token = req.cookies.get(COOKIE_NAME)?.value
-  return token ? verifyToken(token) : null
-}
 
 export async function GET(req, { params }) {
   try {
     const { id } = await params
     const admin = getAdmin(req)
-    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-    await connectDB()
-    const inquiry = await Inquiry.findById(id)
-      .populate('assignedTo', 'name email role')
-      .populate('assignedBy', 'name email')
-      .lean()
-
-    if (!inquiry) return NextResponse.json({ error: 'Inquiry not found' }, { status: 404 })
-
-    // Sales Executive can only view their own
-    if (admin.role === 'SALES_EXECUTIVE' && inquiry.assignedTo?._id?.toString() !== admin.id) {
-      return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
+    if (!admin) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    return NextResponse.json({ success: true, inquiry })
+    const lead = await getLeadById(id, admin)
+    return NextResponse.json({ success: true, inquiry: lead })
   } catch (err) {
-    console.error('Fetch inquiry detail error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    console.error('Fetch inquiry detail API error:', err)
+    return NextResponse.json({ error: err.error || 'Server error' }, { status: err.status || 500 })
   }
 }
 
@@ -42,116 +25,93 @@ export async function PATCH(req, { params }) {
   try {
     const { id } = await params
     const admin = getAdmin(req)
-    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!admin) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     const { note, noteText, status, assignedTo } = await req.json()
 
-    await connectDB()
-    const inquiry = await Inquiry.findById(id)
-    if (!inquiry) return NextResponse.json({ error: 'Inquiry not found' }, { status: 404 })
+    let updatedLead = null
 
-    // Sales Executive can only modify their own
-    if (admin.role === 'SALES_EXECUTIVE' && inquiry.assignedTo?.toString() !== admin.id) {
-      return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
-    }
-
-    let updated = false
-
-    // Note adding
+    // 1. Note addition
     const targetNote = noteText || note
     if (targetNote !== undefined) {
       if (!hasPermission(admin, PERMISSIONS.ADD_INQUIRY_NOTE)) {
         return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
       }
-      if (!targetNote.trim()) {
-        return NextResponse.json({ error: 'Note text cannot be empty' }, { status: 400 })
+      updatedLead = await addLeadNote(id, targetNote, admin)
+
+      try {
+        await createAuditLog({
+          action: 'inquiry_note_added',
+          performedBy: admin,
+          targetId: id,
+          targetType: 'Inquiry',
+          details: { noteSnippet: targetNote.slice(0, 100) },
+          ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+        })
+      } catch (logErr) {
+        console.error('Failed to log note audit trail:', logErr)
       }
-
-      inquiry.notes.push({
-        text: targetNote,
-        adminName: admin.name,
-        adminId: admin.id,
-        createdAt: new Date()
-      })
-      updated = true
-
-      // Log audit trail
-      await createLog({
-        action: 'inquiry_note_added',
-        performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-        targetId: inquiry._id.toString(),
-        targetType: 'Inquiry',
-        details: { noteSnippet: targetNote.slice(0, 100) }
-      })
     }
 
-    // Status Changer
+    // 2. Status update
     if (status !== undefined) {
       if (!hasPermission(admin, PERMISSIONS.UPDATE_INQUIRY_STATUS)) {
         return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
       }
-      const oldStatus = inquiry.status
-      inquiry.status = status
-      updated = true
+      const previousLead = await getLeadById(id, admin)
+      const oldStatus = previousLead.status
 
-      // Log audit trail
-      await createLog({
-        action: 'inquiry_status_changed',
-        performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-        targetId: inquiry._id.toString(),
-        targetType: 'Inquiry',
-        details: { oldStatus, newStatus: status }
-      })
+      updatedLead = await updateLeadStatus(id, status, admin)
+
+      try {
+        await createAuditLog({
+          action: 'inquiry_status_changed',
+          performedBy: admin,
+          targetId: id,
+          targetType: 'Inquiry',
+          details: { oldStatus, newStatus: status },
+          ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+        })
+      } catch (logErr) {
+        console.error('Failed to log status audit trail:', logErr)
+      }
     }
 
-    // Assignment Changer
+    // 3. Lead assignment
     if (assignedTo !== undefined) {
       if (!hasPermission(admin, PERMISSIONS.ASSIGN_INQUIRY)) {
         return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
       }
-      const previousAssignedTo = inquiry.assignedTo
-      inquiry.assignedTo = assignedTo || null
-      inquiry.assignedBy = admin.id
-      inquiry.assignedAt = assignedTo ? new Date() : null
-      updated = true
+      const previousLead = await getLeadById(id, admin)
+      const prevAssigned = previousLead.assignedTo?.id || null
 
-      // Log audit trail
-      await createLog({
-        action: 'inquiry_assigned',
-        performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-        targetId: inquiry._id.toString(),
-        targetType: 'Inquiry',
-        details: { previousAssignedTo, newAssignedTo: assignedTo }
-      })
+      updatedLead = await assignLead(id, assignedTo, admin)
 
-      // Send email notification
-      if (assignedTo) {
-        try {
-          const executive = await Admin.findById(assignedTo)
-          if (executive) {
-            const { sendLeadAssignedEmail } = await import('@/services/email.service')
-            await sendLeadAssignedEmail({ executive, inquiry, manager: admin })
-          }
-        } catch (emailErr) {
-          console.error('Failed to send lead assignment email:', emailErr)
-        }
+      try {
+        await createAuditLog({
+          action: 'inquiry_assigned',
+          performedBy: admin,
+          targetId: id,
+          targetType: 'Inquiry',
+          details: { previousAssignedTo: prevAssigned, newAssignedTo: assignedTo },
+          ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+        })
+      } catch (logErr) {
+        console.error('Failed to log assign audit trail:', logErr)
       }
     }
 
-    if (updated) {
-      await inquiry.save()
+    // If nothing was updated, load current state
+    if (!updatedLead) {
+      updatedLead = await getLeadById(id, admin)
     }
 
-    // Populate assignedTo and assignedBy for returning
-    const populatedInquiry = await Inquiry.findById(inquiry._id)
-      .populate('assignedTo', 'name email role')
-      .populate('assignedBy', 'name email')
-      .lean()
-
-    return NextResponse.json({ success: true, inquiry: populatedInquiry })
+    return NextResponse.json({ success: true, inquiry: updatedLead })
   } catch (err) {
-    console.error('Update inquiry error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    console.error('Update inquiry API error:', err)
+    return NextResponse.json({ error: err.error || 'Server error' }, { status: err.status || 500 })
   }
 }
 
@@ -159,28 +119,32 @@ export async function DELETE(req, { params }) {
   try {
     const { id } = await params
     const admin = getAdmin(req)
-    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!admin) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     if (!hasPermission(admin, PERMISSIONS.DELETE_INQUIRY)) {
       return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
     }
 
-    await connectDB()
-    const inquiry = await Inquiry.findByIdAndDelete(id)
-    if (!inquiry) return NextResponse.json({ error: 'Inquiry not found' }, { status: 404 })
+    const lead = await deleteLead(id, admin)
 
-    // Log audit trail
-    await createLog({
-      action: 'inquiry_deleted',
-      performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-      targetId: id,
-      targetType: 'Inquiry',
-      details: { name: inquiry.name, email: inquiry.email }
-    })
+    try {
+      await createAuditLog({
+        action: 'inquiry_deleted',
+        performedBy: admin,
+        targetId: id,
+        targetType: 'Inquiry',
+        details: { name: lead.name, email: lead.email },
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+      })
+    } catch (logErr) {
+      console.error('Failed to log delete audit trail:', logErr)
+    }
 
     return NextResponse.json({ success: true, message: 'Inquiry deleted successfully' })
   } catch (err) {
-    console.error('Delete inquiry error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    console.error('Delete inquiry API error:', err)
+    return NextResponse.json({ error: err.error || 'Server error' }, { status: err.status || 500 })
   }
 }

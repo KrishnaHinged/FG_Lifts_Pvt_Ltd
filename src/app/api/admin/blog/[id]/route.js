@@ -1,15 +1,9 @@
 import { NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
-import BlogPost from '@/models/BlogPost'
-import { verifyToken, COOKIE_NAME } from '@/lib/auth'
+import { getAdmin } from '@/lib/auth'
+import { getPostById, updatePost, deletePost } from '@/services/blog.service'
+import { createAuditLog } from '@/services/audit.service'
 import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
-import { createLog } from '@/repositories/auditLog.repository'
-
-function getAdmin(req) {
-  const token = req.cookies.get(COOKIE_NAME)?.value
-  return token ? verifyToken(token) : null
-}
 
 export async function GET(req, { params }) {
   try {
@@ -19,13 +13,11 @@ export async function GET(req, { params }) {
       return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
     }
 
-    await connectDB()
-    const post = await BlogPost.findById(id).lean()
-    if (!post) return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+    const post = await getPostById(id)
     return NextResponse.json({ success: true, post })
   } catch (err) {
-    console.error('Fetch post detail error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    console.error('Fetch blog post detail API error:', err)
+    return NextResponse.json({ error: err.error || 'Server error' }, { status: err.status || 500 })
   }
 }
 
@@ -38,11 +30,7 @@ export async function PUT(req, { params }) {
     }
 
     const body = await req.json()
-    await connectDB()
-    
-    // Find original to check publish transition
-    const original = await BlogPost.findById(id)
-    if (!original) return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+    const original = await getPostById(id)
 
     // Check publish permissions if changing publish state
     if (body.isPublished && !original.isPublished) {
@@ -52,35 +40,30 @@ export async function PUT(req, { params }) {
       body.publishedAt = new Date()
     }
 
-    // Apply updates manually to trigger schema pre-save hook
-    Object.keys(body).forEach((key) => {
-      original[key] = body[key]
-    })
-    await original.save()
+    const post = await updatePost(id, body)
 
     // Log action
-    if (body.isPublished && !original.isPublished) {
-      await createLog({
-        action: 'blog_published',
-        performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
+    try {
+      const isPublishTransition = body.isPublished && !original.isPublished
+      await createAuditLog({
+        action: isPublishTransition ? 'blog_published' : 'blog_created',
+        performedBy: admin,
         targetId: id,
         targetType: 'BlogPost',
-        details: { title: original.title, slug: original.slug }
+        details: { title: post.title, slug: post.slug, updated: true },
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
       })
-    } else {
-      await createLog({
-        action: 'blog_created', // closest update/log action
-        performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-        targetId: id,
-        targetType: 'BlogPost',
-        details: { title: original.title, slug: original.slug, updated: true }
-      })
+    } catch (logErr) {
+      console.error('Failed to log blog update audit trail:', logErr)
     }
 
-    return NextResponse.json({ success: true, post: original })
+    return NextResponse.json({ success: true, post })
   } catch (err) {
-    console.error('Update post error:', err)
-    return NextResponse.json({ error: 'Server error: ' + err.message }, { status: 500 })
+    if (err.status === 400) {
+      return NextResponse.json({ error: Object.values(err.errors)[0] || err.error }, { status: 400 })
+    }
+    console.error('Update blog post API error:', err)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
 
@@ -92,25 +75,29 @@ export async function DELETE(req, { params }) {
       return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
     }
 
-    await connectDB()
-    const post = await BlogPost.findByIdAndDelete(id)
-    if (!post) return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+    const post = await deletePost(id)
 
     // Log action
-    await createLog({
-      action: 'blog_deleted',
-      performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-      targetId: id,
-      targetType: 'BlogPost',
-      details: { title: post.title, slug: post.slug }
-    })
+    try {
+      await createAuditLog({
+        action: 'blog_deleted',
+        performedBy: admin,
+        targetId: id,
+        targetType: 'BlogPost',
+        details: { title: post.title, slug: post.slug },
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+      })
+    } catch (logErr) {
+      console.error('Failed to log blog deletion audit trail:', logErr)
+    }
 
     return NextResponse.json({ success: true, message: 'Post deleted successfully' })
   } catch (err) {
-    console.error('Delete post error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    console.error('Delete blog post API error:', err)
+    return NextResponse.json({ error: err.error || 'Server error' }, { status: 500 })
   }
 }
+
 export async function PATCH(req, { params }) {
   try {
     const { id } = await params
@@ -118,40 +105,42 @@ export async function PATCH(req, { params }) {
     if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await req.json()
-    await connectDB()
-    const post = await BlogPost.findById(id)
-    if (!post) return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+    const original = await getPostById(id)
 
     // Handle single-field publishes or toggle updates
-    if (body.isPublished !== undefined && body.isPublished !== post.isPublished) {
+    const updates = { ...original, ...body }
+    if (body.isPublished !== undefined && body.isPublished !== original.isPublished) {
       if (!hasPermission(admin, PERMISSIONS.PUBLISH_BLOG)) {
         return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
       }
-      post.isPublished = body.isPublished
+      updates.isPublished = body.isPublished
       if (body.isPublished) {
-        post.publishedAt = new Date()
+        updates.publishedAt = new Date()
       }
     }
 
-    // Apply any other fields
-    Object.keys(body).forEach((k) => {
-      if (k !== 'isPublished') post[k] = body[k]
-    })
-
-    await post.save()
+    const post = await updatePost(id, updates)
 
     // Log action
-    await createLog({
-      action: body.isPublished ? 'blog_published' : 'blog_created',
-      performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-      targetId: id,
-      targetType: 'BlogPost',
-      details: { title: post.title, slug: post.slug, patch: true }
-    })
+    try {
+      await createAuditLog({
+        action: body.isPublished ? 'blog_published' : 'blog_created',
+        performedBy: admin,
+        targetId: id,
+        targetType: 'BlogPost',
+        details: { title: post.title, slug: post.slug, patch: true },
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+      })
+    } catch (logErr) {
+      console.error('Failed to log blog patch audit trail:', logErr)
+    }
 
     return NextResponse.json({ success: true, post })
   } catch (err) {
-    console.error('Patch post error:', err)
+    if (err.status === 400) {
+      return NextResponse.json({ error: Object.values(err.errors)[0] || err.error }, { status: 400 })
+    }
+    console.error('Patch blog post API error:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getAllPublishedPosts, getAllCategories } from '@/repositories/blog.repository'
+import { getPublishedPosts, getCategories } from '@/services/blog.service'
 
 export async function GET(req) {
   try {
@@ -8,13 +8,13 @@ export async function GET(req) {
     const tag      = searchParams.get('tag') || null
 
     const [posts, categories] = await Promise.all([
-      getAllPublishedPosts({ category, tag }),
-      getAllCategories()
+      getPublishedPosts({ category, tag }),
+      getCategories()
     ])
 
     return NextResponse.json({ success: true, posts, categories })
   } catch (err) {
-    console.error('Blog API error:', err)
+    console.error('Blog API endpoint error:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

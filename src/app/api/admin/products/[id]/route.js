@@ -1,15 +1,9 @@
 import { NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
-import Product from '@/models/Product'
-import { verifyToken, COOKIE_NAME } from '@/lib/auth'
+import { getAdmin } from '@/lib/auth'
+import { getProductById, updateProduct, deleteProduct } from '@/services/product.service'
+import { createAuditLog } from '@/services/audit.service'
 import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
-import { createLog } from '@/repositories/auditLog.repository'
-
-function getAdmin(req) {
-  const token = req.cookies.get(COOKIE_NAME)?.value
-  return token ? verifyToken(token) : null
-}
 
 export async function GET(req, { params }) {
   try {
@@ -19,13 +13,11 @@ export async function GET(req, { params }) {
       return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
     }
 
-    await connectDB()
-    const product = await Product.findById(id).lean()
-    if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+    const product = await getProductById(id)
     return NextResponse.json({ success: true, product })
   } catch (err) {
-    console.error('Fetch product detail error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    console.error('Fetch product detail API error:', err)
+    return NextResponse.json({ error: err.error || 'Server error' }, { status: err.status || 500 })
   }
 }
 
@@ -38,23 +30,29 @@ export async function PUT(req, { params }) {
     }
 
     const body = await req.json()
-    await connectDB()
-    const product = await Product.findByIdAndUpdate(id, body, { new: true }).lean()
-    if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+    const product = await updateProduct(id, body)
 
     // Log action
-    await createLog({
-      action: 'product_updated',
-      performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-      targetId: id,
-      targetType: 'Product',
-      details: { name: product.name, slug: product.slug }
-    })
+    try {
+      await createAuditLog({
+        action: 'product_updated',
+        performedBy: admin,
+        targetId: id,
+        targetType: 'Product',
+        details: { name: product.name, slug: product.slug },
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+      })
+    } catch (logErr) {
+      console.error('Failed to log product update audit trail:', logErr)
+    }
 
     return NextResponse.json({ success: true, product })
   } catch (err) {
-    console.error('Update product error:', err)
-    return NextResponse.json({ error: 'Server error: ' + err.message }, { status: 500 })
+    if (err.status === 400) {
+      return NextResponse.json({ error: Object.values(err.errors)[0] || err.error }, { status: 400 })
+    }
+    console.error('Update product API error:', err)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
 
@@ -66,25 +64,29 @@ export async function DELETE(req, { params }) {
       return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
     }
 
-    await connectDB()
-    const product = await Product.findByIdAndDelete(id)
-    if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+    const product = await deleteProduct(id)
 
     // Log action
-    await createLog({
-      action: 'product_deleted',
-      performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-      targetId: id,
-      targetType: 'Product',
-      details: { name: product.name, slug: product.slug }
-    })
+    try {
+      await createAuditLog({
+        action: 'product_deleted',
+        performedBy: admin,
+        targetId: id,
+        targetType: 'Product',
+        details: { name: product.name, slug: product.slug },
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+      })
+    } catch (logErr) {
+      console.error('Failed to log product deletion audit trail:', logErr)
+    }
 
     return NextResponse.json({ success: true, message: 'Product deleted successfully' })
   } catch (err) {
-    console.error('Delete product error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    console.error('Delete product API error:', err)
+    return NextResponse.json({ error: err.error || 'Server error' }, { status: err.status || 500 })
   }
 }
+
 export async function PATCH(req, { params }) {
   try {
     const { id } = await params
@@ -94,22 +96,32 @@ export async function PATCH(req, { params }) {
     }
 
     const body = await req.json()
-    await connectDB()
-    const product = await Product.findByIdAndUpdate(id, body, { new: true }).lean()
-    if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+    
+    // Retrieve product to apply patch updates
+    const current = await getProductById(id)
+    const merged = { ...current, ...body }
+    const product = await updateProduct(id, merged)
 
     // Log action
-    await createLog({
-      action: 'product_updated',
-      performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-      targetId: id,
-      targetType: 'Product',
-      details: { name: product.name, slug: product.slug, patch: true }
-    })
+    try {
+      await createAuditLog({
+        action: 'product_updated',
+        performedBy: admin,
+        targetId: id,
+        targetType: 'Product',
+        details: { name: product.name, slug: product.slug, patch: true },
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+      })
+    } catch (logErr) {
+      console.error('Failed to log product patch audit trail:', logErr)
+    }
 
     return NextResponse.json({ success: true, product })
   } catch (err) {
-    console.error('Patch product error:', err)
+    if (err.status === 400) {
+      return NextResponse.json({ error: Object.values(err.errors)[0] || err.error }, { status: 400 })
+    }
+    console.error('Patch product API error:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

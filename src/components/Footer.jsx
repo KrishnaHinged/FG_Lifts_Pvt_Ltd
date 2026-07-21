@@ -3,13 +3,13 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 
-const navLinks = [
-  { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
-  { label: 'Products', href: '/products' },
-  { label: 'Projects', href: '/gallery' },
-  { label: 'Contact', href: '/#contact' },
-]
+import { FOOTER } from '@/constants/footer'
+import { SOCIALS } from '@/constants/socials'
+import { NAVIGATION } from '@/constants/navigation'
+import { capitalize } from '@/utils/string'
+
+const navLinks = NAVIGATION.NAV_LINKS
+
 
 export default function Footer() {
   // Framer Motion variants for scroll-triggered staggers
@@ -70,10 +70,10 @@ export default function Footer() {
             className="col-span-12 lg:col-span-5 flex flex-col items-start"
           >
             <h4 className="font-mono text-[14px] uppercase tracking-[0.2em] text-[#F5F0EB]/40 m-0 mb-6 font-medium">
-              // Company
+              {FOOTER.SECTIONS.COMPANY.TITLE}
             </h4>
             <p className="font-sans text-[15px] leading-relaxed text-[#F5F0EB]/50 m-0 max-w-[340px]">
-              Engineering precision systems for luxury estates, commercial landmark towers, and high-density infrastructure across India. Established in 1993.
+              {FOOTER.SECTIONS.COMPANY.TEXT}
             </p>
           </motion.div>
 
@@ -83,7 +83,7 @@ export default function Footer() {
             className="col-span-6 md:col-span-4 lg:col-span-2 lg:col-start-7 flex flex-col items-start"
           >
             <h4 className="font-mono text-[14px] uppercase tracking-[0.2em] text-[#F5F0EB]/40 m-0 mb-6 font-medium">
-              // Navigation
+              {FOOTER.SECTIONS.NAVIGATION.TITLE}
             </h4>
             <ul className="list-none p-0 m-0 space-y-4">
               {navLinks.map((link) => (
@@ -105,27 +105,27 @@ export default function Footer() {
             className="col-span-6 md:col-span-4 lg:col-span-2 flex flex-col items-start"
           >
             <h4 className="font-mono text-[14px] uppercase tracking-[0.2em] text-[#F5F0EB]/40 m-0 mb-6 font-medium">
-              // Contact
+              {FOOTER.SECTIONS.CONTACT.TITLE}
             </h4>
             <ul className="list-none p-0 m-0 space-y-4 font-sans text-[16px] text-[#F5F0EB]/50 leading-relaxed">
               <li>
-                <span className="block text-[#F5F0EB]/70 font-medium">Surat</span>
-                <span className="block text-xs uppercase tracking-wider text-[#F5F0EB]/40 mt-0.5">Gujarat, India</span>
+                <span className="block text-[#F5F0EB]/70 font-medium">{FOOTER.SECTIONS.CONTACT.CITY}</span>
+                <span className="block text-xs uppercase tracking-wider text-[#F5F0EB]/40 mt-0.5">{FOOTER.SECTIONS.CONTACT.REGION}</span>
               </li>
               <li>
                 <a
-                  href="mailto:info@fglift.com"
+                  href={`mailto:${FOOTER.SECTIONS.CONTACT.EMAIL}`}
                   className="text-[#F5F0EB]/60 hover:text-[#F5F0EB] transition-all duration-[350ms] ease-out inline-block hover:translate-x-1.5 no-underline"
                 >
-                  info@fglift.com
+                  {FOOTER.SECTIONS.CONTACT.EMAIL}
                 </a>
               </li>
               <li>
                 <a
-                  href="tel:+919876543210"
+                  href={`tel:${FOOTER.SECTIONS.CONTACT.PHONE.replace(/\s+/g, '')}`}
                   className="text-[#F5F0EB]/60 hover:text-[#F5F0EB] transition-all duration-[350ms] ease-out inline-block hover:translate-x-1.5 no-underline"
                 >
-                  +91 98765 43210
+                  {FOOTER.SECTIONS.CONTACT.PHONE}
                 </a>
               </li>
             </ul>
@@ -137,39 +137,21 @@ export default function Footer() {
             className="col-span-6 md:col-span-4 lg:col-span-2 flex flex-col items-start"
           >
             <h4 className="font-mono text-[14px] uppercase tracking-[0.2em] text-[#F5F0EB]/40 m-0 mb-6 font-medium">
-              // Social
+              {FOOTER.SECTIONS.SOCIAL.TITLE}
             </h4>
             <ul className="list-none p-0 m-0 space-y-4">
-              <li>
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-sans text-[16px] text-[#F5F0EB]/60 hover:text-[#F5F0EB] transition-all duration-[350ms] ease-out inline-block hover:translate-x-1.5 no-underline"
-                >
-                  LinkedIn
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://instagram.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-sans text-[16px] text-[#F5F0EB]/60 hover:text-[#F5F0EB] transition-all duration-[350ms] ease-out inline-block hover:translate-x-1.5 no-underline"
-                >
-                  Instagram
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://youtube.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-sans text-[16px] text-[#F5F0EB]/60 hover:text-[#F5F0EB] transition-all duration-[350ms] ease-out inline-block hover:translate-x-1.5 no-underline"
-                >
-                  YouTube
-                </a>
-              </li>
+              {Object.entries(SOCIALS).map(([platform, url]) => (
+                <li key={platform}>
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-sans text-[16px] text-[#F5F0EB]/60 hover:text-[#F5F0EB] transition-all duration-[350ms] ease-out inline-block hover:translate-x-1.5 no-underline"
+                  >
+                    {capitalize(platform)}
+                  </a>
+                </li>
+              ))}
             </ul>
           </motion.div>
         </motion.div>
@@ -180,15 +162,18 @@ export default function Footer() {
         {/* BOTTOM BAR: Copy & Policy */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] font-mono tracking-widest text-[#F5F0EB]/30 uppercase">
           <div>
-            © {new Date().getFullYear()} FG LIFT PVT. LTD. ALL RIGHTS RESERVED.
+            {FOOTER.COPYRIGHT}
           </div>
           <div className="flex items-center gap-8">
-            <Link href="/privacy" className="text-[#F5F0EB]/30 hover:text-[#EDE8E2] transition-colors no-underline">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="text-[#F5F0EB]/30 hover:text-[#EDE8E2] transition-colors no-underline">
-              Terms & Conditions
-            </Link>
+            {FOOTER.LEGAL_LINKS.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="text-[#F5F0EB]/30 hover:text-[#EDE8E2] transition-colors no-underline"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
 

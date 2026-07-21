@@ -1,15 +1,9 @@
 import { NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
-import GalleryProject from '@/models/GalleryProject'
-import { verifyToken, COOKIE_NAME } from '@/lib/auth'
+import { getAdmin } from '@/lib/auth'
+import { getAllProjectsAdmin, createProject } from '@/services/gallery.service'
+import { createAuditLog } from '@/services/audit.service'
 import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
-import { createLog } from '@/repositories/auditLog.repository'
-
-function getAdmin(req) {
-  const token = req.cookies.get(COOKIE_NAME)?.value
-  return token ? verifyToken(token) : null
-}
 
 export async function GET(req) {
   try {
@@ -18,12 +12,11 @@ export async function GET(req) {
       return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
     }
 
-    await connectDB()
-    const projects = await GalleryProject.find().sort({ sortOrder: 1, createdAt: -1 }).lean()
+    const projects = await getAllProjectsAdmin()
     return NextResponse.json({ success: true, projects })
   } catch (err) {
-    console.error('Fetch gallery projects error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    console.error('Fetch gallery projects admin API error:', err)
+    return NextResponse.json({ error: err.error || 'Server error' }, { status: err.status || 500 })
   }
 }
 
@@ -35,32 +28,28 @@ export async function POST(req) {
     }
 
     const body = await req.json()
-    const { slug, title } = body
-
-    if (!slug || !title) {
-      return NextResponse.json({ error: 'Slug and title are required' }, { status: 400 })
-    }
-
-    await connectDB()
-    const existing = await GalleryProject.findOne({ slug: slug.toLowerCase() })
-    if (existing) {
-      return NextResponse.json({ error: 'Project slug already exists' }, { status: 409 })
-    }
-
-    const project = await GalleryProject.create(body)
+    const project = await createProject(body)
 
     // Log action
-    await createLog({
-      action: 'gallery_created',
-      performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-      targetId: project._id.toString(),
-      targetType: 'GalleryProject',
-      details: { title: project.title, slug: project.slug }
-    })
+    try {
+      await createAuditLog({
+        action: 'gallery_created',
+        performedBy: admin,
+        targetId: project.id,
+        targetType: 'GalleryProject',
+        details: { title: project.title },
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+      })
+    } catch (logErr) {
+      console.error('Failed to log gallery creation audit trail:', logErr)
+    }
 
     return NextResponse.json({ success: true, project }, { status: 201 })
   } catch (err) {
-    console.error('Create project error:', err)
+    if (err.status === 400) {
+      return NextResponse.json({ error: Object.values(err.errors)[0] || err.error }, { status: 400 })
+    }
+    console.error('Create gallery project API error:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

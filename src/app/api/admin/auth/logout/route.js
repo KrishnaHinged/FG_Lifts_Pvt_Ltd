@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
-import { COOKIE_NAME } from '@/lib/auth'
+import authConfig from '@/config/auth'
 
 export async function POST() {
   const response = NextResponse.json({ success: true })
-  response.cookies.set(COOKIE_NAME, '', { maxAge: 0, path: '/' })
+  response.cookies.set(authConfig.cookieName, '', { maxAge: 0, path: '/' })
   return response
 }

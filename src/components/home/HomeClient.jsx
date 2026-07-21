@@ -9,11 +9,9 @@ import StatsGrid from '@/components/home/StatsGrid'
 import ServicesGrid from '@/components/home/ServicesGrid'
 import Industries from '@/components/home/Industries'
 import WhyFG from '@/components/home/WhyFG'
-import ProjectShowcase from '@/components/home/ProjectShowcase'
 import GalleryMarquee from '@/components/home/GalleryMarquee'
 import Testimonials from '@/components/home/Testimonials'
 import ConfiguratorHome from '@/components/home/ConfiguratorHome'
-import HomeCTA from '@/components/home/HomeCTA'
 import ContactSection from '@/components/home/ContactSection'
 
 export default function HomeClient() {
@@ -102,11 +100,9 @@ export default function HomeClient() {
           <BenefitsText />{/*done redesign*/}
           <StatsGrid />
           <ServicesGrid />{/*done redesign*/}
-          <Industries />
+          <Industries />{/*done redesign*/}
           <WhyFG />
-          {/* <ProjectShowcase /> */}
           <ConfiguratorHome />
-          {/* <HomeCTA /> */}
           <GalleryMarquee />{/*done redesign*/}
           <Testimonials />{/*done redesign*/}
           <ContactSection />{/*done redesign*/}

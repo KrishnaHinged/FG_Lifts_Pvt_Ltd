@@ -132,6 +132,9 @@ export async function comparePassword(plain, hashed) {
   return bcrypt.compare(plain, hashed)
 }
 
+export const verifyPassword = comparePassword
+
+
 export function getCookieOptions(maxAge = COOKIE_MAX_AGE) {
   return {
     httpOnly: true,
@@ -142,4 +145,10 @@ export function getCookieOptions(maxAge = COOKIE_MAX_AGE) {
   }
 }
 
+export function getAdmin(req) {
+  const token = req.cookies.get(COOKIE_NAME)?.value
+  return token ? verifyToken(token) : null
+}
+
 export { COOKIE_NAME }
+

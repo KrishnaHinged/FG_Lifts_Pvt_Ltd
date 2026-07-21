@@ -2,6 +2,10 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import Section from '@/components/layouts/Section'
+import Container from '@/components/layouts/Container'
+import Heading from '@/components/typography/Heading'
+import Paragraph from '@/components/typography/Paragraph'
 
 export default function VisionMission() {
   const slideUp = {
@@ -14,11 +18,9 @@ export default function VisionMission() {
   }
 
   return (
-    <section className="relative py-24 lg:py-32 px-6 lg:px-8 bg-white overflow-hidden">
-
+    <Section background="white" size="none" className="py-24 lg:py-32 relative overflow-hidden">
       {/* Animated Gradient Orbs */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        {/* Yellow-green orb — left side, drifts slowly */}
         <div
           className="absolute -left-[10%] top-[10%] w-[500px] h-[500px] rounded-full opacity-[0.35]"
           style={{
@@ -27,7 +29,6 @@ export default function VisionMission() {
             animation: 'floatBlob1 14s ease-in-out infinite',
           }}
         />
-        {/* Purple/violet orb — right side, drifts slowly */}
         <div
           className="absolute -right-[8%] bottom-[5%] w-[450px] h-[450px] rounded-full opacity-[0.30]"
           style={{
@@ -38,7 +39,6 @@ export default function VisionMission() {
         />
       </div>
 
-      {/* Keyframe styles */}
       <style jsx>{`
         @keyframes floatBlob1 {
           0%, 100% { transform: translate(0, 0) scale(1); }
@@ -52,11 +52,9 @@ export default function VisionMission() {
         }
       `}</style>
 
-      <div className="relative z-10 w-full max-w-[1200px] mx-auto flex flex-col gap-2 lg:gap-4">
-
-        {/* Row 1: Mission (Text Left, Image Right) */}
+      <Container className="relative z-10 max-w-[1200px] flex flex-col gap-2 lg:gap-4">
+        {/* Row 1: Mission */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch">
-          {/* Text Block */}
           <motion.div
             variants={slideUp}
             initial="hidden"
@@ -64,15 +62,14 @@ export default function VisionMission() {
             viewport={{ once: true, amount: 0.2 }}
             className="flex flex-col justify-start pt-4 md:pt-6 lg:pt-8"
           >
-            <h2 className="m-0 font-sans text-[clamp(40px,5vw,64px)] font-bold uppercase tracking-tight leading-[1.05] text-[#111111] mb-6">
+            <Heading level="2" className="m-0 font-sans text-[clamp(40px,5vw,64px)] font-bold uppercase tracking-tight leading-[1.05] text-[#111111] mb-6">
               OUR MISSION
-            </h2>
-            <p className="m-0 font-sans text-[17px] sm:text-[19px] text-[#444444] leading-[1.7] max-w-[480px]">
+            </Heading>
+            <Paragraph className="m-0 text-[17px] sm:text-[19px] text-[#444444] leading-[1.7] max-w-[480px]">
               We exceed customer expectations by providing reliable products, responsive service, and long-term value. Our mission is to deliver world-class elevator solutions with uncompromising quality, safety, and trust — empowering every partner to rise higher.
-            </p>
+            </Paragraph>
           </motion.div>
 
-          {/* Image Block */}
           <motion.div
             variants={slideUp}
             initial="hidden"
@@ -90,9 +87,8 @@ export default function VisionMission() {
           </motion.div>
         </div>
 
-        {/* Row 2: Vision (Image Left, Text Right) — overlaps row 1 */}
+        {/* Row 2: Vision */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch md:-mt-28 lg:-mt-36">
-          {/* Image Block */}
           <motion.div
             variants={slideUp}
             initial="hidden"
@@ -109,7 +105,6 @@ export default function VisionMission() {
             />
           </motion.div>
 
-          {/* Text Block */}
           <motion.div
             variants={slideUp}
             initial="hidden"
@@ -117,16 +112,15 @@ export default function VisionMission() {
             viewport={{ once: true, amount: 0.2 }}
             className="flex flex-col justify-end py-4 md:py-6 lg:py-8 order-1 md:order-2"
           >
-            <h2 className="m-0 font-sans text-[clamp(40px,5vw,64px)] font-bold uppercase tracking-tight leading-[1.05] text-[#111111] mb-6">
+            <Heading level="2" className="m-0 font-sans text-[clamp(40px,5vw,64px)] font-bold uppercase tracking-tight leading-[1.05] text-[#111111] mb-6">
               OUR VISION
-            </h2>
-            <p className="m-0 font-sans text-[17px] sm:text-[19px] text-[#444444] leading-[1.7] max-w-[480px]">
+            </Heading>
+            <Paragraph className="m-0 text-[17px] sm:text-[19px] text-[#444444] leading-[1.7] max-w-[480px]">
               We aspire to be the most trusted partner for intelligent transit systems by creating safer and more sustainable transportation for modern cities — empowering people to connect, move, and thrive in a taller, faster, and smarter world.
-            </p>
+            </Paragraph>
           </motion.div>
         </div>
-
-      </div>
-    </section>
+      </Container>
+    </Section>
   )
 }

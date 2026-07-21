@@ -1,5 +1,4 @@
 import AboutHero from '@/components/about/AboutHero'
-import BrandStory from '@/components/about/BrandStory'
 import VisionMission from '@/components/about/VisionMission'
 import ManufacturingBlock from '@/components/about/ManufacturingBlock'
 import Leadership from '@/components/about/Leadership'
@@ -20,14 +19,13 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <>
-      <AboutHero />
-      <BrandStory />
-      <VisionMission />
-      <ManufacturingBlock />
-      <Leadership />
-      <MilestoneTimeline />
-      <CertificationsStrip />
-      <AboutCTA />
+      <AboutHero /> {/*redesign done*/}
+      <VisionMission />{/*redesign done*/}
+      <ManufacturingBlock />{/*redesign done*/}
+      <Leadership />{/*redesign done*/}
+      <MilestoneTimeline /> {/*redesign done*/}
+      <CertificationsStrip /> {/*redesign done*/}
+      <AboutCTA />{/*redesign done*/}
     </>
   )
 }

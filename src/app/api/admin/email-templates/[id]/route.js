@@ -1,15 +1,9 @@
 import { NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
-import { updateTemplate } from '@/repositories/emailTemplate.repository'
-import { verifyToken, COOKIE_NAME } from '@/lib/auth'
+import { getAdmin } from '@/lib/auth'
+import { updateEmailTemplate } from '@/services/email.service'
+import { createAuditLog } from '@/services/audit.service'
 import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
-import { createLog } from '@/repositories/auditLog.repository'
-
-function getAdmin(req) {
-  const token = req.cookies.get(COOKIE_NAME)?.value
-  return token ? verifyToken(token) : null
-}
 
 export async function PUT(req, { params }) {
   try {
@@ -19,27 +13,29 @@ export async function PUT(req, { params }) {
       return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
     }
 
-    const { subject, body } = await req.json()
-    if (!subject || !body) {
-      return NextResponse.json({ error: 'Subject and body are required' }, { status: 400 })
-    }
-
-    await connectDB()
-    const template = await updateTemplate(id, { subject, body })
-    if (!template) return NextResponse.json({ error: 'Template not found' }, { status: 404 })
+    const body = await req.json()
+    const template = await updateEmailTemplate(id, body)
 
     // Log action
-    await createLog({
-      action: 'template_updated',
-      performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-      targetId: id,
-      targetType: 'EmailTemplate',
-      details: { name: template.name, subject: template.subject }
-    })
+    try {
+      await createAuditLog({
+        action: 'template_updated',
+        performedBy: admin,
+        targetId: id,
+        targetType: 'EmailTemplate',
+        details: { name: template.name, subject: template.subject },
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+      })
+    } catch (logErr) {
+      console.error('Failed to log template update audit trail:', logErr)
+    }
 
     return NextResponse.json({ success: true, template })
   } catch (err) {
-    console.error('Update template error:', err)
+    if (err.status === 400) {
+      return NextResponse.json({ error: Object.values(err.errors)[0] || 'Subject and body are required' }, { status: 400 })
+    }
+    console.error('Update template API error:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

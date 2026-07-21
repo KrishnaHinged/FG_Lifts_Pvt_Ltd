@@ -2,6 +2,11 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import Section from '@/components/layouts/Section'
+import Container from '@/components/layouts/Container'
+import Grid from '@/components/layouts/Grid'
+import Heading from '@/components/typography/Heading'
+import Paragraph from '@/components/typography/Paragraph'
 
 const principles = [
   {
@@ -35,19 +40,14 @@ export default function WhyFG() {
   const [hoveredIndex, setHoveredIndex] = useState(null)
 
   return (
-    <section className="bg-white py-[120px] select-none border-b border-[#E8E2DA] relative overflow-hidden">
-
+    <Section background="white" size="none" className="py-[120px] select-none border-b border-[#E8E2DA] relative overflow-hidden">
       {/* Background Glowing Ball */}
       <div className="absolute top-[30%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-[radial-gradient(circle,rgba(165,124,240,0.06)_0%,transparent_70%)] blur-[90px] pointer-events-none z-0" />
 
-      <div className="relative z-10 max-w-[1380px] mx-auto px-6 lg:px-8">
-        <div className="grid grid-cols-12 gap-6 lg:gap-[80px]">
-
+      <Container className="relative z-10 max-w-[1380px]">
+        <Grid cols="12" className="gap-6 lg:gap-[80px]">
           {/* Left Column - Sticky */}
           <div className="col-span-12 lg:col-span-4 lg:sticky lg:top-32 lg:self-start flex flex-col gap-4">
-            {/* <span className="font-mono text-[9px] tracking-widest text-[#D72638] uppercase font-bold">
-              // 05 / Principles
-            </span> */}
             <h2 className="font-sans text-4xl sm:text-5xl lg:text-[3.5rem] font-bold tracking-tight uppercase leading-[1.05] text-[#111111] m-0">
               Built on <br />
               <span className="text-[#0797CE]">engineering.</span>
@@ -68,7 +68,7 @@ export default function WhyFG() {
                   onMouseLeave={() => setHoveredIndex(null)}
                   className="group flex items-start gap-6 py-[40px] border-b border-[#E8E2DA] transition-colors duration-300 relative cursor-pointer first:pt-0 last:border-b-0"
                 >
-                  {/* Hover Red Accent Dot Indicator (Framer Motion X Slide) */}
+                  {/* Hover Red Accent Dot Indicator */}
                   <motion.div
                     initial={{ x: -15, opacity: 0 }}
                     animate={isHovered ? { x: 0, opacity: 1 } : { x: -15, opacity: 0 }}
@@ -94,9 +94,8 @@ export default function WhyFG() {
               )
             })}
           </div>
-
-        </div>
-      </div>
-    </section>
+        </Grid>
+      </Container>
+    </Section>
   )
 }

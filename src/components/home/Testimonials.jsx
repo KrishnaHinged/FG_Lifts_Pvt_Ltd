@@ -1,6 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Section from '@/components/layouts/Section'
+import Container from '@/components/layouts/Container'
+import Grid from '@/components/layouts/Grid'
 
 const col1 = [
   {
@@ -83,9 +86,9 @@ function TestimonialCard({ item }) {
       </p>
 
       <div className="flex items-center gap-3.5 mt-6">
-        {/* Profile Circle */}
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-mono text-xs font-bold ${item.bgColor.includes('bg-[#E8A840]') ? 'bg-black/10 text-black' : 'bg-white/10 text-white'
-          }`}>
+        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-mono text-xs font-bold ${
+          item.bgColor.includes('bg-[#E8A840]') ? 'bg-black/10 text-black' : 'bg-white/10 text-white'
+        }`}>
           {item.avatar}
         </div>
         <div>
@@ -103,18 +106,13 @@ function TestimonialCard({ item }) {
 
 export default function Testimonials() {
   return (
-    <section className="bg-[#111111] py-[120px] select-none overflow-hidden relative">
-      {/* Glow Effects */}
-      <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-[radial-gradient(circle,rgba(14,79,179,0.06),transparent_70%)] blur-[100px] pointer-events-none" />
+    <Section background="dark" size="none" className="py-[120px] select-none overflow-hidden relative">
+      <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-[radial-gradient(circle,rgba(14,79,179,0.06),transparent_60%)] blur-[100px] pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[radial-gradient(circle,rgba(232,168,64,0.04)_0%,transparent_70%)] blur-[100px] pointer-events-none" />
 
-      <div className="max-w-[1380px] mx-auto px-6 lg:px-8 relative z-10">
-
-        {/* Header - Replicating Zestate Bold Header */}
+      <Container className="max-w-[1380px] relative z-10">
+        {/* Header */}
         <div className="flex flex-col items-center text-center gap-4 mb-16 max-w-2xl mx-auto">
-          {/* <span className="font-mono text-[9px] tracking-[0.25em] text-[#D72638] uppercase font-bold">
-            // 07 / Feedback
-          </span> */}
           <h2 className="font-sans text-4xl sm:text-5xl lg:text-[4rem] font-bold tracking-tight uppercase leading-[1.05] text-white m-0">
             What <span className="text-[#0797CE]">our clients</span> <br />
             are saying
@@ -122,14 +120,13 @@ export default function Testimonials() {
         </div>
 
         {/* 3-Column Infinite Vertical Marquee */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[600px] overflow-hidden relative mask-gradient-vertical">
-
-          {/* Top/Bottom gradient fade mask overlays for cards column */}
+        <Grid cols="3" className="h-[600px] overflow-hidden relative mask-gradient-vertical gap-6">
+          {/* Top/Bottom gradient fade mask overlays */}
           <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#111111] to-transparent z-20 pointer-events-none" />
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#111111] to-transparent z-20 pointer-events-none" />
 
           {/* Column 1: Slides Up */}
-          <div className="flex flex-col gap-6 overflow-hidden h-full">
+          <div className="flex flex-col gap-6 overflow-hidden h-full col-span-3 md:col-span-1">
             <div className="flex flex-col gap-6 animate-marquee-y">
               {[...col1, ...col1, ...col1].map((item, idx) => (
                 <TestimonialCard key={`col1-${idx}`} item={item} />
@@ -137,8 +134,8 @@ export default function Testimonials() {
             </div>
           </div>
 
-          {/* Column 2: Slides Down (Reverse) */}
-          <div className="flex flex-col gap-6 overflow-hidden h-full">
+          {/* Column 2: Slides Down */}
+          <div className="flex flex-col gap-6 overflow-hidden h-full col-span-3 md:col-span-1">
             <div className="flex flex-col gap-6 animate-marquee-y-reverse">
               {[...col2, ...col2, ...col2].map((item, idx) => (
                 <TestimonialCard key={`col2-${idx}`} item={item} />
@@ -147,17 +144,15 @@ export default function Testimonials() {
           </div>
 
           {/* Column 3: Slides Up */}
-          <div className="flex flex-col gap-6 overflow-hidden h-full">
+          <div className="flex flex-col gap-6 overflow-hidden h-full col-span-3 md:col-span-1">
             <div className="flex flex-col gap-6 animate-marquee-y">
               {[...col3, ...col3, ...col3].map((item, idx) => (
                 <TestimonialCard key={`col3-${idx}`} item={item} />
               ))}
             </div>
           </div>
-
-        </div>
-
-      </div>
-    </section>
+        </Grid>
+      </Container>
+    </Section>
   )
 }

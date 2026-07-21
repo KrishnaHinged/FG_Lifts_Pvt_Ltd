@@ -1,6 +1,5 @@
 import { connectDB } from '@/lib/mongodb'
 import Admin from '@/models/Admin'
-import { hashPassword } from '@/lib/auth'
 
 export async function findAdminByEmail(email) {
   await connectDB()
@@ -17,17 +16,13 @@ export async function getAllAdmins() {
   return Admin.find().select('-password').sort({ createdAt: -1 }).lean()
 }
 
-export async function createAdmin({ name, email, password, role, createdBy }) {
+export async function createAdmin(data) {
   await connectDB()
-  const hashed = await hashPassword(password)
-  return Admin.create({ name, email, password: hashed, role, createdBy })
+  return Admin.create(data)
 }
 
 export async function updateAdmin(id, updates) {
   await connectDB()
-  if (updates.password) {
-    updates.password = await hashPassword(updates.password)
-  }
   return Admin.findByIdAndUpdate(id, updates, { new: true }).select('-password').lean()
 }
 
@@ -39,4 +34,14 @@ export async function toggleAdminStatus(id, isActive) {
 export async function updateLastLogin(id) {
   await connectDB()
   return Admin.findByIdAndUpdate(id, { lastLoginAt: new Date() })
+}
+
+export async function deleteAdmin(id) {
+  await connectDB()
+  return Admin.findByIdAndDelete(id).lean()
+}
+
+export async function countAdmins(query = {}) {
+  await connectDB()
+  return Admin.countDocuments(query)
 }

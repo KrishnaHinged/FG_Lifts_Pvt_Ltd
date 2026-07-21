@@ -3,7 +3,7 @@ import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import NewsletterStrip from '@/components/newsletter/NewsletterStrip'
-import LenisProvider from '@/components/LenisProvider'
+import AppProvider from '@/providers/AppProvider'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -48,17 +48,20 @@ export default async function RootLayout({ children }) {
         <a href="#main" className="sr-only focus:not-sr-only bg-fg-blue text-white px-4 py-2.5 absolute top-0 left-0 z-[9999] font-sans font-bold text-xs uppercase rounded-br-xl select-none">
           Skip to main content
         </a>
-        {isAdmin ? (
-          <main id="main">{children}</main>
-        ) : (
-          <LenisProvider>
-            <Navbar />
+        <AppProvider>
+          {isAdmin ? (
             <main id="main">{children}</main>
-            <NewsletterStrip />
-            <Footer />
-          </LenisProvider>
-        )}
+          ) : (
+            <>
+              <Navbar />
+              <main id="main">{children}</main>
+              <NewsletterStrip />
+              <Footer />
+            </>
+          )}
+        </AppProvider>
       </body>
     </html>
   )
 }
+

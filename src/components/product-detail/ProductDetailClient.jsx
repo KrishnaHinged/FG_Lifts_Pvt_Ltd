@@ -14,63 +14,72 @@ export default function ProductDetailClient({ product, related = [] }) {
   if (!product) return null
 
   return (
-    <div className="bg-[#F5F0EB] pt-32 pb-24 relative overflow-hidden select-none">
+    <div className="bg-[#F5F0EB] pt-32 pb-0 relative overflow-hidden select-none">
       
-
-      
+      {/* Ambient Floating Orbs */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
         <motion.div
           animate={{
-            x: [0, 40, -20, 0],
-            y: [0, -30, 30, 0],
+            x: [0, 50, -25, 0],
+            y: [0, -40, 35, 0],
           }}
           transition={{
-            duration: 25,
+            duration: 28,
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute -top-[15%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-[#0E4FB3]/[0.03] blur-[120px]"
+          className="absolute -top-[15%] -left-[10%] w-[55vw] h-[55vw] rounded-full bg-[#0E4FB3]/[0.025] blur-[140px]"
         />
         <motion.div
           animate={{
-            x: [0, -30, 40, 0],
-            y: [0, 50, -20, 0],
+            x: [0, -35, 45, 0],
+            y: [0, 55, -25, 0],
           }}
           transition={{
-            duration: 20,
+            duration: 22,
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute -bottom-[15%] -right-[10%] w-[45vw] h-[45vw] rounded-full bg-[#E8A840]/[0.04] blur-[100px]"
+          className="absolute -bottom-[10%] -right-[10%] w-[45vw] h-[45vw] rounded-full bg-[#E8A840]/[0.035] blur-[120px]"
+        />
+        <motion.div
+          animate={{
+            x: [0, 25, -15, 0],
+            y: [0, -20, 15, 0],
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute top-[40%] right-[20%] w-[25vw] h-[25vw] rounded-full bg-[#0E4FB3]/[0.015] blur-[100px]"
         />
       </div>
-
-
 
       {/* Main Container */}
       <div className="relative z-10 max-w-[1200px] mx-auto px-6 lg:px-8">
         
         {/* Breadcrumb Navigation */}
-        <motion.div 
+        <motion.nav 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex flex-wrap items-center gap-2.5 font-mono text-[9px] sm:text-[10px] text-[#6B6B6B] uppercase tracking-wider mb-12 select-none"
+          className="flex flex-wrap items-center gap-2 font-mono text-[9px] sm:text-[10px] text-[#6B6B6B] uppercase tracking-[0.18em] mb-10 select-none"
         >
-          <Link href="/" className="hover:text-[#0E4FB3] transition-colors duration-200 no-underline text-[#6B6B6B]">Home</Link>
-          <span>/</span>
-          <Link href="/products" className="hover:text-[#0E4FB3] transition-colors duration-200 no-underline text-[#6B6B6B]">Products</Link>
-          <span>/</span>
-          <span className="hover:text-[#0E4FB3] transition-colors duration-200 text-[#6B6B6B]">{product.category}</span>
-          <span>/</span>
+          <Link href="/" className="hover:text-[#0E4FB3] transition-colors duration-200 no-underline text-[#9A9A9A]">Home</Link>
+          <span className="text-[#E8E2DA]">/</span>
+          <Link href="/products" className="hover:text-[#0E4FB3] transition-colors duration-200 no-underline text-[#9A9A9A]">Products</Link>
+          <span className="text-[#E8E2DA]">/</span>
+          <span className="text-[#9A9A9A] hover:text-[#0E4FB3] transition-colors duration-200">{product.category}</span>
+          <span className="text-[#E8E2DA]">/</span>
           <span className="text-[#111111] font-bold">{product.name}</span>
-        </motion.div>
+        </motion.nav>
 
         {/* Main Grid - Two Columns Layout */}
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start mb-20">
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start mb-20">
           
-          {/* Left Column - Product Gallery / 360 View */}
-          <div className="lg:col-span-7 w-full">
+          {/* Left Column - Product Gallery / 360 View — Sticky */}
+          <div className="lg:col-span-7 w-full lg:sticky lg:top-28 lg:self-start">
             <ProductGallery 
               images={product.images} 
               has360View={product.has360View}
@@ -92,37 +101,50 @@ export default function ProductDetailClient({ product, related = [] }) {
           </div>
 
           {/* Right Column - Product Specs Details */}
-          <div className="lg:col-span-5 flex flex-col items-start gap-10">
+          <div className="lg:col-span-5 flex flex-col items-start gap-8">
             
             {/* Title & Badge */}
-            <div className="w-full">
-              <div className="flex items-center gap-3 mb-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="w-full"
+            >
+              <div className="flex items-center gap-3 mb-4 flex-wrap">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#0E4FB3] animate-pulse" />
                 <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#0E4FB3] font-bold">
                   {product.category} {product.subCategory ? `· ${product.subCategory}` : ''}
                 </span>
                 {product.badge && (
-                  <span className="bg-[#0E4FB3]/10 border border-[#0E4FB3]/20 text-[#0E4FB3] font-mono text-[9px] uppercase tracking-wider font-bold px-3 py-1 rounded-full shadow-xs">
+                  <span className="bg-[#0E4FB3]/[0.08] border border-[#0E4FB3]/15 text-[#0E4FB3] font-mono text-[8px] uppercase tracking-[0.2em] font-extrabold px-3 py-1 rounded-full">
                     {product.badge}
                   </span>
                 )}
               </div>
 
-              <h1 className="m-0 font-display text-3xl sm:text-4xl lg:text-5xl font-bold uppercase tracking-tight text-[#111111] leading-none">
+              <h1 className="m-0 font-display text-3xl sm:text-4xl lg:text-[2.8rem] font-bold uppercase tracking-tight text-[#111111] leading-[1.05]">
                 {product.name}
               </h1>
 
               {product.tagline && (
-                <p className="m-0 mt-4 text-base text-[#6B6B6B] leading-relaxed font-normal italic font-serif lowercase first-letter:uppercase">
+                <p className="m-0 mt-4 text-base sm:text-lg text-[#6B6B6B] leading-relaxed font-normal italic font-serif lowercase first-letter:uppercase">
                   {product.tagline}
                 </p>
               )}
-            </div>
+            </motion.div>
 
             {/* Description */}
-            <p className="m-0 text-[#6B6B6B] text-sm sm:text-base leading-relaxed font-normal">
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="m-0 text-[#525252] text-sm sm:text-[15px] leading-[1.75] font-normal"
+            >
               {product.description}
-            </p>
+            </motion.p>
+
+            {/* Divider */}
+            <div className="w-full h-px bg-[#E8E2DA]/70" />
 
             {/* Application Chips */}
             <ApplicationChips applications={product.applications} />
@@ -137,7 +159,7 @@ export default function ProductDetailClient({ product, related = [] }) {
         </div>
 
         {/* Features List Section */}
-        <div className="border-t border-[#E8E2DA] pt-16">
+        <div className="border-t border-[#E8E2DA]/70 pt-16">
           <FeaturesList features={product.features} />
         </div>
 

@@ -1,16 +1,9 @@
 import { NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
-import { updateAdmin, toggleAdminStatus } from '@/repositories/admin.repository'
-import { verifyToken, COOKIE_NAME } from '@/lib/auth'
+import { getAdmin } from '@/lib/auth'
+import { updateAdmin, deleteAdmin, getAdminById } from '@/services/admin.service'
+import { createAuditLog } from '@/services/audit.service'
 import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
-import { createLog } from '@/repositories/auditLog.repository'
-import Admin from '@/models/Admin'
-
-function getAdmin(req) {
-  const token = req.cookies.get(COOKIE_NAME)?.value
-  return token ? verifyToken(token) : null
-}
 
 export async function PUT(req, { params }) {
   try {
@@ -27,48 +20,41 @@ export async function PUT(req, { params }) {
       return NextResponse.json({ error: '403 Forbidden — Cannot assign Super Admin role' }, { status: 403 })
     }
 
-    await connectDB()
-    const target = await Admin.findById(id)
-    if (!target) return NextResponse.json({ error: 'User not found' }, { status: 404 })
-
-    // Prevent deactivating self
-    if (body.isActive === false && id === admin.id) {
-      return NextResponse.json({ error: 'Cannot deactivate yourself' }, { status: 400 })
-    }
-
-    // Prevent changing role of last SUPER_ADMIN
-    if (target.role === 'SUPER_ADMIN' && body.role !== 'SUPER_ADMIN' && body.role !== undefined) {
-      const superAdminsCount = await Admin.countDocuments({ role: 'SUPER_ADMIN', isActive: true })
-      if (superAdminsCount <= 1) {
-        return NextResponse.json({ error: 'Cannot downgrade the last Super Admin' }, { status: 400 })
-      }
-    }
-
-    const updated = await updateAdmin(id, body)
+    const original = await getAdminById(id)
+    const updated = await updateAdmin(id, body, admin)
 
     // Log action
-    if (body.isActive !== undefined && body.isActive !== target.isActive) {
-      await createLog({
-        action: body.isActive ? 'user_created' : 'user_deactivated', // closest action logs
-        performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-        targetId: id,
-        targetType: 'Admin',
-        details: { name: updated.name, email: updated.email, isActive: body.isActive }
-      })
-    } else {
-      await createLog({
-        action: 'user_created',
-        performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-        targetId: id,
-        targetType: 'Admin',
-        details: { name: updated.name, email: updated.email, updated: true }
-      })
+    try {
+      if (body.isActive !== undefined && body.isActive !== original.isActive) {
+        await createAuditLog({
+          action: body.isActive ? 'user_created' : 'user_deactivated',
+          performedBy: admin,
+          targetId: id,
+          targetType: 'Admin',
+          details: { name: updated.name, email: updated.email, isActive: body.isActive },
+          ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+        })
+      } else {
+        await createAuditLog({
+          action: 'user_created',
+          performedBy: admin,
+          targetId: id,
+          targetType: 'Admin',
+          details: { name: updated.name, email: updated.email, updated: true },
+          ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+        })
+      }
+    } catch (logErr) {
+      console.error('Failed to log user update audit trail:', logErr)
     }
 
     return NextResponse.json({ success: true, user: updated })
   } catch (err) {
-    console.error('Update user error:', err)
-    return NextResponse.json({ error: 'Server error: ' + err.message }, { status: 500 })
+    if (err.status === 400) {
+      return NextResponse.json({ error: err.error }, { status: 400 })
+    }
+    console.error('Update user API error:', err)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
 
@@ -83,37 +69,28 @@ export async function DELETE(req, { params }) {
       return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
     }
 
-    // Prevent deleting self
-    if (id === admin.id) {
-      return NextResponse.json({ error: 'Cannot delete yourself' }, { status: 400 })
-    }
-
-    await connectDB()
-    const target = await Admin.findById(id)
-    if (!target) return NextResponse.json({ error: 'User not found' }, { status: 404 })
-
-    // Prevent deleting the last active SUPER_ADMIN
-    if (target.role === 'SUPER_ADMIN') {
-      const superAdminsCount = await Admin.countDocuments({ role: 'SUPER_ADMIN', isActive: true })
-      if (superAdminsCount <= 1) {
-        return NextResponse.json({ error: 'Cannot delete the last Super Admin' }, { status: 400 })
-      }
-    }
-
-    await Admin.findByIdAndDelete(id)
+    const deletedUser = await deleteAdmin(id, admin)
 
     // Log action
-    await createLog({
-      action: 'user_deactivated', // closest delete/deactivate log code
-      performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-      targetId: id,
-      targetType: 'Admin',
-      details: { name: target.name, email: target.email, deleted: true }
-    })
+    try {
+      await createAuditLog({
+        action: 'user_deactivated',
+        performedBy: admin,
+        targetId: id,
+        targetType: 'Admin',
+        details: { name: deletedUser.name, email: deletedUser.email, deleted: true },
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+      })
+    } catch (logErr) {
+      console.error('Failed to log user deletion audit trail:', logErr)
+    }
 
     return NextResponse.json({ success: true, message: 'User deleted successfully' })
   } catch (err) {
-    console.error('Delete user error:', err)
+    if (err.status === 400) {
+      return NextResponse.json({ error: err.error }, { status: 400 })
+    }
+    console.error('Delete user API error:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

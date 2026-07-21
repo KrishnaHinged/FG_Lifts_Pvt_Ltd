@@ -3,6 +3,10 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import Section from '@/components/layouts/Section'
+import Container from '@/components/layouts/Container'
+import Heading from '@/components/typography/Heading'
+import Paragraph from '@/components/typography/Paragraph'
 
 const services = [
   {
@@ -29,15 +33,11 @@ export default function ServicesGrid() {
   const [hoveredId, setHoveredId] = useState('passenger')
 
   return (
-    <section className="bg-white py-[120px] select-none border-b border-[#E8E2DA]">
-      <div className="max-w-[1380px] mx-auto px-6 lg:px-8">
-
-        {/* Header - Replicating Zestate Bold Uppercase Sans Heading */}
+    <Section background="white" size="none" className="py-[120px] select-none border-b border-[#E8E2DA]">
+      <Container className="max-w-[1380px]">
+        {/* Header */}
         <div className="grid grid-cols-12 gap-6 mb-[80px]">
           <div className="col-span-12 md:col-span-10 flex flex-col gap-4">
-            {/* <span className="font-mono text-[9px] tracking-widest text-[#D72638] uppercase font-bold">
-              // 03 / Solutions
-            </span> */}
             <h2 className="font-sans text-4xl sm:text-5xl lg:text-[4rem] font-bold tracking-tight uppercase leading-[1.05] text-[#111111] m-0">
               We shape <span className="text-[#0797CE]">vertical mobility</span> with engineered <span className="text-[#0797CE]">lifts.</span>
             </h2>
@@ -52,10 +52,11 @@ export default function ServicesGrid() {
               <div
                 key={item.id}
                 onMouseEnter={() => setHoveredId(item.id)}
-                className={`relative rounded-[2.5rem] overflow-hidden flex flex-col justify-between p-10 cursor-pointer transition-all duration-700 ease-[0.16,1,0.3,1] ${isActive ? 'flex-[2.2] bg-neutral-900 shadow-lg' : 'flex-[1] bg-neutral-800'
-                  }`}
+                className={`relative rounded-[2.5rem] overflow-hidden flex flex-col justify-between p-10 cursor-pointer transition-all duration-700 ease-[0.16,1,0.3,1] ${
+                  isActive ? 'flex-[2.2] bg-neutral-900 shadow-lg' : 'flex-[1] bg-neutral-800'
+                }`}
               >
-                {/* Background Image with animated zoom and opacity overlays */}
+                {/* Background Image */}
                 <div className="absolute inset-0 z-0">
                   <Image
                     src={item.image}
@@ -73,7 +74,6 @@ export default function ServicesGrid() {
 
                 {/* Inner Content */}
                 <div className="relative z-20 flex flex-col justify-between h-full w-full">
-
                   {/* TOP SLOT (Title when active) */}
                   <div className="h-12 flex items-start justify-between">
                     {isActive && (
@@ -106,7 +106,7 @@ export default function ServicesGrid() {
                           {item.desc}
                         </p>
 
-                        {/* Zestate Split-Arrow Button */}
+                        {/* Custom visual Split-Arrow Button */}
                         <a
                           href="/products"
                           className="inline-flex items-center group/btn select-none"
@@ -128,14 +128,12 @@ export default function ServicesGrid() {
                       </motion.div>
                     )}
                   </div>
-
                 </div>
               </div>
             )
           })}
         </div>
-
-      </div>
-    </section>
+      </Container>
+    </Section>
   )
 }

@@ -1,15 +1,9 @@
 import { NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
-import GalleryProject from '@/models/GalleryProject'
-import { verifyToken, COOKIE_NAME } from '@/lib/auth'
+import { getAdmin } from '@/lib/auth'
+import { getProjectById, updateProject, deleteProject } from '@/services/gallery.service'
+import { createAuditLog } from '@/services/audit.service'
 import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
-import { createLog } from '@/repositories/auditLog.repository'
-
-function getAdmin(req) {
-  const token = req.cookies.get(COOKIE_NAME)?.value
-  return token ? verifyToken(token) : null
-}
 
 export async function GET(req, { params }) {
   try {
@@ -19,13 +13,11 @@ export async function GET(req, { params }) {
       return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
     }
 
-    await connectDB()
-    const project = await GalleryProject.findById(id).lean()
-    if (!project) return NextResponse.json({ error: 'Project not found' }, { status: 404 })
+    const project = await getProjectById(id)
     return NextResponse.json({ success: true, project })
   } catch (err) {
-    console.error('Fetch project detail error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    console.error('Fetch gallery project detail API error:', err)
+    return NextResponse.json({ error: err.error || 'Server error' }, { status: err.status || 500 })
   }
 }
 
@@ -38,22 +30,28 @@ export async function PUT(req, { params }) {
     }
 
     const body = await req.json()
-    await connectDB()
-    const project = await GalleryProject.findByIdAndUpdate(id, body, { new: true }).lean()
-    if (!project) return NextResponse.json({ error: 'Project not found' }, { status: 404 })
+    const project = await updateProject(id, body)
 
     // Log action
-    await createLog({
-      action: 'gallery_updated',
-      performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-      targetId: id,
-      targetType: 'GalleryProject',
-      details: { title: project.title, slug: project.slug }
-    })
+    try {
+      await createAuditLog({
+        action: 'gallery_updated',
+        performedBy: admin,
+        targetId: id,
+        targetType: 'GalleryProject',
+        details: { title: project.title },
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+      })
+    } catch (logErr) {
+      console.error('Failed to log gallery project update audit trail:', logErr)
+    }
 
     return NextResponse.json({ success: true, project })
   } catch (err) {
-    console.error('Update project error:', err)
+    if (err.status === 400) {
+      return NextResponse.json({ error: Object.values(err.errors)[0] || err.error }, { status: 400 })
+    }
+    console.error('Update gallery project API error:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
@@ -66,25 +64,29 @@ export async function DELETE(req, { params }) {
       return NextResponse.json({ error: '403 Forbidden' }, { status: 403 })
     }
 
-    await connectDB()
-    const project = await GalleryProject.findByIdAndDelete(id)
-    if (!project) return NextResponse.json({ error: 'Project not found' }, { status: 404 })
+    const project = await deleteProject(id)
 
     // Log action
-    await createLog({
-      action: 'gallery_deleted',
-      performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-      targetId: id,
-      targetType: 'GalleryProject',
-      details: { title: project.title, slug: project.slug }
-    })
+    try {
+      await createAuditLog({
+        action: 'gallery_deleted',
+        performedBy: admin,
+        targetId: id,
+        targetType: 'GalleryProject',
+        details: { title: project.title },
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+      })
+    } catch (logErr) {
+      console.error('Failed to log gallery project deletion audit trail:', logErr)
+    }
 
-    return NextResponse.json({ success: true, message: 'Project deleted successfully' })
+    return NextResponse.json({ success: true, message: 'Gallery project deleted successfully' })
   } catch (err) {
-    console.error('Delete project error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    console.error('Delete gallery project API error:', err)
+    return NextResponse.json({ error: err.error || 'Server error' }, { status: err.status || 500 })
   }
 }
+
 export async function PATCH(req, { params }) {
   try {
     const { id } = await params
@@ -94,22 +96,30 @@ export async function PATCH(req, { params }) {
     }
 
     const body = await req.json()
-    await connectDB()
-    const project = await GalleryProject.findByIdAndUpdate(id, body, { new: true }).lean()
-    if (!project) return NextResponse.json({ error: 'Project not found' }, { status: 404 })
+    const current = await getProjectById(id)
+    const merged = { ...current, ...body }
+    const project = await updateProject(id, merged)
 
     // Log action
-    await createLog({
-      action: 'gallery_updated',
-      performedBy: { adminId: admin.id, name: admin.name, email: admin.email, role: admin.role },
-      targetId: id,
-      targetType: 'GalleryProject',
-      details: { title: project.title, slug: project.slug, patch: true }
-    })
+    try {
+      await createAuditLog({
+        action: 'gallery_updated',
+        performedBy: admin,
+        targetId: id,
+        targetType: 'GalleryProject',
+        details: { title: project.title, patch: true },
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+      })
+    } catch (logErr) {
+      console.error('Failed to log gallery project patch audit trail:', logErr)
+    }
 
     return NextResponse.json({ success: true, project })
   } catch (err) {
-    console.error('Patch project error:', err)
+    if (err.status === 400) {
+      return NextResponse.json({ error: Object.values(err.errors)[0] || err.error }, { status: 400 })
+    }
+    console.error('Patch gallery project API error:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

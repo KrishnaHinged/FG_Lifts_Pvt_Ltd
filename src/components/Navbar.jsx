@@ -5,13 +5,12 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const navLinks = [
-  { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
-  { label: 'Products', href: '/products' },
-  { label: 'Projects', href: '/gallery' },
-  { label: 'Contact', href: '/#contact' },
-]
+import { NAVIGATION } from '@/constants/navigation'
+import { COMPANY } from '@/constants/company'
+import { ROUTES } from '@/constants/routes'
+
+const navLinks = NAVIGATION.NAV_LINKS
+
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -121,12 +120,12 @@ export default function Navbar() {
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
           <Link 
-            href="/" 
+            href={ROUTES.home} 
             className={`font-display text-[17px] tracking-[0.25em] font-medium uppercase transition-colors duration-500 no-underline ${
               isDark ? 'text-[#F5F0EB] hover:text-white' : 'text-[#111111] hover:text-[#111111]/70'
             }`}
           >
-            FG LIFT
+            {COMPANY.SHORT_NAME.toUpperCase()}
           </Link>
         </motion.div>
 
@@ -173,7 +172,7 @@ export default function Navbar() {
           className="hidden lg:block"
         >
           <Link
-            href="/#contact"
+            href={`${ROUTES.home}#contact`}
             className={`inline-flex items-center justify-center h-[46px] px-[28px] rounded-full text-xs font-medium uppercase tracking-[0.15em] no-underline transition-all duration-500 ${
               isDark
                 ? 'border border-[#F5F0EB]/30 text-[#F5F0EB] hover:bg-[#F5F0EB]/10 hover:border-[#F5F0EB]/65'
@@ -209,7 +208,7 @@ export default function Navbar() {
             {/* Top header row */}
             <div className="flex items-center justify-between w-full max-w-[1440px] mx-auto">
               <span className="font-display text-[17px] tracking-[0.25em] font-medium uppercase text-[#111111]">
-                FG LIFT
+                {COMPANY.SHORT_NAME.toUpperCase()}
               </span>
               <button
                 onClick={() => setMobileOpen(false)}
@@ -248,7 +247,7 @@ export default function Navbar() {
             {/* Footer row */}
             <div className="flex flex-col items-center gap-4 w-full max-w-[1440px] mx-auto">
               <Link
-                href="/#contact"
+                href={`${ROUTES.home}#contact`}
                 onClick={() => setMobileOpen(false)}
                 className="w-full sm:w-[280px] text-center inline-flex items-center justify-center h-[48px] bg-[#0B1B33] text-[#F5F0EB] px-8 rounded-full text-xs font-semibold tracking-wider uppercase no-underline hover:bg-[#152A4A] transition-colors duration-300 shadow-sm"
               >

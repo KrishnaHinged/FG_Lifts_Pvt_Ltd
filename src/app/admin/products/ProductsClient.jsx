@@ -8,6 +8,14 @@ import ConfirmModal from '@/components/admin/ConfirmModal'
 import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
 
+// Design System Components
+import PageHeader from '@/components/composition/PageHeader'
+import SearchBar from '@/components/forms/SearchBar'
+import Table from '@/components/composition/Table'
+import Badge from '@/components/ui/Badge'
+import PrimaryButton from '@/components/ui/button/PrimaryButton'
+import IconButton from '@/components/ui/button/IconButton'
+
 const categories = ['All', 'Passenger', 'Goods', 'Capsule', 'Home', 'Hospital', 'Panoramic']
 
 export default function ProductsClient({ initialProducts = [], currentAdmin }) {
@@ -72,34 +80,31 @@ export default function ProductsClient({ initialProducts = [], currentAdmin }) {
     <div className="space-y-6 select-none">
       
       {/* Top Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="font-sans font-bold text-gray-900 text-2xl tracking-tight leading-none">
-          Products
-        </h1>
-        {canCreate && (
-          <Link
-            href="/admin/products/new"
-            className="inline-flex items-center gap-1.5 bg-fg-blue text-white rounded-full px-5 py-2.5 font-sans font-bold text-xs shadow-sm hover:shadow-md hover:bg-fg-blue/90 transition-all no-underline cursor-pointer border-none outline-none"
-          >
-            <Plus className="w-4 h-4" />
-            Add Product System
-          </Link>
-        )}
-      </div>
+      <PageHeader
+        title="Products"
+        actions={
+          canCreate && (
+            <Link
+              href="/admin/products/new"
+              className="inline-flex items-center justify-center font-sans font-bold uppercase tracking-wider transition-all duration-300 bg-[#0E4FB3] text-white hover:bg-[#0b3c8a] active:bg-[#082a63] px-6 py-3 text-[11px] rounded-full no-underline"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Product System
+            </Link>
+          )
+        }
+      />
 
       {/* Search & Category Pills bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-between bg-white border border-gray-200 rounded-2xl p-4 shadow-xs">
-        <div className="flex items-center gap-3 border border-gray-200 rounded-xl px-3 py-2 max-w-sm flex-1">
-          <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
-          <input
-            type="text"
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-between bg-white border border-[#E8E2DA] rounded-2xl p-4 shadow-sm">
+        <div className="w-full sm:max-w-sm">
+          <SearchBar
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by system name or slug..."
-            className="flex-1 font-sans text-xs text-gray-900 placeholder:text-gray-400 outline-none border-none"
           />
         </div>
-        <div className="flex-shrink-0 max-w-[450px]">
+        <div className="flex-shrink-0">
           <FilterPillBar
             options={categories}
             active={activeCategory}
@@ -109,113 +114,103 @@ export default function ProductsClient({ initialProducts = [], currentAdmin }) {
       </div>
 
       {/* Catalog Table */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse" role="table">
-            <thead>
-              <tr className="bg-gray-50 border-b border-gray-200 font-mono text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                <th className="px-6 py-4" scope="col">Image</th>
-                <th className="px-6 py-4" scope="col">System Name</th>
-                <th className="px-6 py-4" scope="col">Category</th>
-                <th className="px-6 py-4" scope="col">Grouping</th>
-                <th className="px-6 py-4" scope="col">Status</th>
-                <th className="px-6 py-4" scope="col">360° Customizer</th>
-                <th className="px-6 py-4 text-right" scope="col">Actions</th>
+      <Table>
+        <thead>
+          <tr className="bg-[#EDE8E2]/50 border-b border-[#E8E2DA]">
+            <th className="px-6 py-4 font-mono text-[10px] uppercase tracking-widest text-[#7A7A7A] font-bold" scope="col">Image</th>
+            <th className="px-6 py-4 font-mono text-[10px] uppercase tracking-widest text-[#7A7A7A] font-bold" scope="col">System Name</th>
+            <th className="px-6 py-4 font-mono text-[10px] uppercase tracking-widest text-[#7A7A7A] font-bold" scope="col">Category</th>
+            <th className="px-6 py-4 font-mono text-[10px] uppercase tracking-widest text-[#7A7A7A] font-bold" scope="col">Grouping</th>
+            <th className="px-6 py-4 font-mono text-[10px] uppercase tracking-widest text-[#7A7A7A] font-bold" scope="col">Status</th>
+            <th className="px-6 py-4 font-mono text-[10px] uppercase tracking-widest text-[#7A7A7A] font-bold" scope="col">360° Customizer</th>
+            <th className="px-6 py-4 font-mono text-[10px] uppercase tracking-widest text-[#7A7A7A] font-bold text-right" scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-[#E8E2DA]">
+          {filtered.map((prod) => {
+            const isToggling = togglingId === prod._id
+            return (
+              <tr key={prod._id} className={`hover:bg-neutral-50/50 transition-colors ${isToggling ? 'opacity-50 pointer-events-none' : ''}`}>
+                <td className="px-6 py-4">
+                  <div className="w-12 h-9 relative border border-[#E8E2DA] rounded bg-gray-50 overflow-hidden">
+                    <img
+                      src={prod.images?.[0]?.url || '/images/projects-collage.png'}
+                      alt={prod.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </td>
+                <td className="px-6 py-4" scope="row">
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-[#111111]">{prod.name}</span>
+                    <span className="text-[10px] text-[#7A7A7A] font-mono">{prod.slug}</span>
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-[#555555] font-semibold">{prod.category}</td>
+                <td className="px-6 py-4">
+                  <Badge variant="neutral">{prod.tabGroup}</Badge>
+                </td>
+                <td className="px-6 py-4">
+                  {canEdit ? (
+                    <button
+                      onClick={() => handleToggleActive(prod._id, prod.isActive)}
+                      disabled={isToggling}
+                      className="cursor-pointer border-none bg-transparent p-0 m-0 outline-none"
+                    >
+                      <Badge variant={prod.isActive ? 'success' : 'neutral'}>
+                        {prod.isActive ? 'Active' : 'Draft'}
+                      </Badge>
+                    </button>
+                  ) : (
+                    <Badge variant={prod.isActive ? 'success' : 'neutral'}>
+                      {prod.isActive ? 'Active' : 'Draft'}
+                    </Badge>
+                  )}
+                </td>
+                <td className="px-6 py-4">
+                  {prod.has360View ? (
+                    <Badge variant="primary" className="gap-1.5 flex w-fit items-center">
+                      <Rotate3d className="w-3 h-3" />
+                      Enabled
+                    </Badge>
+                  ) : (
+                    <span className="text-[#7A7A7A] text-xs font-mono">-</span>
+                  )}
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    {canEdit && (
+                      <Link
+                        href={`/admin/products/${prod._id}/edit`}
+                        className="inline-flex items-center justify-center p-2 min-w-0 rounded-full border border-[#E8E2DA] bg-transparent text-[#111111] hover:border-[#111111] hover:bg-neutral-50 transition-all cursor-pointer outline-none"
+                        title="Edit details"
+                      >
+                        <Edit size={14} />
+                      </Link>
+                    )}
+                    {canDelete && (
+                      <button
+                        onClick={() => setDeleteId(prod._id)}
+                        className="inline-flex items-center justify-center p-2 min-w-0 rounded-full border border-red-200 bg-red-50 text-red-700 hover:bg-[#b81d2d] hover:text-white transition-all cursor-pointer outline-none"
+                        title="Delete Listing"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 font-sans text-sm text-gray-700">
-              {filtered.map((prod) => {
-                const isToggling = togglingId === prod._id
-                return (
-                  <tr key={prod._id} className={isToggling ? 'opacity-50 pointer-events-none' : ''}>
-                    <td className="px-6 py-4">
-                      <div className="w-12 h-9 relative border border-gray-100 rounded bg-gray-50 overflow-hidden">
-                        <img
-                          src={prod.images?.[0]?.url || '/images/projects-collage.png'}
-                          alt={prod.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </td>
-                    <td className="px-6 py-4" scope="row">
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-gray-950">{prod.name}</span>
-                        <span className="text-[10px] text-gray-400 font-mono">{prod.slug}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-gray-500 font-semibold">{prod.category}</td>
-                    <td className="px-6 py-4">
-                      <span className="bg-gray-100 border border-gray-200 text-gray-600 font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded font-bold">
-                        {prod.tabGroup}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      {canEdit ? (
-                        <button
-                          onClick={() => handleToggleActive(prod._id, prod.isActive)}
-                          disabled={isToggling}
-                          className={`inline-flex items-center gap-1 text-[10px] font-bold font-mono px-2 py-0.5 rounded border cursor-pointer bg-transparent transition-colors ${
-                            prod.isActive
-                              ? 'border-emerald-200 text-emerald-700 bg-emerald-50'
-                              : 'border-gray-200 text-gray-400 bg-gray-50'
-                          }`}
-                        >
-                          {prod.isActive ? 'Active' : 'Draft'}
-                        </button>
-                      ) : (
-                        <span className={`inline-block text-[10px] font-bold font-mono px-2 py-0.5 rounded border ${
-                          prod.isActive ? 'border-emerald-100 text-emerald-600 bg-emerald-50' : 'border-gray-200 text-gray-400 bg-gray-50'
-                        }`}>
-                          {prod.isActive ? 'Active' : 'Draft'}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      {prod.has360View ? (
-                        <span className="inline-flex items-center gap-1.5 text-xs text-blue-600 font-semibold">
-                          <Rotate3d className="w-4 h-4" />
-                          Enabled
-                        </span>
-                      ) : (
-                        <span className="text-gray-400 text-xs font-mono">-</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        {canEdit && (
-                          <Link
-                            href={`/admin/products/${prod._id}/edit`}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-fg-blue hover:bg-gray-50 cursor-pointer outline-none transition-colors inline-block"
-                            title="Edit details"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Link>
-                        )}
-                        {canDelete && (
-                          <button
-                            onClick={() => setDeleteId(prod._id)}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-gray-50 cursor-pointer bg-transparent border-none outline-none"
-                            title="Delete Listing"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                )
-              })}
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan="7" className="text-center py-12 text-gray-400 font-mono text-xs uppercase tracking-wider">
-                    No products found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            )
+          })}
+          {filtered.length === 0 && (
+            <tr>
+              <td colSpan="7" className="px-6 py-12 text-center text-sm text-[#7A7A7A] font-sans">
+                No products found.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
 
       {/* Delete Prompt Modal */}
       <ConfirmModal

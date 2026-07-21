@@ -255,36 +255,77 @@ fglifts/
 │   │   ├── FilterPillBar.jsx         # Custom filter navigation bar
 │   │   ├── home/
 │   │   │   ├── AboutTeaser.jsx       # Side-by-side about section
+│   │   │   ├── BenefitsText.jsx      # Highlighting vertical mobility benefits
+│   │   │   ├── ConfiguratorHome.jsx  # Configurator promotion and preview banner
 │   │   │   ├── ContactSection.jsx    # Inquiry form component
+│   │   │   ├── GalleryMarquee.jsx    # Infinite loop gallery showcase
 │   │   │   ├── Hero.jsx              # Main home visual teaser
+│   │   │   ├── HomeCTA.jsx           # Home call-to-action banner
+│   │   │   ├── HomeClient.jsx        # Aggregator component for Home sections
+│   │   │   ├── Industries.jsx        # Sectors showcase grid with directional custom cursor arrow
 │   │   │   ├── PartnersMarquee.jsx   # Infinite loop ticker of logotypes
-│   │   │   ├── ProjectShowcase.jsx   # GSAP horizontal scrolling gallery
+│   │   │   ├── ProductsHome.jsx      # Products showcase overview
+│   │   │   ├── ProjectShowcase.jsx   # Horizontal scrolling showcase
+│   │   │   ├── ServicesAccordion.jsx # Vertical mobility divisions accordion
 │   │   │   ├── ServicesGrid.jsx      # Highlighting vertical mobility divisions
+│   │   │   ├── StatsGrid.jsx         # Metric cards grid
 │   │   │   ├── StatsStrip.jsx        # Key corporate metrics strip
 │   │   │   ├── Testimonials.jsx      # Sliding review quotes
+│   │   │   ├── TrustStrip.jsx        # Quality highlights banner
 │   │   │   └── WhyFG.jsx             # Grid highlight section
 │   │   ├── about/
-│   │   │   └── Timeline.jsx          # GSAP scrolling chronological timeline
+│   │   │   ├── AboutCTA.jsx          # Call-to-action for about page
+│   │   │   ├── AboutHero.jsx         # Corporate values and summary
+│   │   │   ├── AboutStats.jsx        # Corporate metrics layout
+│   │   │   ├── CertificationsStrip.jsx# Partnership, approvals and certificates
+│   │   │   ├── Leadership.jsx        # Board of directors and management
+│   │   │   ├── ManufacturingBlock.jsx# Facilities and engineering highlights
+│   │   │   ├── MilestoneTimeline.jsx # Timeline highlighting milestones
+│   │   │   └── VisionMission.jsx     # Strategic mission statements
 │   │   ├── products/
-│   │   │   └── ProductCard.jsx       # Grid list display card
+│   │   │   ├── ProductCard.jsx       # Grid list display card with interactive cursor-following arrow
+│   │   │   └── ProductGrid.jsx       # Responsive grid manager for products list
 │   │   ├── product-detail/
-│   │   │   └── Lift360Viewer.jsx     # Three.js 3D WebGL panoramic renderer component
+│   │   │   ├── ApplicationChips.jsx  # Building applications display chips
+│   │   │   ├── FeaturesList.jsx      # Product features layout
+│   │   │   ├── Lift360Viewer.jsx     # Three.js 3D WebGL panoramic renderer component
+│   │   │   ├── ProductCTA.jsx        # Inquire callback button callout
+│   │   │   ├── ProductDetailClient.jsx# Client controller for details layout
+│   │   │   ├── ProductGallery.jsx    # Image showcase carousel
+│   │   │   ├── RelatedProducts.jsx   # Cross-linked product suggestions
+│   │   │   └── SpecsTable.jsx        # Technical specifications data tables
 │   │   ├── gallery/
+│   │   │   ├── GalleryClient.jsx     # Masonry layout controller
+│   │   │   ├── GalleryHero.jsx       # Top intro section
 │   │   │   ├── ProjectCard.jsx       # Grid project item
-│   │   │   └── ProjectModal.jsx      # Staggered details and image carousel modal
+│   │   │   ├── ProjectGrid.jsx       # Gallery grid manager
+│   │   │   └── ProjectModal.jsx      # Details and image carousel modal
 │   │   ├── blog/
 │   │   │   ├── BlogCard.jsx          # Article preview grid card
-│   │   │   ├── BlogHero.jsx          # Top featured post header
-│   │   │   ├── BlogEditor.jsx        # Markdown writer wrapper
-│   │   │   └── NewsletterInline.jsx  # Inline signup component
+│   │   │   ├── BlogClient.jsx        # Page logic coordinator
+│   │   │   ├── BlogDetail.jsx        # Read post layout coordinator
+│   │   │   ├── BlogGrid.jsx          # Grid layout for posts
+│   │   │   ├── BlogHero.jsx          # Spotlight post presentation
+│   │   │   └── BlogSidebar.jsx       # Secondary details navigation
+│   │   ├── newsletter/
+│   │   │   ├── NewsletterInline.jsx  # Inline signup component
+│   │   │   └── NewsletterStrip.jsx   # Subscription banner
 │   │   └── admin/
 │   │       ├── AdminSidebar.jsx      # Left workspace navigation menu
 │   │       ├── AdminTopbar.jsx       # User profiles header with notifications
-│   │       ├── CRMKanban.jsx         # Interactive Kanban drag-and-drop lead board
-│   │       ├── CRMTable.jsx          # Interactive search, sort, filter data table
+│   │       ├── AuditLogTable.jsx     # Searchable logs dashboard
+│   │       ├── BlogEditor.jsx        # Markdown editor component for admin panel
+│   │       ├── ConfirmModal.jsx      # Generic confirmation prompt
+│   │       ├── EmailTemplateEditor.jsx# Rich HTML template customizer
+│   │       ├── GalleryProjectForm.jsx# Portfolio creator/editor form
+│   │       ├── InquiriesKanban.jsx   # Interactive Kanban drag-and-drop lead board
+│   │       ├── InquiriesTable.jsx    # Leads list with filter / sorting controls
+│   │       ├── InquiryDetailModal.jsx# CRM lead action and comments manager
+│   │       ├── ProductForm.jsx       # Product metadata builder with 3D swatches
 │   │       ├── StatCard.jsx          # Server Component stat renderer
-│   │       ├── EmailTemplateEditor.jsx# Rich HTML code template editor
-│   │       └── UserModal.jsx         # Account generator/modifier overlay
+│   │       ├── SubscriberTable.jsx   # Roster of newsletter leads
+│   │       ├── UserForm.jsx          # User generator / modifier form
+│   │       └── View360Uploader.jsx   # Panorama 360 texture manager
 │   ├── models/                       # Mongoose database schema models
 │   │   ├── Admin.js                  # User credentials and permissions overrides
 │   │   ├── AuditLog.js               # Record of administrative modifications
@@ -1223,6 +1264,16 @@ export async function PATCH(req, { params }) {
 ---
 
 ## 20. Changelog
+
+## [2.1.2] — Interaction and Interactive Card Redesign
+### Added
+- Redesigned **Sectors/Industries** (`Industries.jsx`) and **Product Card** (`ProductCard.jsx`) components to use an image-dominant aspect ratio (`aspect-[3/4]`), sleek hover zoom states (`scale-110`), and a dark bottom-up gradient overlay.
+- Engineered a custom floating action/arrow indicator inside cards that follows the mouse cursor with spring damping physics using Framer Motion's `useMotionValue` and `useSpring`.
+- Added dynamic rotation logic to the floating arrow using the `atan2(dy, dx)` mathematical vector angle of mouse travel velocity.
+- Added a specs drawer at the bottom of the hover cards displaying key details (Beds/Baths/SqFt style layouts adapted for vertical lift capacities, speeds, and color swatches) with inline icon badges.
+
+### Fixed
+- Restored missing `ProductGrid.jsx` to resolve Next.js compilation issues (`Module not found: Can't resolve './ProductGrid'`) under `/products`.
 
 ## [2.1.1] — Environment Setup and Path Context Updates
 ### Added

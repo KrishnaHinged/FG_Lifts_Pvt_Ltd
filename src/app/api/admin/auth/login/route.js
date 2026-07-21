@@ -1,48 +1,46 @@
 import { NextResponse } from 'next/server'
-import { findAdminByEmail, updateLastLogin } from '@/repositories/admin.repository'
-import { comparePassword, signToken, getCookieOptions, COOKIE_NAME } from '@/lib/auth'
-import { createLog } from '@/repositories/auditLog.repository'
+import { loginAdmin } from '@/services/admin.service'
+import { createAuditLog } from '@/services/audit.service'
+import { signToken, getCookieOptions } from '@/lib/auth'
+import authConfig from '@/config/auth'
 
 export async function POST(req) {
   try {
-    const { email, password } = await req.json()
-    if (!email || !password) {
-      return NextResponse.json({ error: 'Email and password required.' }, { status: 400 })
-    }
-
-    const admin = await findAdminByEmail(email)
-    if (!admin) {
-      return NextResponse.json({ error: 'Invalid credentials.' }, { status: 401 })
-    }
-
-    const valid = await comparePassword(password, admin.password)
-    if (!valid) {
-      return NextResponse.json({ error: 'Invalid credentials.' }, { status: 401 })
-    }
-
-    await updateLastLogin(admin._id)
+    const body = await req.json()
+    const admin = await loginAdmin(body)
 
     const token = signToken({
-      id:    admin._id.toString(),
+      id:    admin.id,
       email: admin.email,
       name:  admin.name,
       role:  admin.role,
     })
 
-    await createLog({
-      action:      'admin_login',
-      performedBy: { adminId: admin._id, name: admin.name, email: admin.email, role: admin.role },
-      ipAddress:   req.headers.get('x-forwarded-for') || 'unknown',
-    })
+    // Log the login event
+    try {
+      await createAuditLog({
+        action: 'admin_login',
+        performedBy: admin,
+        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+      })
+    } catch (logErr) {
+      console.error('Failed to write login audit log:', logErr)
+    }
 
     const response = NextResponse.json({
       success: true,
-      admin: { id: admin._id, name: admin.name, email: admin.email, role: admin.role }
+      admin
     })
-    response.cookies.set(COOKIE_NAME, token, getCookieOptions())
+    response.cookies.set(authConfig.cookieName, token, getCookieOptions())
     return response
   } catch (err) {
-    console.error('Login error:', err)
+    if (err.status === 400) {
+      return NextResponse.json({ error: Object.values(err.errors)[0] || 'Email and password required.' }, { status: 400 })
+    }
+    if (err.status === 401) {
+      return NextResponse.json({ error: err.error || 'Invalid credentials.' }, { status: 401 })
+    }
+    console.error('Admin login API endpoint error:', err)
     return NextResponse.json({ error: 'Server error.' }, { status: 500 })
   }
 }

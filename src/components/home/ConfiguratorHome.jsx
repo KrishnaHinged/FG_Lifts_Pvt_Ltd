@@ -2,35 +2,34 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import Section from '@/components/layouts/Section'
+import Container from '@/components/layouts/Container'
+import Grid from '@/components/layouts/Grid'
+import Heading from '@/components/typography/Heading'
+import Paragraph from '@/components/typography/Paragraph'
 
 export default function ConfiguratorHome() {
   return (
-    <section className="bg-[#F5F0EB] py-[120px] select-none border-b border-[#E8E2DA] relative overflow-hidden">
-
-      {/* Background Glowing Balls */}
+    <Section background="cream" size="none" className="py-[120px] select-none border-b border-[#E8E2DA] relative overflow-hidden">
       <div className="absolute top-[10%] left-[-10%] w-[55vw] h-[55vw] rounded-full bg-[radial-gradient(circle,rgba(168,230,120,0.12)_0%,transparent_70%)] blur-[90px] pointer-events-none z-0" />
       <div className="absolute bottom-[10%] right-[-10%] w-[55vw] h-[55vw] rounded-full bg-[radial-gradient(circle,rgba(14,79,179,0.06)_0%,transparent_70%)] blur-[90px] pointer-events-none z-0" />
 
-      <div className="relative z-10 max-w-[1380px] mx-auto px-6 lg:px-8">
-        <div className="grid grid-cols-12 gap-6 md:gap-[80px] items-center">
-
+      <Container className="relative z-10 max-w-[1380px]">
+        <Grid cols="12" className="gap-6 md:gap-[80px] items-center">
           {/* Left Column: Copy & Actions */}
           <div className="col-span-12 md:col-span-5 flex flex-col items-start gap-[40px]">
             <div className="flex flex-col gap-4">
-              {/* <span className="font-mono text-[9px] tracking-widest text-[#D72638] uppercase font-bold">
-                // 06 / Configurator
-              </span> */}
               <h2 className="font-sans text-4xl sm:text-5xl lg:text-[3.5rem] font-bold tracking-tight uppercase leading-[1.05] text-[#111111] m-0">
                 Craft your <br />
                 <span className="text-[#0797CE]">cabin atmosphere.</span>
               </h2>
             </div>
 
-            <p className="m-0 font-sans text-sm text-[#6B6B6B] leading-relaxed max-w-[380px] font-light">
+            <Paragraph className="m-0 leading-relaxed max-w-[380px] font-light text-sm">
               Experiment with luxury veneers, mirrors, custom lighting, and premium metal cladding inside our interactive 3D cabin configurator.
-            </p>
+            </Paragraph>
 
-            {/* Zestate Split-Arrow Button */}
+            {/* Custom visual Split-Arrow Button */}
             <a
               href="/products"
               className="inline-flex items-center group select-none"
@@ -53,7 +52,6 @@ export default function ConfiguratorHome() {
 
           {/* Right Column: Cabin Render Display */}
           <div className="col-span-12 md:col-span-7 relative aspect-[4/3] rounded-[2.5rem] overflow-hidden border border-[#E8E2DA] shadow-lg bg-white flex items-center justify-center p-8 group">
-            {/* Ambient subtle backglow */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(14,79,179,0.04),transparent_60%)] pointer-events-none" />
 
             <motion.div
@@ -84,9 +82,8 @@ export default function ConfiguratorHome() {
               </span>
             </div>
           </div>
-
-        </div>
-      </div>
-    </section>
+        </Grid>
+      </Container>
+    </Section>
   )
 }
