@@ -1,9 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { History, RefreshCw, Filter, ShieldAlert, Search } from 'lucide-react'
+import { History, RefreshCw, Filter, ShieldAlert } from 'lucide-react'
 import AuditLogTable from '@/components/admin/AuditLogTable'
 import { useDebouncedValue } from '@/hooks/useDebounce'
+
+// Design System Components
+import PageHeader from '@/components/composition/PageHeader'
+import SearchBar from '@/components/forms/SearchBar'
 
 const actionTypes = [
   { value: '', label: 'All Operations' },
@@ -82,54 +86,42 @@ export default function LogsClient({ initialLogs = [], total = 0, admins = [] })
     <div className="space-y-6">
       
       {/* Top Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="font-sans font-bold text-gray-900 text-2xl tracking-tight leading-none">
-            Audit Logs
-          </h1>
-          <span className="bg-gray-150 text-gray-500 font-mono text-xs px-2 py-0.5 rounded-full font-bold">
-            Immutable History log
-          </span>
-        </div>
-
-        <button
-          onClick={() => fetchLogs(currentPage, itemsPerPage, actionFilter, adminFilter)}
-          disabled={loading}
-          className="p-2 border border-gray-200 hover:border-gray-300 rounded-xl bg-white hover:bg-gray-50 cursor-pointer disabled:opacity-50 outline-none transition-all flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#0E4FB3] focus-visible:ring-offset-2"
-          title="Refresh Feed"
-          aria-label="Refresh Feed"
-        >
-          <RefreshCw className={`w-4 h-4 text-gray-400 ${loading ? 'animate-spin' : ''}`} />
-        </button>
-      </div>
+      <PageHeader
+        title="Audit Logs"
+        subtitle="Immutable History log"
+        actions={
+          <button
+            onClick={() => fetchLogs(currentPage, itemsPerPage, actionFilter, adminFilter)}
+            disabled={loading}
+            className="p-2 border border-[#E8E2DA] hover:border-[#111111] rounded-xl bg-white hover:bg-neutral-50 cursor-pointer disabled:opacity-50 outline-none transition-all flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#0E4FB3] focus-visible:ring-offset-2"
+            title="Refresh Feed"
+            aria-label="Refresh Feed"
+          >
+            <RefreshCw className={`w-4 h-4 text-[#7A7A7A] ${loading ? 'animate-spin' : ''}`} />
+          </button>
+        }
+      />
 
       {/* Search & Filters block */}
-      <div className="flex flex-col gap-4 bg-white border border-gray-200 rounded-2xl p-4 shadow-xs">
+      <div className="flex flex-col gap-4 bg-white border border-[#E8E2DA] rounded-2xl p-4 shadow-xs">
         
         {/* Search Input */}
-        <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-2 max-w-md w-full focus-within:border-fg-blue transition-colors">
-          <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
-          <input
-            type="text"
+        <div className="max-w-md w-full">
+          <SearchBar
             value={search}
             onChange={(e) => { setSearch(e.target.value); setCurrentPage(1) }}
             placeholder="Search logs by IP, operator, target ID..."
-            className="flex-1 font-sans text-xs text-gray-950 placeholder:text-gray-400 outline-none border-none"
-            aria-label="Search logs"
           />
-          {search !== debouncedSearch && (
-            <RefreshCw className="w-3.5 h-3.5 text-fg-blue animate-spin" />
-          )}
         </div>
 
         {/* Dropdown Filters Row */}
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
           <div className="flex-1 w-full flex flex-col gap-1">
-            <label className="font-mono text-[9px] uppercase tracking-wider text-gray-400 font-bold mb-1">Filter by Operations</label>
+            <label className="font-mono text-[9px] uppercase tracking-wider text-[#7A7A7A] font-bold mb-1">Filter by Operations</label>
             <select
               value={actionFilter}
               onChange={(e) => { setActionFilter(e.target.value); setCurrentPage(1) }}
-              className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white font-sans text-xs outline-none focus:border-fg-blue w-full focus-visible:ring-2 focus-visible:ring-[#0E4FB3]"
+              className="px-3.5 py-2.5 rounded-xl border border-[#E8E2DA] bg-white font-sans text-xs outline-none focus:border-[#0E4FB3] w-full focus-visible:ring-2 focus-visible:ring-[#0E4FB3]"
             >
               {actionTypes.map(type => (
                 <option key={type.value} value={type.value}>{type.label}</option>
@@ -138,11 +130,11 @@ export default function LogsClient({ initialLogs = [], total = 0, admins = [] })
           </div>
 
           <div className="flex-1 w-full flex flex-col gap-1">
-            <label className="font-mono text-[9px] uppercase tracking-wider text-gray-400 font-bold mb-1">Filter by Operator Name</label>
+            <label className="font-mono text-[9px] uppercase tracking-wider text-[#7A7A7A] font-bold mb-1">Filter by Operator Name</label>
             <select
               value={adminFilter}
               onChange={(e) => { setAdminFilter(e.target.value); setCurrentPage(1) }}
-              className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white font-sans text-xs outline-none focus:border-fg-blue w-full focus-visible:ring-2 focus-visible:ring-[#0E4FB3]"
+              className="px-3.5 py-2.5 rounded-xl border border-[#E8E2DA] bg-white font-sans text-xs outline-none focus:border-[#0E4FB3] w-full focus-visible:ring-2 focus-visible:ring-[#0E4FB3]"
             >
               <option value="">All Team Operators</option>
               {admins.map(adm => (

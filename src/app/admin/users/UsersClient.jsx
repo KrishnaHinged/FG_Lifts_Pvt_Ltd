@@ -8,6 +8,10 @@ import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
 import { AnimatePresence } from 'framer-motion'
 
+// Design System Components
+import PageHeader from '@/components/composition/PageHeader'
+import Badge from '@/components/ui/Badge'
+
 export default function UsersClient({ initialUsers = [], currentAdmin }) {
   const [users, setUsers] = useState(initialUsers)
   const [activeUser, setActiveUser] = useState(null)
@@ -54,17 +58,6 @@ export default function UsersClient({ initialUsers = [], currentAdmin }) {
     handleRefresh()
   }
 
-  const getRoleColor = (role) => {
-    switch (role) {
-      case 'SUPER_ADMIN': return 'bg-blue-50 text-blue-700 border-blue-200'
-      case 'SALES_MANAGER': return 'bg-emerald-50 text-emerald-700 border-emerald-200'
-      case 'SALES_EXECUTIVE': return 'bg-amber-50 text-amber-700 border-amber-200'
-      case 'MARKETING_MANAGER': return 'bg-purple-50 text-purple-700 border-purple-200'
-      case 'CONTENT_EDITOR': return 'bg-gray-50 text-gray-700 border-gray-200'
-      default: return 'bg-gray-50 text-gray-500'
-    }
-  }
-
   const formatRole = (role) => {
     return role.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ')
   }
@@ -77,40 +70,35 @@ export default function UsersClient({ initialUsers = [], currentAdmin }) {
     <div className="space-y-6 select-none">
       
       {/* Top Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="font-sans font-bold text-gray-900 text-2xl tracking-tight leading-none">
-            Team Members
-          </h1>
-          <span className="bg-gray-150 text-gray-500 font-mono text-xs px-2 py-0.5 rounded-full font-bold">
-            {users.length} rostered
-          </span>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleRefresh}
-            disabled={loading}
-            className="p-2 border border-gray-200 hover:border-gray-300 rounded-xl bg-white hover:bg-gray-50 cursor-pointer disabled:opacity-50 outline-none transition-all flex items-center justify-center"
-            title="Refresh List"
-          >
-            <RefreshCw className={`w-4 h-4 text-gray-400 ${loading ? 'animate-spin' : ''}`} />
-          </button>
-          {canCreate && (
+      <PageHeader
+        title="Team Members"
+        subtitle={`${users.length} rostered`}
+        actions={
+          <div className="flex items-center gap-3">
             <button
-              onClick={() => { setActiveUser(null); setShowForm(true) }}
-              className="inline-flex items-center gap-1.5 bg-fg-blue text-white rounded-full px-5 py-2.5 font-sans font-bold text-xs shadow-sm hover:shadow-md hover:bg-fg-blue/90 transition-all cursor-pointer border-none outline-none"
+              onClick={handleRefresh}
+              disabled={loading}
+              className="p-2 border border-[#E8E2DA] hover:border-[#111111] rounded-xl bg-white hover:bg-neutral-50 cursor-pointer disabled:opacity-50 outline-none transition-all flex items-center justify-center"
+              title="Refresh List"
             >
-              <Plus className="w-4 h-4" />
-              Add Team Member
+              <RefreshCw className={`w-4 h-4 text-[#7A7A7A] ${loading ? 'animate-spin' : ''}`} />
             </button>
-          )}
-        </div>
-      </div>
+            {canCreate && (
+              <button
+                onClick={() => { setActiveUser(null); setShowForm(true) }}
+                className="inline-flex items-center justify-center font-sans font-bold uppercase tracking-wider transition-all duration-300 bg-[#0E4FB3] text-white hover:bg-[#0b3c8a] active:bg-[#082a63] px-6 py-3 text-[11px] rounded-full cursor-pointer border-none outline-none"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Team Member
+              </button>
+            )}
+          </div>
+        }
+      />
 
       {/* Team Roster Grid layout */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {users.map((user) => {
+        {users.map((user, idx) => {
           const joinedDate = new Date(user.createdAt).toLocaleDateString('en-IN', {
             day: 'numeric',
             month: 'short',
@@ -119,42 +107,40 @@ export default function UsersClient({ initialUsers = [], currentAdmin }) {
 
           return (
             <div
-              key={user._id}
-              className={`bg-white rounded-2xl p-5 border border-gray-200 shadow-sm flex flex-col justify-between relative hover:shadow-md transition-shadow duration-300 ${
+              key={String(user._id || user.id || user.email || idx)}
+              className={`bg-white rounded-2xl p-5 border border-[#E8E2DA] shadow-sm flex flex-col justify-between relative hover:shadow-md transition-shadow duration-300 ${
                 !user.isActive ? 'opacity-60' : ''
               }`}
             >
               {/* Profile card content */}
               <div className="space-y-4">
                 <div className="flex items-start justify-between">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm font-sans select-none">
+                  <div className="w-10 h-10 rounded-full bg-[#0E4FB3]/10 text-[#0E4FB3] flex items-center justify-center font-bold text-sm font-sans select-none">
                     {user.name.slice(0, 2).toUpperCase()}
                   </div>
                   
                   {/* Status Indicator bubble */}
-                  <span className={`inline-block text-[9px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full border ${
-                    user.isActive ? 'border-emerald-100 text-emerald-700 bg-emerald-50' : 'border-gray-200 text-gray-400 bg-gray-50'
-                  }`}>
+                  <Badge variant={user.isActive ? 'success' : 'neutral'}>
                     {user.isActive ? 'Active' : 'Suspended'}
-                  </span>
+                  </Badge>
                 </div>
 
                 <div className="space-y-1">
-                  <h3 className="font-sans font-bold text-gray-900 text-sm leading-tight">
+                  <h3 className="font-sans font-bold text-[#111111] text-sm leading-tight">
                     {user.name}
                   </h3>
-                  <p className="text-xs text-gray-400 truncate font-mono mt-0.5">{user.email}</p>
+                  <p className="text-xs text-[#7A7A7A] truncate font-mono mt-0.5">{user.email}</p>
                 </div>
 
                 {/* Role and joined dates tags */}
-                <div className="flex flex-col gap-1.5 pt-1.5 border-t border-gray-100 text-xs text-gray-500 font-sans">
+                <div className="flex flex-col gap-1.5 pt-1.5 border-t border-[#E8E2DA] text-xs text-[#555555] font-sans">
                   <div className="flex items-center justify-between">
                     <span>Role Group:</span>
-                    <span className={`font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded font-bold border ${getRoleColor(user.role)}`}>
+                    <Badge variant="primary">
                       {formatRole(user.role)}
-                    </span>
+                    </Badge>
                   </div>
-                  <div className="flex items-center justify-between font-mono text-[10px] text-gray-400">
+                  <div className="flex items-center justify-between font-mono text-[10px] text-[#7A7A7A]">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5" />
                       Joined:
@@ -165,11 +151,11 @@ export default function UsersClient({ initialUsers = [], currentAdmin }) {
               </div>
 
               {/* Action bar */}
-              <div className="flex items-center justify-end gap-2 border-t border-gray-100 pt-4 mt-5">
+              <div className="flex items-center justify-end gap-2 border-t border-[#E8E2DA] pt-4 mt-5">
                 {canEdit && (
                   <button
                     onClick={() => { setActiveUser(user); setShowForm(true) }}
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-fg-blue hover:bg-gray-50 cursor-pointer bg-transparent border-none outline-none"
+                    className="p-1.5 rounded-lg text-[#7A7A7A] hover:text-[#0E4FB3] hover:bg-neutral-50 cursor-pointer bg-transparent border-none outline-none transition-colors"
                     title="Edit team member access"
                   >
                     <Edit className="w-4 h-4" />
@@ -178,7 +164,7 @@ export default function UsersClient({ initialUsers = [], currentAdmin }) {
                 {canDelete && user._id !== currentAdmin.id && (
                   <button
                     onClick={() => setDeleteId(user._id)}
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-gray-50 cursor-pointer bg-transparent border-none outline-none"
+                    className="p-1.5 rounded-lg text-[#7A7A7A] hover:text-red-600 hover:bg-neutral-50 cursor-pointer bg-transparent border-none outline-none transition-colors"
                     title="Remove user account"
                   >
                     <Trash2 className="w-4 h-4" />

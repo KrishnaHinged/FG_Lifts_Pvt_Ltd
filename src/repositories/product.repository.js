@@ -14,6 +14,11 @@ export async function getProductBySlug(slug) {
   return Product.findOne({ slug, isActive: true }).lean()
 }
 
+export async function getProductBySlugRaw(slug) {
+  await connectDB()
+  return Product.findOne({ slug }).lean()
+}
+
 export async function getFeaturedProduct() {
   await connectDB()
   return Product.findOne({ isFeatured: true, isActive: true }).lean()
@@ -46,7 +51,7 @@ export async function createProduct(data) {
 
 export async function updateProduct(id, data) {
   await connectDB()
-  return Product.findByIdAndUpdate(id, data, { new: true }).lean()
+  return Product.findByIdAndUpdate(id, data, { returnDocument: 'after' }).lean()
 }
 
 export async function deleteProduct(id) {

@@ -3,12 +3,18 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import Lenis from 'lenis'
 
+import { usePathname } from 'next/navigation'
+
 const LenisContext = createContext(null)
 
 export function LenisProvider({ children }) {
   const [lenis, setLenis] = useState(null)
+  const pathname = usePathname()
+  const isAdmin = pathname?.startsWith('/admin')
 
   useEffect(() => {
+    if (isAdmin) return
+
     const lenisInstance = new Lenis({
       lerp: 0.08,
       smoothWheel: true,
@@ -35,7 +41,7 @@ export function LenisProvider({ children }) {
         window.lenis = undefined
       }
     }
-  }, [])
+  }, [isAdmin])
 
   const scrollTo = (target, options = {}) => {
     if (lenis) lenis.scrollTo(target, options)

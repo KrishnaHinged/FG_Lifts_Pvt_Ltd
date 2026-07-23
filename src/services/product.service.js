@@ -44,8 +44,8 @@ export async function createProduct(data) {
     throw { status: 400, errors }
   }
 
-  // Check unique slug
-  const existing = await productRepo.getProductBySlug(data.slug)
+  // Check unique slug (raw including inactive ones to prevent DB duplicate key exception)
+  const existing = await productRepo.getProductBySlugRaw(data.slug)
   if (existing) {
     throw { status: 400, error: 'Product with this slug already exists.' }
   }
@@ -60,8 +60,8 @@ export async function updateProduct(id, data) {
     throw { status: 400, errors }
   }
 
-  // Check unique slug (exclude this product)
-  const existing = await productRepo.getProductBySlug(data.slug)
+  // Check unique slug (raw including inactive ones to prevent DB duplicate key exception)
+  const existing = await productRepo.getProductBySlugRaw(data.slug)
   if (existing && existing._id?.toString() !== id) {
     throw { status: 400, error: 'Product with this slug already exists.' }
   }

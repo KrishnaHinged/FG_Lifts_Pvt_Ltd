@@ -7,6 +7,9 @@ import Subscriber from '@/models/Subscriber'
 import BlogPost from '@/models/BlogPost'
 import EmailQueue from '@/models/EmailQueue'
 import StatCard from '@/components/admin/StatCard'
+import PageHeader from '@/components/composition/PageHeader'
+import Table from '@/components/composition/Table'
+import Badge from '@/components/ui/Badge'
 import {
   Inbox,
   Sparkles,
@@ -16,7 +19,8 @@ import {
   Mail,
   ArrowRight,
   Plus,
-  FileText
+  FileText,
+  Activity
 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -67,14 +71,14 @@ export default async function DashboardPage() {
     return `${days}d ago`
   }
 
-  const getStatusBadge = (status) => {
+  const getStatusVariant = (status) => {
     switch (status) {
-      case 'New': return 'bg-blue-50 text-blue-700 border-blue-100'
-      case 'Contacted': return 'bg-amber-50 text-amber-700 border-amber-100'
-      case 'Qualified': return 'bg-emerald-50 text-emerald-700 border-emerald-100'
-      case 'Closed': return 'bg-gray-50 text-gray-500 border-gray-200'
-      case 'Rejected': return 'bg-red-50 text-red-700 border-red-100'
-      default: return 'bg-gray-50 text-gray-400'
+      case 'New': return 'primary'
+      case 'Contacted': return 'warning'
+      case 'Qualified': return 'success'
+      case 'Closed': return 'neutral'
+      case 'Rejected': return 'danger'
+      default: return 'neutral'
     }
   }
 
@@ -82,14 +86,10 @@ export default async function DashboardPage() {
     <div className="space-y-8 select-none">
       
       {/* Welcome header */}
-      <div className="space-y-1">
-        <h1 className="font-sans font-bold text-gray-900 text-2xl tracking-tight leading-none">
-          Dashboard
-        </h1>
-        <p className="text-gray-500 font-sans text-sm">
-          Good morning, {adminName} — here is the platform status summary.
-        </p>
-      </div>
+      <PageHeader
+        title="Admin Dashboard"
+        subtitle={`Welcome back, ${adminName} — platform status and live activity feed.`}
+      />
 
       {/* Stats Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -105,12 +105,15 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-6">
         
         {/* Left Column: Recent Leads table */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
-          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <span className="font-sans font-bold text-gray-900 text-sm">Recent CRM Leads</span>
+        <div className="bg-white border border-[#E8E2DA] rounded-2xl shadow-xs overflow-hidden flex flex-col">
+          <div className="px-6 py-4 border-b border-[#E8E2DA] flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Activity className="w-4 h-4 text-[#0E4FB3]" />
+              <span className="font-sans font-bold text-[#111111] text-sm">Recent CRM Leads</span>
+            </div>
             <Link
               href="/admin/inquiries"
-              className="text-xs text-fg-blue font-bold flex items-center gap-1 hover:underline no-underline"
+              className="text-xs text-[#0E4FB3] font-bold flex items-center gap-1 hover:underline no-underline"
             >
               Pipeline Board
               <ArrowRight className="w-3.5 h-3.5" />
@@ -118,63 +121,63 @@ export default async function DashboardPage() {
           </div>
 
           <div className="flex-1 overflow-x-auto">
-            <table className="w-full text-left border-collapse" role="table">
+            <Table>
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-100 font-mono text-[9px] font-bold uppercase tracking-wider text-gray-400">
-                  <th className="px-6 py-3" scope="col">Client</th>
-                  <th className="px-6 py-3" scope="col">Elevator type</th>
-                  <th className="px-6 py-3" scope="col">Status</th>
-                  <th className="px-6 py-3 text-right" scope="col">Age</th>
+                <tr className="bg-[#EDE8E2]/50 border-b border-[#E8E2DA]">
+                  <th className="px-6 py-3 font-mono text-[9px] font-bold uppercase tracking-widest text-[#7A7A7A]" scope="col">Client</th>
+                  <th className="px-6 py-3 font-mono text-[9px] font-bold uppercase tracking-widest text-[#7A7A7A]" scope="col">Elevator type</th>
+                  <th className="px-6 py-3 font-mono text-[9px] font-bold uppercase tracking-widest text-[#7A7A7A]" scope="col">Status</th>
+                  <th className="px-6 py-3 font-mono text-[9px] font-bold uppercase tracking-widest text-[#7A7A7A] text-right" scope="col">Age</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 font-sans text-xs text-gray-700">
+              <tbody className="divide-y divide-[#E8E2DA]">
                 {recentInquiries.map((inquiry) => (
-                  <tr key={inquiry._id}>
+                  <tr key={inquiry._id} className="hover:bg-neutral-50/50 transition-colors">
                     <td className="px-6 py-3" scope="row">
-                      <div className="flex flex-col font-semibold text-gray-950">
+                      <div className="flex flex-col font-semibold text-[#111111]">
                         <span>{inquiry.name}</span>
-                        <span className="text-[10px] text-gray-400 font-normal">{inquiry.email}</span>
+                        <span className="text-[10px] text-[#7A7A7A] font-mono font-normal">{inquiry.email}</span>
                       </div>
                     </td>
                     <td className="px-6 py-3">
-                      <span className="bg-gray-100 font-mono text-[9px] text-gray-500 font-bold px-1.5 py-0.5 rounded">
+                      <span className="bg-[#EDE8E2] font-mono text-[9px] text-[#555555] font-bold px-2 py-0.5 rounded">
                         {inquiry.elevatorType || 'Passenger'}
                       </span>
                     </td>
                     <td className="px-6 py-3">
-                      <span className={`inline-block text-[10px] px-2 py-0.5 rounded-full font-bold border ${getStatusBadge(inquiry.status)}`}>
+                      <Badge variant={getStatusVariant(inquiry.status)}>
                         {inquiry.status}
-                      </span>
+                      </Badge>
                     </td>
-                    <td className="px-6 py-3 text-right text-gray-400 font-mono">
+                    <td className="px-6 py-3 text-right text-[#7A7A7A] font-mono text-xs">
                       {getRelativeTime(inquiry.createdAt)}
                     </td>
                   </tr>
                 ))}
                 {recentInquiries.length === 0 && (
                   <tr>
-                    <td colSpan="4" className="text-center py-8 text-gray-400 font-mono">
+                    <td colSpan="4" className="text-center py-8 text-[#7A7A7A] font-mono text-xs">
                       No inquiries recorded.
                     </td>
                   </tr>
                 )}
               </tbody>
-            </table>
+            </Table>
           </div>
         </div>
 
         {/* Right Column: Quick Actions menu panel */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex flex-col space-y-4">
-          <h3 className="font-sans font-bold text-gray-900 text-sm border-b border-gray-100 pb-2">
+        <div className="bg-white border border-[#E8E2DA] rounded-2xl p-6 shadow-xs flex flex-col space-y-4">
+          <h3 className="font-sans font-bold text-[#111111] text-sm border-b border-[#E8E2DA] pb-3 m-0">
             Quick Actions
           </h3>
           <div className="flex flex-col gap-3">
             <Link
               href="/admin/inquiries"
-              className="flex items-center justify-between p-3.5 border border-gray-200 hover:border-fg-blue rounded-xl text-xs font-semibold font-sans text-gray-700 hover:text-fg-blue transition-all no-underline bg-white"
+              className="flex items-center justify-between p-3.5 border border-[#E8E2DA] hover:border-[#0E4FB3] rounded-xl text-xs font-semibold font-sans text-[#555555] hover:text-[#0E4FB3] hover:bg-neutral-50 transition-all no-underline bg-white"
             >
-              <span className="flex items-center gap-2">
-                <Inbox className="w-4.5 h-4.5 text-gray-400" />
+              <span className="flex items-center gap-2.5">
+                <Inbox className="w-4 h-4 text-[#7A7A7A]" />
                 View Leads Pipeline
               </span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -182,10 +185,10 @@ export default async function DashboardPage() {
 
             <Link
               href="/admin/products/new"
-              className="flex items-center justify-between p-3.5 border border-gray-200 hover:border-fg-blue rounded-xl text-xs font-semibold font-sans text-gray-700 hover:text-fg-blue transition-all no-underline bg-white"
+              className="flex items-center justify-between p-3.5 border border-[#E8E2DA] hover:border-[#0E4FB3] rounded-xl text-xs font-semibold font-sans text-[#555555] hover:text-[#0E4FB3] hover:bg-neutral-50 transition-all no-underline bg-white"
             >
-              <span className="flex items-center gap-2">
-                <Boxes className="w-4.5 h-4.5 text-gray-400" />
+              <span className="flex items-center gap-2.5">
+                <Boxes className="w-4 h-4 text-[#7A7A7A]" />
                 Add New Product
               </span>
               <Plus className="w-3.5 h-3.5" />
@@ -193,10 +196,10 @@ export default async function DashboardPage() {
 
             <Link
               href="/admin/blog/new"
-              className="flex items-center justify-between p-3.5 border border-gray-200 hover:border-fg-blue rounded-xl text-xs font-semibold font-sans text-gray-700 hover:text-fg-blue transition-all no-underline bg-white"
+              className="flex items-center justify-between p-3.5 border border-[#E8E2DA] hover:border-[#0E4FB3] rounded-xl text-xs font-semibold font-sans text-[#555555] hover:text-[#0E4FB3] hover:bg-neutral-50 transition-all no-underline bg-white"
             >
-              <span className="flex items-center gap-2">
-                <FileText className="w-4.5 h-4.5 text-gray-400" />
+              <span className="flex items-center gap-2.5">
+                <FileText className="w-4 h-4 text-[#7A7A7A]" />
                 Write Blog Post
               </span>
               <Plus className="w-3.5 h-3.5" />
@@ -204,10 +207,10 @@ export default async function DashboardPage() {
 
             <Link
               href="/admin/newsletter"
-              className="flex items-center justify-between p-3.5 border border-gray-200 hover:border-fg-blue rounded-xl text-xs font-semibold font-sans text-gray-700 hover:text-fg-blue transition-all no-underline bg-white"
+              className="flex items-center justify-between p-3.5 border border-[#E8E2DA] hover:border-[#0E4FB3] rounded-xl text-xs font-semibold font-sans text-[#555555] hover:text-[#0E4FB3] hover:bg-neutral-50 transition-all no-underline bg-white"
             >
-              <span className="flex items-center gap-2">
-                <Users className="w-4.5 h-4.5 text-gray-400" />
+              <span className="flex items-center gap-2.5">
+                <Users className="w-4 h-4 text-[#7A7A7A]" />
                 Newsletter Roster
               </span>
               <ArrowRight className="w-3.5 h-3.5" />

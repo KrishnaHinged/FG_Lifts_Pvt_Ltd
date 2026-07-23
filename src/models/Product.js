@@ -4,6 +4,7 @@ const ColorVariantSchema = new mongoose.Schema({
   name:  { type: String, required: true },   // e.g. "Champagne Gold"
   hex:   { type: String },                   // e.g. "#C9A84C"
   panoramaImages: {
+    sphere:  String,
     front:   String,
     back:    String,
     left:    String,

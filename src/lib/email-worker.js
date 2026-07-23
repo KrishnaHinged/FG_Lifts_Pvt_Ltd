@@ -17,6 +17,14 @@ async function processQueue() {
       const attempts = (email.attempts || 0) + 1
       const lastAttemptAt = new Date()
 
+      // Lock item to 'processing' before dispatching SMTP call
+      try {
+        await emailQueueRepo.updateQueueItemStatus(email._id, { status: 'processing' })
+      } catch (lockErr) {
+        console.error('[EmailWorker] Failed to lock queue item:', lockErr.message)
+        continue
+      }
+
       try {
         await sendMail({
           to: email.to,

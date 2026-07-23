@@ -36,6 +36,7 @@ const ColorVariantSchema = new mongoose.Schema({
   name:  String,
   hex:   String,
   panoramaImages: {
+    sphere:  String,
     front:   String,
     back:    String,
     left:    String,
@@ -578,27 +579,44 @@ async function seed() {
       }
     }
 
-    // 3. Clear and seed Products, Projects, Blog Posts
-    console.log('Wiping mock products, projects, and posts...');
-    await Product.deleteMany({});
-    await GalleryProject.deleteMany({});
-    await BlogPost.deleteMany({});
-
-    console.log('Seeding mock products...');
-    await Product.insertMany(mockProducts);
-
-    console.log('Seeding mock projects...');
-    await GalleryProject.insertMany(mockProjects);
-
-    console.log('Seeding mock blog posts...');
-    for (const postData of mockBlogPosts) {
-      const post = new BlogPost(postData);
-      // Auto compute read time before save
-      if (post.content) {
-        const wordCount = post.content.replace(/<[^>]+>/g, '').split(/\s+/).length;
-        post.readTime = Math.max(1, Math.ceil(wordCount / 200));
+    // 3. Seed Products, Projects, Blog Posts (preserving existing MongoDB data)
+    console.log('Seeding products (preserving existing)...');
+    for (const prodData of mockProducts) {
+      const existingProduct = await Product.findOne({ slug: prodData.slug });
+      if (!existingProduct) {
+        await Product.create(prodData);
+        console.log(`Seeded product: ${prodData.name}`);
+      } else {
+        console.log(`Product "${prodData.name}" already exists in DB. Preserving user data...`);
       }
-      await post.save();
+    }
+
+    console.log('Seeding projects (preserving existing)...');
+    for (const projData of mockProjects) {
+      const existingProject = await GalleryProject.findOne({ title: projData.title });
+      if (!existingProject) {
+        await GalleryProject.create(projData);
+        console.log(`Seeded project: ${projData.title}`);
+      } else {
+        console.log(`Project "${projData.title}" already exists in DB. Preserving user data...`);
+      }
+    }
+
+    console.log('Seeding blog posts (preserving existing)...');
+    for (const postData of mockBlogPosts) {
+      const existingPost = await BlogPost.findOne({ slug: postData.slug });
+      if (!existingPost) {
+        const post = new BlogPost(postData);
+        // Auto compute read time before save
+        if (post.content) {
+          const wordCount = post.content.replace(/<[^>]+>/g, '').split(/\s+/).length;
+          post.readTime = Math.max(1, Math.ceil(wordCount / 200));
+        }
+        await post.save();
+        console.log(`Seeded blog post: ${postData.title}`);
+      } else {
+        console.log(`Blog post "${postData.title}" already exists in DB. Preserving user data...`);
+      }
     }
 
     console.log('Database seeding successfully finished!');

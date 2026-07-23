@@ -91,6 +91,10 @@ export async function getLeadById(id, userContext = null) {
 }
 
 export async function updateLeadStatus(id, status, userContext) {
+  const allowedStatuses = ['New', 'Contacted', 'Qualified', 'Closed', 'Rejected']
+  if (!allowedStatuses.includes(status)) {
+    throw { status: 400, error: 'Invalid lead status.' }
+  }
   const lead = await getLeadById(id, userContext)
   const updated = await inquiryRepo.updateInquiry(id, { status })
   return mapToInquiryDTO(updated)
@@ -131,12 +135,19 @@ export async function addLeadNote(id, text, userContext) {
   if (!text || text.trim() === '') {
     throw { status: 400, error: 'Note text cannot be empty.' }
   }
+  if (text.length > 2000) {
+    throw { status: 400, error: 'Note text cannot exceed 2000 characters.' }
+  }
+
+  // Import dynamic clean helper to prevent stored XSS injection
+  const { sanitizeString } = require('@/security/sanitizer')
+  const cleanText = sanitizeString(text.trim())
 
   // Fetch the full inquiry to push the note inside notes array
   const fullInquiry = await inquiryRepo.getInquiryById(id)
   fullInquiry.notes = fullInquiry.notes || []
   fullInquiry.notes.push({
-    text: text.trim(),
+    text: cleanText,
     adminName: userContext.name || userContext.email,
     adminId: userContext.id,
     createdAt: new Date()
@@ -189,5 +200,12 @@ export async function exportLeadsToCSV() {
     ])
   })
 
-  return rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n')
+  // Prevent CSV Formula Injection by prepending single-quote to values starting with =, +, -, @, or tab
+  return rows.map(r => r.map(v => {
+    let str = String(v || '')
+    if (/^[=+\-@\t\r]/.test(str)) {
+      str = "'" + str
+    }
+    return `"${str.replace(/"/g, '""')}"`
+  }).join(',')).join('\n')
 }

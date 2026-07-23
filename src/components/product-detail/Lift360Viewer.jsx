@@ -2,9 +2,9 @@
 
 import { useRef, useEffect, useState, useCallback } from 'react'
 import * as THREE from 'three'
-import { Rotate3d, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react'
+import { Rotate3d, ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize } from 'lucide-react'
 
-export default function Lift360Viewer({ panoramaUrl = '/images/projects-collage.png', colorVariants = [] }) {
+export default function Lift360Viewer({ panoramaUrl = '/images/360-gold.png', colorVariants = [] }) {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const rendererRef = useRef(null)
@@ -22,6 +22,7 @@ export default function Lift360Viewer({ panoramaUrl = '/images/projects-collage.
   const [activeVariant, setActiveVariant] = useState(0)
   const [isActivated, setIsActivated] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   useEffect(() => {
     const checkMobile = () => {
@@ -32,9 +33,27 @@ export default function Lift360Viewer({ panoramaUrl = '/images/projects-collage.
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  const currentPanorama = colorVariants.length > 0
-    ? colorVariants[activeVariant]?.panorama || panoramaUrl
-    : panoramaUrl
+  // Fullscreen change listener
+  useEffect(() => {
+    const handleFsChange = () => {
+      const isFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement)
+      setIsFullscreen(isFs)
+      if (containerRef.current && rendererRef.current && cameraRef.current) {
+        const w = isFs ? window.innerWidth : containerRef.current.clientWidth
+        const h = isFs ? window.innerHeight : containerRef.current.clientHeight
+        cameraRef.current.aspect = w / h
+        cameraRef.current.updateProjectionMatrix()
+        rendererRef.current.setSize(w, h)
+      }
+    }
+
+    document.addEventListener('fullscreenchange', handleFsChange)
+    document.addEventListener('webkitfullscreenchange', handleFsChange)
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFsChange)
+      document.removeEventListener('webkitfullscreenchange', handleFsChange)
+    }
+  }, [])
 
   // Initialize Three.js scene
   useEffect(() => {
@@ -51,7 +70,7 @@ export default function Lift360Viewer({ panoramaUrl = '/images/projects-collage.
       75,
       container.clientWidth / container.clientHeight,
       0.1,
-      1100
+      1200
     )
     camera.position.set(0, 0, 0.1)
     cameraRef.current = camera
@@ -67,19 +86,7 @@ export default function Lift360Viewer({ panoramaUrl = '/images/projects-collage.
     renderer.outputColorSpace = THREE.SRGBColorSpace
     rendererRef.current = renderer
 
-    // Sphere geometry — invert faces for interior view
-    const geometry = new THREE.SphereGeometry(500, 60, 40)
-    geometry.scale(-1, 1, 1) // flip normals inward
-
-    const material = new THREE.MeshBasicMaterial({
-      color: 0x333333,
-    })
-
-    const mesh = new THREE.Mesh(geometry, material)
-    scene.add(mesh)
-    meshRef.current = mesh
-
-    // Animate
+    // Animate loop
     function animate() {
       animIdRef.current = requestAnimationFrame(animate)
       
@@ -109,7 +116,7 @@ export default function Lift360Viewer({ panoramaUrl = '/images/projects-collage.
     }
     animate()
 
-    // Resize
+    // Resize handler
     const handleResize = () => {
       if (!container) return
       const w = container.clientWidth
@@ -123,42 +130,114 @@ export default function Lift360Viewer({ panoramaUrl = '/images/projects-collage.
     return () => {
       window.removeEventListener('resize', handleResize)
       if (animIdRef.current) cancelAnimationFrame(animIdRef.current)
-      
-      // Memory disposal
-      geometry.dispose()
-      material.dispose()
-      if (material.map) material.map.dispose()
-      
+      if (meshRef.current) {
+        scene.remove(meshRef.current)
+        if (meshRef.current.geometry) meshRef.current.geometry.dispose()
+      }
       renderer.dispose()
     }
   }, [])
 
-  // Load / swap texture when currentPanorama changes
+  const activeVariantObj = colorVariants[activeVariant] || {}
+  const activePanoImages = activeVariantObj.panoramaImages || {}
+  const textureKey = JSON.stringify({
+    variantIndex: activeVariant,
+    pano: activePanoImages,
+    sphere: activeVariantObj.panorama || panoramaUrl
+  })
+
+  // Load / swap 3D elevator cabin room textures when activeVariant or colorVariants change
   useEffect(() => {
-    if (!meshRef.current) return
+    if (!sceneRef.current) return
     setLoading(true)
 
-    const loader = new THREE.TextureLoader()
-    loader.load(
-      currentPanorama,
-      (texture) => {
-        texture.colorSpace = THREE.SRGBColorSpace
-        // Dispose old texture
-        if (meshRef.current.material.map) {
-          meshRef.current.material.map.dispose()
-        }
-        meshRef.current.material.map = texture
-        meshRef.current.material.color.set(0xffffff)
-        meshRef.current.material.needsUpdate = true
-        setLoading(false)
-      },
-      undefined,
-      () => {
-        console.warn('360 texture failed to load:', currentPanorama)
-        setLoading(false)
-      }
+    const activeVariantObj = colorVariants[activeVariant] || {}
+    const activePanoImages = activeVariantObj.panoramaImages || {}
+
+    const hasCubicSides = Boolean(
+      activePanoImages.front ||
+      activePanoImages.back ||
+      activePanoImages.left ||
+      activePanoImages.ceiling ||
+      activePanoImages.floor
     )
-  }, [currentPanorama])
+
+    const loader = new THREE.TextureLoader()
+
+    if (hasCubicSides) {
+      // 6 Cubic Box faces: [+X Right, -X Left, +Y Ceiling, -Y Floor, +Z Front (Doors), -Z Back]
+      // Elevator cabin geometry: Width: 500, Height: 833.33 (3:5 ratio wall height), Depth: 500 (1:1 ceiling/floor square)
+      const faceUrls = [
+        activePanoImages.left || activePanoImages.front || panoramaUrl,     // +X Right side (3:5 ratio)
+        activePanoImages.left || activePanoImages.front || panoramaUrl,     // -X Left side (3:5 ratio)
+        activePanoImages.ceiling || panoramaUrl,                           // +Y Ceiling (1:1 ratio square)
+        activePanoImages.floor || panoramaUrl,                             // -Y Floor (1:1 ratio square)
+        activePanoImages.front || panoramaUrl,                             // +Z Front Doors (3:5 ratio)
+        activePanoImages.back || panoramaUrl,                              // -Z Back Wall (3:5 ratio)
+      ]
+
+      let loadedCount = 0
+      const materials = new Array(6)
+
+      faceUrls.forEach((url, i) => {
+        loader.load(
+          url,
+          (tex) => {
+            tex.colorSpace = THREE.SRGBColorSpace
+            materials[i] = new THREE.MeshBasicMaterial({
+              map: tex,
+              side: THREE.BackSide
+            })
+            loadedCount++
+            if (loadedCount === 6) {
+              if (meshRef.current) sceneRef.current.remove(meshRef.current)
+              // Realistic Elevator Cabin Box: Width 500, Height 833.33 (3:5 Wall Ratio), Depth 500 (1:1 Ceiling/Floor Ratio)
+              const boxGeo = new THREE.BoxGeometry(500, 833.33, 500)
+              const boxMesh = new THREE.Mesh(boxGeo, materials)
+              sceneRef.current.add(boxMesh)
+              meshRef.current = boxMesh
+              setLoading(false)
+            }
+          },
+          undefined,
+          () => {
+            materials[i] = new THREE.MeshBasicMaterial({ color: 0x222222, side: THREE.BackSide })
+            loadedCount++
+            if (loadedCount === 6) {
+              if (meshRef.current) sceneRef.current.remove(meshRef.current)
+              const boxGeo = new THREE.BoxGeometry(500, 833.33, 500)
+              const boxMesh = new THREE.Mesh(boxGeo, materials)
+              sceneRef.current.add(boxMesh)
+              meshRef.current = boxMesh
+              setLoading(false)
+            }
+          }
+        )
+      })
+    } else {
+      // Sphere equirectangular mode fallback
+      const sphereUrl = activeVariantObj.panorama || panoramaUrl || '/images/360-gold.png'
+      loader.load(
+        sphereUrl,
+        (texture) => {
+          texture.colorSpace = THREE.SRGBColorSpace
+          if (meshRef.current) sceneRef.current.remove(meshRef.current)
+
+          const sphereGeo = new THREE.SphereGeometry(500, 60, 40)
+          sphereGeo.scale(-1, 1, 1)
+          const sphereMat = new THREE.MeshBasicMaterial({ map: texture })
+          const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat)
+          sceneRef.current.add(sphereMesh)
+          meshRef.current = sphereMesh
+          setLoading(false)
+        },
+        undefined,
+        () => {
+          setLoading(false)
+        }
+      )
+    }
+  }, [textureKey])
 
   // Pointer handlers for drag rotation
   const handlePointerDown = useCallback((e) => {
@@ -184,7 +263,7 @@ export default function Lift360Viewer({ panoramaUrl = '/images/projects-collage.
     e.currentTarget.style.cursor = 'grab'
   }, [])
 
-  // Native wheel listener to avoid passive event warnings and allow zooming
+  // Native wheel listener for zooming
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
@@ -224,11 +303,34 @@ export default function Lift360Viewer({ panoramaUrl = '/images/projects-collage.
     }
   }
 
+  const toggleFullscreen = () => {
+    const elem = containerRef.current
+    if (!elem) return
+
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen()
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen()
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen()
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen()
+      }
+    }
+  }
+
   return (
-    <div className="relative w-full h-full min-h-[400px] rounded-2xl overflow-hidden bg-fg-dark-2">
+    <div
+      ref={containerRef}
+      className={`relative w-full h-full min-h-[400px] overflow-hidden bg-fg-dark-2 transition-all ${
+        isFullscreen ? 'fixed inset-0 z-[99999] rounded-none' : 'rounded-2xl'
+      }`}
+    >
       {/* WebGL canvas container */}
       <div
-        ref={containerRef}
         className="absolute inset-0 cursor-grab outline-none"
         tabIndex={0}
         onFocus={() => { isFocusedRef.current = true }}
@@ -248,13 +350,20 @@ export default function Lift360Viewer({ panoramaUrl = '/images/projects-collage.
             <Rotate3d className="w-8 h-8 text-fg-blue animate-spin" style={{ animationDuration: '3s' }} />
           </div>
           <p className="font-mono text-xs text-fg-cream/60 tracking-wider uppercase">
-            Loading 360° View...
+            Loading 360° Cabin...
           </p>
         </div>
       )}
 
       {/* Controls - Top Right */}
       <div className="absolute top-4 right-4 flex flex-col gap-2 z-20">
+        <button
+          onClick={toggleFullscreen}
+          className="w-9 h-9 rounded-lg bg-black/60 backdrop-blur-sm border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black/80 hover:border-white/40 transition-all duration-200 shadow-md"
+          title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
+        >
+          {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+        </button>
         <button
           onClick={zoomIn}
           className="w-9 h-9 rounded-lg bg-black/50 backdrop-blur-sm border border-white/10 text-white flex items-center justify-center cursor-pointer hover:bg-black/70 transition-colors duration-200"

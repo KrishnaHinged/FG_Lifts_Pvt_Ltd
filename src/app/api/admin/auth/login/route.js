@@ -3,9 +3,16 @@ import { loginAdmin } from '@/services/admin.service'
 import { createAuditLog } from '@/services/audit.service'
 import { signToken, getCookieOptions } from '@/lib/auth'
 import authConfig from '@/config/auth'
+import { checkRateLimit } from '@/security/rateLimit'
 
 export async function POST(req) {
   try {
+    const ip = req.headers.get('x-forwarded-for') || '127.0.0.1'
+    const rateCheck = checkRateLimit(`login:${ip}`, 5, 15 * 60 * 1000) // max 5 attempts per 15 mins
+    if (!rateCheck.allowed) {
+      return NextResponse.json({ error: 'Too many login attempts. Please try again in 15 minutes.' }, { status: 429 })
+    }
+
     const body = await req.json()
     const admin = await loginAdmin(body)
 
@@ -21,7 +28,7 @@ export async function POST(req) {
       await createAuditLog({
         action: 'admin_login',
         performedBy: admin,
-        ipAddress: req.headers.get('x-forwarded-for') || 'unknown'
+        ipAddress: ip
       })
     } catch (logErr) {
       console.error('Failed to write login audit log:', logErr)

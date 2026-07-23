@@ -1265,6 +1265,56 @@ export async function PATCH(req, { params }) {
 
 ## 20. Changelog
 
+## [2.3.0] — 360° Customizer Ratios, Fullscreen Mode, Image Cropper & Products Client Refactoring
+### Added
+- **Interactive Image Cropper & Adjuster (`MediaGalleryModal.jsx`)**:
+  - Integrated a native client-side HTML5 canvas image cropper and adjuster.
+  - Added visual drag/pan repositioning and slider zoom (100%–300%) adjustments.
+  - Implemented aspect ratio presets guaranteeing walls are cropped to 3:5 and ceiling/floor are cropped to 1:1.
+  - Exports sharp high-resolution crop images directly as Data URLs for storage.
+- **Cubic Cabin Geometry & Fullscreen Mode (`Lift360Viewer.jsx`)**:
+  - Engineered realistic 3D elevator cabin proportions using `BoxGeometry(500, 833.33, 500)` representing a 3:5 aspect ratio for walls/doors and 1:1 aspect ratio square for ceiling/floor.
+  - Added Fullscreen mode toggle button utilizing standard HTML5 and Webkit (iOS) fullscreen APIs with dynamic canvas and camera aspect recalculations.
+- **Modular Products Refactoring (`ProductHero.jsx`, `ProductFilterBar.jsx`, `ProductTestimonials.jsx`, `ProductCTA.jsx`)**:
+  - Refactored `ProductsClient.jsx` into modular components to improve separation of concerns.
+  - Isolated the catalog banner, configurator filter dropdowns, client testimonials, and consult CTAs into separate reusable files.
+
+### Fixed
+- **Stable Hook Dependencies in Lift360Viewer**:
+  - Fixed React console error: *"The final argument passed to useEffect changed size between renders"* by serializing variants and urls into a single stable primitive string dependency (`textureKey`).
+- **Global Image Stylesheet Overrides**:
+  - Fixed crop preview styling where natural images failed to fill the vertical crop box by replacing the `<img>` tag with a `<div>` utilizing `backgroundSize: 'cover'` to bypass global Next.js stylesheet overrides.
+- **Gitignore Rewrite**:
+  - Updated `.gitignore` to prevent committing env settings, editor configs (`.vscode`, `.idea`), OS artifacts (`.DS_Store`), and local server log/scratch files.
+
+## [2.2.0] — Final Enterprise Architecture & UI/UX Transformation
+### Added
+- **Interactive 360° Texture Dropzone Cards & Media Gallery Picker (`View360Uploader.jsx` & `MediaGalleryModal.jsx`)**:
+  - Engineered 6-sided cubic face and equirectangular texture upload cards (Front Wall, Back Wall, Side Walls, Ceiling, Floor, Equirectangular Map) in `View360Uploader.jsx`.
+  - Built an interactive `MediaGalleryModal.jsx` component supporting 1-click stock asset selection, local file drag-and-drop file upload, and custom image URLs.
+  - Added full support for `panoramaImages.sphere` in Mongoose schema (`Product.js`), database seed routines (`seed.js`), and DTO mapper (`product.mapper.js`).
+- **Sticky Form Action Bar & UI Redesign (`ProductForm.jsx`)**:
+  - Integrated a sticky floating bottom action bar featuring glassmorphism, `Cancel` link, and `Publish Product` primary action button.
+  - Upgraded public photo gallery slideshow rows into visual dropzone cards with hover image previews and direct media gallery picking.
+- **1-Click Email Templates Seeding (`TemplatesClient.jsx` & `/api/seed`)**:
+  - Integrated default email templates (`inquiry_received`, `lead_assigned`, `newsletter_welcome`) into both `/api/seed` and `/api/admin/email-templates`.
+  - Added a 1-click **"Seed Default Email Templates"** / **"Restore Defaults"** action on `/admin/email-templates`.
+- **Enterprise Core Engines (`src/seo/`, `src/performance/`, `src/security/`)**:
+  - Dynamic JSON-LD structured data engine, OpenGraph/Twitter card generators, and sitemap builders.
+  - Multi-tier TTL cache engine, WebGL cleanup helpers (`optimization.js`), Core Web Vitals telemetry, and performance hooks.
+  - Sliding-window rate limiter, XSS sanitizer, security HTTP headers, anti-CSRF token verification, and centralized logging.
+
+### Fixed
+- **Admin Layout Trapped Window Scrolling**:
+  - Resolved window scrolling lock on all admin views (`/admin/products/new`, `/admin/inquiries`, etc.) by converting layout containers to a fixed sidebar (`w-64 h-screen z-40 fixed top-0 left-0`) and natural page body scroll container (`pl-64 min-h-screen`).
+- **Kanban Board Popover & Drag-and-Drop Invariants**:
+  - Fixed `@hello-pangea/dnd` `draggableId` string conversion error in `InquiriesKanban.jsx`.
+  - Resolved multi-card popover opening glitch by stringifying card IDs before comparison and attaching click-outside backdrop event listeners.
+- **Form Submissions via Child Buttons**:
+  - Fixed unintended form navigation during image picker opening by adding explicit `type="button"` attributes across `MediaGalleryModal.jsx` and `View360Uploader.jsx`.
+- **Missing React Key Warning**:
+  - Fixed missing `key` prop warning in `UsersClient.jsx` by stringifying user IDs (`key={String(user._id || user.id || idx)}`).
+
 ## [2.1.2] — Interaction and Interactive Card Redesign
 ### Added
 - Redesigned **Sectors/Industries** (`Industries.jsx`) and **Product Card** (`ProductCard.jsx`) components to use an image-dominant aspect ratio (`aspect-[3/4]`), sleek hover zoom states (`scale-110`), and a dark bottom-up gradient overlay.

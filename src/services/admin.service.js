@@ -75,14 +75,30 @@ export async function updateAdmin(id, data, userContext) {
     throw { status: 400, errors }
   }
 
+  const currentAdmin = await adminRepo.findAdminById(id)
+  if (!currentAdmin) {
+    throw { status: 404, error: 'Admin account not found.' }
+  }
+
   // Self protection rule: cannot deactivate or change own role
   if (id === userContext.id) {
     if (data.isActive !== undefined && !data.isActive) {
       throw { status: 400, error: 'Self-Protection: You cannot deactivate your own active admin account.' }
     }
-    const currentAdmin = await adminRepo.findAdminById(id)
     if (data.role && data.role !== currentAdmin.role) {
       throw { status: 400, error: 'Self-Protection: You cannot modify your own administrative role.' }
+    }
+  }
+
+  // Prevent deactivating or demoting the last active SUPER_ADMIN
+  const isTargetSuperAdmin = currentAdmin.role === 'SUPER_ADMIN'
+  const isDemotingRole = data.role && data.role !== 'SUPER_ADMIN'
+  const isDeactivating = data.isActive !== undefined && !data.isActive
+
+  if (isTargetSuperAdmin && (isDemotingRole || isDeactivating)) {
+    const superAdminCount = await adminRepo.countAdmins({ role: 'SUPER_ADMIN', isActive: true })
+    if (superAdminCount <= 1) {
+      throw { status: 400, error: 'Protection Gate: System must retain at least one active Super Admin account.' }
     }
   }
 

@@ -20,6 +20,16 @@ export default function InquiriesKanban({ inquiries = [], admins = [], currentAd
     setMounted(true)
   }, [])
 
+  // Close menus on outside click
+  useEffect(() => {
+    const handleOutsideClick = () => {
+      setActiveMenuId(null)
+      setActiveAssignId(null)
+    }
+    window.addEventListener('click', handleOutsideClick)
+    return () => window.removeEventListener('click', handleOutsideClick)
+  }, [])
+
   const handleDragEnd = (result) => {
     const { destination, source, draggableId } = result
     if (!destination) return
@@ -31,9 +41,10 @@ export default function InquiriesKanban({ inquiries = [], admins = [], currentAd
       return
     }
 
-    const card = inquiries.find((i) => i._id === draggableId)
+    const card = inquiries.find((i) => String(i._id || i.id) === String(draggableId))
     if (card) {
-      handleStatusChange(draggableId, destination.droppableId)
+      const cardId = String(card._id || card.id)
+      handleStatusChange(cardId, destination.droppableId)
       setAnnouncement(`Lead ${card.name} moved to ${destination.droppableId}`)
       setTimeout(() => setAnnouncement(''), 3000)
     }
@@ -123,12 +134,12 @@ export default function InquiriesKanban({ inquiries = [], admins = [], currentAd
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      {/* Screen Reader Live Announcements */}
+      {/* Screen Reader Announcements */}
       <div className="sr-only" aria-live="polite">
         {announcement}
       </div>
 
-      <div className="flex gap-4 overflow-x-auto pb-6 select-none no-scrollbar">
+      <div className="flex gap-4 overflow-x-auto pb-8 select-none no-scrollbar">
         {statuses.map((status) => {
           const columnInquiries = inquiries.filter((i) => i.status === status)
 
@@ -138,14 +149,14 @@ export default function InquiriesKanban({ inquiries = [], admins = [], currentAd
                 <div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className={`flex-shrink-0 w-80 rounded-xl p-4 flex flex-col max-h-[75vh] transition-all duration-200 ${
-                    snapshot.isDraggingOver ? 'bg-blue-50/50 border-2 border-dashed border-blue-300' : 'bg-gray-50 border border-transparent'
+                  className={`flex-shrink-0 w-80 rounded-2xl p-4 flex flex-col max-h-[75vh] transition-all duration-200 ${
+                    snapshot.isDraggingOver ? 'bg-blue-50/50 border-2 border-dashed border-blue-300' : 'bg-gray-50/80 border border-[#E8E2DA]'
                   }`}
                 >
                   {/* Column Header */}
                   <div className="flex items-center justify-between mb-4 px-1">
-                    <span className="font-sans font-bold text-gray-800 text-sm">{status}</span>
-                    <span className="bg-gray-200/80 text-gray-600 font-mono text-xs px-2 py-0.5 rounded-full font-bold">
+                    <span className="font-sans font-bold text-[#111111] text-sm">{status}</span>
+                    <span className="bg-gray-200/80 text-gray-700 font-mono text-xs px-2.5 py-0.5 rounded-full font-bold">
                       {columnInquiries.length}
                     </span>
                   </div>
@@ -153,15 +164,16 @@ export default function InquiriesKanban({ inquiries = [], admins = [], currentAd
                   {/* Cards Grid */}
                   <div className="flex-1 overflow-y-auto space-y-3 pr-1 py-1 no-scrollbar min-h-[150px]">
                     {columnInquiries.map((inquiry, index) => {
-                      const isUpdating = updatingId === inquiry._id
+                      const inquiryId = String(inquiry._id || inquiry.id || `inquiry-${status}-${index}`)
+                      const isUpdating = updatingId === inquiryId
                       const isAssigned = !!inquiry.assignedTo
                       const canAssign = hasPermission(currentAdmin, PERMISSIONS.ASSIGN_INQUIRY)
                       const canUpdateStatus = hasPermission(currentAdmin, PERMISSIONS.UPDATE_INQUIRY_STATUS)
 
                       return (
                         <Draggable
-                          key={inquiry._id}
-                          draggableId={inquiry._id}
+                          key={inquiryId}
+                          draggableId={inquiryId}
                           index={index}
                           isDragDisabled={!canUpdateStatus || isUpdating}
                         >
@@ -181,7 +193,7 @@ export default function InquiriesKanban({ inquiries = [], admins = [], currentAd
                             >
                               {/* Top row */}
                               <div className="flex justify-between items-start gap-2 mb-1.5">
-                                <h4 className="font-sans font-semibold text-gray-900 text-sm line-clamp-1">
+                                <h4 className="font-sans font-semibold text-gray-900 text-sm line-clamp-1 m-0">
                                   {inquiry.name}
                                 </h4>
                                 {isUpdating && <RefreshCw className="w-3.5 h-3.5 text-gray-400 animate-spin flex-shrink-0" />}
@@ -214,7 +226,7 @@ export default function InquiriesKanban({ inquiries = [], admins = [], currentAd
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation()
-                                        setActiveAssignId(activeAssignId === inquiry._id ? null : inquiry._id)
+                                        setActiveAssignId(activeAssignId === inquiryId ? null : inquiryId)
                                         setActiveMenuId(null)
                                       }}
                                       className="flex items-center gap-1 font-sans text-[10px] text-gray-500 hover:text-gray-900 font-semibold cursor-pointer bg-transparent border-none p-0 outline-none focus-visible:ring-2 focus-visible:ring-[#0E4FB3] rounded"
@@ -235,24 +247,30 @@ export default function InquiriesKanban({ inquiries = [], admins = [], currentAd
                                   )}
 
                                   {/* Assign list popover */}
-                                  {activeAssignId === inquiry._id && (
-                                    <div className="absolute left-0 bottom-full mb-1 z-30 w-48 bg-white border border-gray-200 rounded-xl shadow-lg p-1.5 flex flex-col">
+                                  {activeAssignId === inquiryId && (
+                                    <div 
+                                      className="absolute left-0 bottom-full mb-1 z-50 w-48 bg-white border border-gray-200 rounded-xl shadow-xl p-1.5 flex flex-col"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
                                       <button
-                                        onClick={() => handleAssignChange(inquiry._id, '')}
+                                        onClick={() => handleAssignChange(inquiryId, '')}
                                         className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-sans text-red-600 hover:bg-gray-50 cursor-pointer bg-transparent border-none"
                                       >
                                         Unassign Lead
                                       </button>
                                       <div className="h-px bg-gray-100 my-1" />
-                                      {salesTeam.map(user => (
-                                        <button
-                                          key={user._id}
-                                          onClick={() => handleAssignChange(inquiry._id, user._id)}
-                                          className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-sans text-gray-700 hover:bg-gray-50 cursor-pointer bg-transparent border-none"
-                                        >
-                                          {user.name}
-                                        </button>
-                                      ))}
+                                      {salesTeam.map(user => {
+                                        const userId = String(user._id || user.id)
+                                        return (
+                                          <button
+                                            key={userId}
+                                            onClick={() => handleAssignChange(inquiryId, userId)}
+                                            className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-sans text-gray-700 hover:bg-gray-50 cursor-pointer bg-transparent border-none"
+                                          >
+                                            {user.name}
+                                          </button>
+                                        )
+                                      })}
                                     </div>
                                   )}
                                 </div>
@@ -263,7 +281,7 @@ export default function InquiriesKanban({ inquiries = [], admins = [], currentAd
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation()
-                                        setActiveMenuId(activeMenuId === inquiry._id ? null : inquiry._id)
+                                        setActiveMenuId(activeMenuId === inquiryId ? null : inquiryId)
                                         setActiveAssignId(null)
                                       }}
                                       className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 cursor-pointer bg-transparent border-none outline-none focus-visible:ring-2 focus-visible:ring-[#0E4FB3]"
@@ -272,12 +290,15 @@ export default function InquiriesKanban({ inquiries = [], admins = [], currentAd
                                     </button>
 
                                     {/* Move list popover */}
-                                    {activeMenuId === inquiry._id && (
-                                      <div className="absolute right-0 bottom-full mb-1 z-30 w-36 bg-white border border-gray-200 rounded-xl shadow-lg p-1 flex flex-col">
+                                    {activeMenuId === inquiryId && (
+                                      <div 
+                                        className="absolute right-0 bottom-full mb-1 z-50 w-36 bg-white border border-gray-200 rounded-xl shadow-xl p-1 flex flex-col"
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
                                         {statuses.filter(s => s !== status).map(s => (
                                           <button
                                             key={s}
-                                            onClick={() => handleStatusChange(inquiry._id, s)}
+                                            onClick={() => handleStatusChange(inquiryId, s)}
                                             className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-sans text-gray-700 hover:bg-gray-50 cursor-pointer bg-transparent border-none"
                                           >
                                             Move to {s}

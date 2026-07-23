@@ -5,6 +5,7 @@ import GalleryProject from '@/models/GalleryProject'
 import BlogPost from '@/models/BlogPost'
 import Admin from '@/models/Admin'
 import { hashPassword } from '@/lib/auth'
+import EmailTemplate from '@/models/EmailTemplate'
 
 const mockProducts = [
   // SYSTEMS
@@ -577,45 +578,116 @@ const mockBlogPosts = [
   },
 ]
 
+const defaultTemplates = [
+  {
+    name: 'inquiry_received',
+    subject: 'Inquiry Received - Reference #{{referenceId}}',
+    body: `
+      <div style="font-family: sans-serif; padding: 24px; color: #111111; max-width: 600px; margin: 0 auto; border: 1px solid #E5E7EB; border-radius: 12px;">
+        <h2 style="color: #0E4FB3;">FG Lift Pvt. Ltd.</h2>
+        <p>Dear {{name}},</p>
+        <p>Thank you for reaching out to us. We have successfully received your product inquiry for <strong>{{product}}</strong>.</p>
+        <p>One of our elevator solutions executives will review your requirements and get in touch with you shortly.</p>
+        <p style="margin-top: 30px; font-size: 12px; color: #7A7A7A;">Reference ID: {{referenceId}}</p>
+      </div>
+    `,
+    variables: ['{{name}}', '{{product}}', '{{referenceId}}']
+  },
+  {
+    name: 'lead_assigned',
+    subject: 'Lead Assigned: {{clientName}}',
+    body: `
+      <div style="font-family: sans-serif; padding: 24px; color: #111111; max-width: 600px; margin: 0 auto; border: 1px solid #E5E7EB; border-radius: 12px;">
+        <h2 style="color: #0E4FB3;">CRM Notification</h2>
+        <p>Hello {{executiveName}},</p>
+        <p>You have been assigned a new lead from <strong>{{clientName}}</strong> by <strong>{{assignedBy}}</strong>.</p>
+        <p>Please log in to the admin panel to view the inquiry details and reach out to the customer.</p>
+        <a href="http://localhost:3000/admin/inquiries" style="display: inline-block; background-color: #0E4FB3; color: #FFFFFF; padding: 10px 20px; border-radius: 6px; text-decoration: none; margin-top: 20px; font-weight: bold;">View CRM Pipeline</a>
+      </div>
+    `,
+    variables: ['{{executiveName}}', '{{clientName}}', '{{assignedBy}}']
+  },
+  {
+    name: 'newsletter_welcome',
+    subject: 'Welcome to FG Lift Insights!',
+    body: `
+      <div style="font-family: sans-serif; padding: 24px; color: #111111; max-width: 600px; margin: 0 auto; border: 1px solid #E5E7EB; border-radius: 12px;">
+        <h2 style="color: #0E4FB3;">FG Lift Insights</h2>
+        <p>Hello {{name}},</p>
+        <p>Thank you for subscribing to our newsletter! You will now receive industry insights, engineering guides, and product updates from the FG Lift engineering team.</p>
+      </div>
+    `,
+    variables: ['{{name}}']
+  }
+]
+
 export async function GET() {
   try {
     await connectDB()
 
-    // 1. Wipe existing mock data to start clean
-    await Product.deleteMany({})
-    await GalleryProject.deleteMany({})
-    await BlogPost.deleteMany({})
-    await Admin.deleteMany({}) // Clean seed of admins too
-
-    // 2. Insert new mock data
-    const seededProducts = await Product.create(mockProducts)
-    const seededProjects = await GalleryProject.create(mockProjects)
-
-    // 3. Blog posts need .save() for pre-save hook (readTime calc)
-    const seededPosts = []
-    for (const postData of mockBlogPosts) {
-      const post = new BlogPost(postData)
-      await post.save()
-      seededPosts.push(post)
+    // 1. Seed Products if missing (preserving existing user data)
+    const seededProducts = []
+    for (const prodData of mockProducts) {
+      const exists = await Product.findOne({ slug: prodData.slug })
+      if (!exists) {
+        const created = await Product.create(prodData)
+        seededProducts.push(created)
+      }
     }
 
-    // 4. Seed default Super Admin
-    const hashedPassword = await hashPassword('adminpassword')
-    const defaultAdmin = await Admin.create({
-      name: 'Super Admin',
-      email: 'admin@fglift.com',
-      password: hashedPassword,
-      role: 'SUPER_ADMIN',
-      isActive: true
-    })
+    // 2. Seed Projects if missing
+    const seededProjects = []
+    for (const projData of mockProjects) {
+      const exists = await GalleryProject.findOne({ title: projData.title })
+      if (!exists) {
+        const created = await GalleryProject.create(projData)
+        seededProjects.push(created)
+      }
+    }
+
+    // 3. Seed Email Templates if missing
+    const seededTemplates = []
+    for (const temp of defaultTemplates) {
+      const exists = await EmailTemplate.findOne({ name: temp.name })
+      if (!exists) {
+        const created = await EmailTemplate.create(temp)
+        seededTemplates.push(created)
+      }
+    }
+
+    // 4. Seed Blog posts if missing (with readTime calculation)
+    const seededPosts = []
+    for (const postData of mockBlogPosts) {
+      const exists = await BlogPost.findOne({ slug: postData.slug })
+      if (!exists) {
+        const post = new BlogPost(postData)
+        await post.save()
+        seededPosts.push(post)
+      }
+    }
+
+    // 5. Seed default Super Admin if missing
+    let adminEmail = 'admin@fglift.com'
+    const existingAdmin = await Admin.findOne({ email: adminEmail })
+    if (!existingAdmin) {
+      const hashedPassword = await hashPassword('adminpassword')
+      await Admin.create({
+        name: 'Super Admin',
+        email: adminEmail,
+        password: hashedPassword,
+        role: 'SUPER_ADMIN',
+        isActive: true
+      })
+    }
 
     return NextResponse.json({
       success: true,
-      message: 'Database seeded successfully with premium mock data & default Super Admin.',
+      message: 'Database seeded safely. Existing MongoDB data preserved.',
       productsSeeded: seededProducts.length,
       projectsSeeded: seededProjects.length,
       postsSeeded: seededPosts.length,
-      adminSeeded: defaultAdmin.email
+      templatesSeeded: seededTemplates.length,
+      adminSeeded: adminEmail
     })
   } catch (err) {
     console.error('Seed API error:', err)

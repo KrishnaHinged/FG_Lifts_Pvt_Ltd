@@ -49,7 +49,9 @@ export async function PUT(req, { params }) {
     return NextResponse.json({ success: true, product })
   } catch (err) {
     if (err.status === 400) {
-      return NextResponse.json({ error: Object.values(err.errors)[0] || err.error }, { status: 400 })
+      const firstError = err.errors ? Object.values(err.errors)[0] : null
+      const errorMsg = firstError || err.error || err.message || 'Validation error'
+      return NextResponse.json({ error: errorMsg }, { status: 400 })
     }
     console.error('Update product API error:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
@@ -119,7 +121,9 @@ export async function PATCH(req, { params }) {
     return NextResponse.json({ success: true, product })
   } catch (err) {
     if (err.status === 400) {
-      return NextResponse.json({ error: Object.values(err.errors)[0] || err.error }, { status: 400 })
+      const firstError = err.errors ? Object.values(err.errors)[0] : null
+      const errorMsg = firstError || err.error || err.message || 'Validation error'
+      return NextResponse.json({ error: errorMsg }, { status: 400 })
     }
     console.error('Patch product API error:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })

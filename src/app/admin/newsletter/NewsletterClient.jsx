@@ -1,13 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Download, RefreshCw, Mail, Users, CheckCircle, XCircle, Search } from 'lucide-react'
+import { Download, RefreshCw, Mail, Users, CheckCircle, XCircle } from 'lucide-react'
 import StatCard from '@/components/admin/StatCard'
 import FilterPillBar from '@/components/FilterPillBar'
 import SubscriberTable from '@/components/admin/SubscriberTable'
 import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
 import ConfirmModal from '@/components/admin/ConfirmModal'
+
+// Design System Components
+import PageHeader from '@/components/composition/PageHeader'
+import SearchBar from '@/components/forms/SearchBar'
 
 export default function NewsletterClient({ initialSubscribers = [], total = 0, stats: initialStats, currentAdmin }) {
   const [subscribers, setSubscribers] = useState(initialSubscribers)
@@ -103,30 +107,30 @@ export default function NewsletterClient({ initialSubscribers = [], total = 0, s
     <div className="space-y-6 select-none">
       
       {/* Top Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="font-sans font-bold text-gray-900 text-2xl tracking-tight leading-none">
-          Newsletter
-        </h1>
-        <div className="flex gap-2">
-          <button
-            onClick={() => fetchData(currentPage, search, statusFilter)}
-            disabled={loading}
-            className="p-2 border border-gray-200 hover:border-gray-300 rounded-xl bg-white hover:bg-gray-50 cursor-pointer disabled:opacity-50 outline-none transition-all flex items-center justify-center"
-            title="Refresh List"
-          >
-            <RefreshCw className={`w-4 h-4 text-gray-400 ${loading ? 'animate-spin' : ''}`} />
-          </button>
-          {canExport && (
+      <PageHeader
+        title="Newsletter"
+        actions={
+          <div className="flex items-center gap-2">
             <button
-              onClick={handleExport}
-              className="inline-flex items-center gap-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-sans text-xs font-semibold px-4 py-2.5 rounded-xl cursor-pointer shadow-xs hover:shadow-md transition-all outline-none"
+              onClick={() => fetchData(currentPage, search, statusFilter)}
+              disabled={loading}
+              className="p-2 border border-[#E8E2DA] hover:border-[#111111] rounded-xl bg-white hover:bg-neutral-50 cursor-pointer disabled:opacity-50 outline-none transition-all flex items-center justify-center"
+              title="Refresh List"
             >
-              <Download className="w-4 h-4 text-gray-400" />
-              Export CSV
+              <RefreshCw className={`w-4 h-4 text-[#7A7A7A] ${loading ? 'animate-spin' : ''}`} />
             </button>
-          )}
-        </div>
-      </div>
+            {canExport && (
+              <button
+                onClick={handleExport}
+                className="inline-flex items-center gap-1.5 bg-white border border-[#E8E2DA] hover:bg-neutral-50 text-[#111111] font-sans text-xs font-semibold px-4 py-2.5 rounded-xl cursor-pointer shadow-xs hover:shadow-md transition-all outline-none"
+              >
+                <Download className="w-4 h-4 text-[#7A7A7A]" />
+                Export CSV
+              </button>
+            )}
+          </div>
+        }
+      />
 
       {/* Top Stat Row Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -136,15 +140,12 @@ export default function NewsletterClient({ initialSubscribers = [], total = 0, s
       </div>
 
       {/* Filters Search & Options row */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-between bg-white border border-gray-200 rounded-2xl p-4 shadow-xs">
-        <form onSubmit={handleSearchSubmit} className="flex items-center gap-3 border border-gray-200 rounded-xl px-3 py-2 max-w-sm flex-1">
-          <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
-          <input
-            type="text"
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-between bg-white border border-[#E8E2DA] rounded-2xl p-4 shadow-xs">
+        <form onSubmit={handleSearchSubmit} className="max-w-sm flex-1">
+          <SearchBar
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by subscriber email..."
-            className="flex-1 font-sans text-xs text-gray-900 placeholder:text-gray-400 outline-none border-none"
           />
         </form>
         <div className="flex-shrink-0 max-w-[320px]">

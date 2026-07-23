@@ -18,7 +18,7 @@ export async function getInquiryById(id) {
 
 export async function updateInquiry(id, updateData) {
   await connectDB()
-  return Inquiry.findByIdAndUpdate(id, updateData, { new: true }).lean()
+  return Inquiry.findByIdAndUpdate(id, updateData, { returnDocument: 'after' }).lean()
 }
 
 export async function deleteInquiry(id) {

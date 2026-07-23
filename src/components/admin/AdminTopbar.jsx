@@ -2,11 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Search, Bell, Menu } from 'lucide-react'
+import { Search, Bell, Command } from 'lucide-react'
+import CommandPalette from './CommandPalette'
+import NotificationCenter from './NotificationCenter'
 
 export default function AdminTopbar({ admin }) {
   const pathname = usePathname()
   const [pendingCount, setPendingCount] = useState(0)
+  const [showNotifications, setShowNotifications] = useState(false)
 
   // Determine current page title based on pathname
   const getPageTitle = () => {
@@ -40,63 +43,75 @@ export default function AdminTopbar({ admin }) {
   }
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 px-6 lg:px-8 flex items-center justify-between z-10 flex-shrink-0 select-none">
-      
-      {/* Left - Page Title */}
-      <div className="flex items-center gap-4">
-        <h2 className="font-sans font-semibold text-gray-900 text-lg leading-none">
-          {getPageTitle()}
-        </h2>
-      </div>
-
-      {/* Right - Notification / Search / User */}
-      <div className="flex items-center gap-6">
+    <>
+      <header className="sticky top-0 z-30 h-16 bg-[#F5F0EB]/60 backdrop-blur-xl border-b border-[#E8E2DA] px-6 lg:px-8 flex items-center justify-between select-none">
         
-        {/* Search Toggle Icon */}
-        <button
-          className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 cursor-pointer bg-transparent border-none outline-none transition-colors"
-          title="Search"
-          onClick={() => alert('Search functionality enabled')}
-        >
-          <Search className="w-5 h-5" />
-        </button>
+        {/* Left - Page Title */}
+        <div className="flex items-center gap-4">
+          <h2 className="font-sans font-bold text-[#111111] text-base leading-none">
+            {getPageTitle()}
+          </h2>
+        </div>
+ 
+        {/* Right - Notification / Search / User */}
+        <div className="flex items-center gap-4 sm:gap-6">
+          
+          {/* Command Palette Trigger indicator */}
+          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#E8E2DA] bg-white/50 backdrop-blur-md text-[10px] font-mono text-[#7A7A7A]">
+            <Command size={12} />
+            <span>Press</span>
+            <kbd className="bg-white border border-[#E8E2DA] px-1 rounded shadow-2xs font-bold text-[#111111]">Ctrl + K</kbd>
+            <span>for commands</span>
+          </div>
 
-        {/* Notification Bell */}
-        <div className="relative">
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#F4F6F9] transition">
-            <Bell className="w-4 h-4 text-[#6B7280]" />
-          </button>
-          {pendingCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-[#EF4444] text-white
-                             text-[9px] font-mono font-bold w-4 h-4 rounded-full
-                             flex items-center justify-center leading-none">
-              {pendingCount > 9 ? '9+' : pendingCount}
-            </span>
+          {/* Notification Bell */}
+          <div className="relative">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-neutral-100 transition cursor-pointer border-none bg-transparent"
+              title="Notifications"
+            >
+              <Bell className="w-4 h-4 text-[#555555]" />
+            </button>
+            {pendingCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-[#D72638] text-white text-[9px] font-mono font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none">
+                {pendingCount > 9 ? '9+' : pendingCount}
+              </span>
+            )}
+          </div>
+
+          {/* Separator line */}
+          <div className="w-px h-6 bg-[#E8E2DA]" />
+
+          {/* User Card Profile */}
+          {admin && (
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-[#0E4FB3] text-white flex items-center justify-center font-sans font-bold text-xs">
+                {getInitials(admin.name)}
+              </div>
+              <div className="hidden sm:flex flex-col items-start leading-none">
+                <span className="font-sans text-xs font-semibold text-[#111111] leading-tight">
+                  {admin.name}
+                </span>
+                <span className="font-mono text-[9px] uppercase tracking-wider text-[#7A7A7A] leading-none mt-0.5">
+                  {admin.role?.replace('_', ' ')}
+                </span>
+              </div>
+            </div>
           )}
+
         </div>
 
-        {/* Separator line */}
-        <div className="w-px h-6 bg-gray-200" />
+      </header>
 
-        {/* User Card Profile */}
-        {admin && (
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-fg-blue text-white flex items-center justify-center font-sans font-bold text-xs">
-              {getInitials(admin.name)}
-            </div>
-            <div className="hidden sm:flex flex-col items-start leading-none">
-              <span className="font-sans text-xs font-semibold text-gray-900 leading-tight">
-                {admin.name}
-              </span>
-              <span className="font-mono text-[9px] uppercase tracking-wider text-gray-400 leading-none mt-0.5">
-                {admin.role?.replace('_', ' ')}
-              </span>
-            </div>
-          </div>
-        )}
+      {/* Command Palette Modal */}
+      <CommandPalette />
 
-      </div>
-
-    </header>
+      {/* Notification Center Drawer */}
+      <NotificationCenter
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      />
+    </>
   )
 }

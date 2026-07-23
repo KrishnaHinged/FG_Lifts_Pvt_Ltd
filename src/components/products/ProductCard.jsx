@@ -4,6 +4,8 @@ import { useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
+import { Rotate3d, ArrowUpRight, Gauge, Layers } from 'lucide-react'
+import Badge from '@/components/ui/Badge'
 
 export default function ProductCard({ product }) {
   if (!product) return null
@@ -12,21 +14,18 @@ export default function ProductCard({ product }) {
   const [isHovered, setIsHovered] = useState(false)
   const prevMousePos = useRef({ x: 0, y: 0 })
 
-  // Extract specs to display on the card
+  // Extract specs
   const capacitySpec = product.specifications?.find(s => s.key === 'Capacity')?.value || 'Custom Spec'
   const speedSpec = product.specifications?.find(s => s.key === 'Speed')?.value || 'Varies'
 
   // Color variants
   const colors = product.colorVariants?.slice(0, 4) || []
 
-  // Motion values for smooth cursor-following position
+  // Motion values
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
-
-  // Motion value for arrow rotation (points in cursor movement direction)
   const arrowRotate = useMotionValue(0)
 
-  // Spring configs
   const springConfig = { damping: 25, stiffness: 200, mass: 0.5 }
   const rotateSpring = { damping: 20, stiffness: 150, mass: 0.3 }
   const x = useSpring(mouseX, springConfig)
@@ -39,19 +38,15 @@ export default function ProductCard({ product }) {
     const curX = e.clientX - rect.left
     const curY = e.clientY - rect.top
 
-    // Set position (offset by half button size — 28px)
     mouseX.set(curX - 28)
     mouseY.set(curY - 28)
 
-    // Calculate movement direction angle
     const dx = curX - prevMousePos.current.x
     const dy = curY - prevMousePos.current.y
     const distance = Math.sqrt(dx * dx + dy * dy)
 
-    // Only update rotation if mouse moved enough (avoids jitter)
     if (distance > 3) {
       const angle = Math.atan2(dy, dx) * (180 / Math.PI)
-      // Arrow SVG points top-right by default (-45°), offset so 0° = right
       arrowRotate.set(angle + 45)
     }
 
@@ -84,39 +79,52 @@ export default function ProductCard({ product }) {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group block w-full select-none text-left no-underline outline-none cursor-none"
+      className="group block w-full select-none text-left no-underline outline-none"
     >
-      {/* Card container - image dominant with hover reveal */}
-      <div
+      <motion.div
         ref={cardRef}
-        className="relative w-full aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-neutral-200 cursor-none"
+        whileHover={{ y: -6 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="relative w-full aspect-[3/4] rounded-[2rem] overflow-hidden bg-neutral-900 border border-[#E8E2DA]/80 shadow-[0_10px_30px_-15px_rgba(17,17,17,0.12)] group-hover:shadow-[0_25px_50px_-12px_rgba(14,79,179,0.25)] group-hover:border-[#0E4FB3]/40 transition-all duration-500"
         onMouseMove={handleMouseMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-
         {/* Background Image */}
         <Image
           src={product.images?.[0]?.url || '/images/services-collage.png'}
           alt={product.name}
           fill
-          className="object-cover object-center transition-transform duration-[1200ms] ease-out group-hover:scale-110"
-          sizes="(max-width: 768px) 100vw, 25vw"
+          className="object-cover object-center transition-transform duration-[1000ms] ease-out group-hover:scale-110"
+          sizes="(max-width: 768px) 100vw, 33vw"
         />
 
-        {/* Dark gradient overlay - appears on hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out" />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/10 group-hover:from-black/95 group-hover:via-black/40 transition-all duration-500" />
 
-        {/* Badge - always visible */}
-        {product.badge && (
-          <div className="absolute top-4 left-4 z-[3] bg-white/90 backdrop-blur-lg border border-white/30 text-[#0E4FB3] font-mono text-[8px] font-extrabold uppercase tracking-[0.18em] px-3 py-1.5 rounded-full shadow-sm">
-            {product.badge}
-          </div>
-        )}
+        {/* Top Badges */}
+        <div className="absolute top-4 left-4 right-4 z-[3] flex items-center justify-between gap-2">
+          {product.badge ? (
+            <Badge variant="new" className="bg-[#0E4FB3] text-white border-none shadow-md backdrop-blur-md">
+              {product.badge}
+            </Badge>
+          ) : (
+            <Badge variant="neutral" className="bg-white/80 backdrop-blur-md text-[#111111] border-white/40">
+              {product.tabGroup || 'System'}
+            </Badge>
+          )}
 
-        {/* Floating arrow button - follows cursor with directional rotation */}
+          {product.has360View && (
+            <Badge variant="primary" className="bg-white/90 backdrop-blur-md text-[#0E4FB3] border-white/50 gap-1.5 shadow-sm">
+              <Rotate3d className="w-3.5 h-3.5 text-[#0E4FB3]" />
+              360° View
+            </Badge>
+          )}
+        </div>
+
+        {/* Floating cursor arrow button */}
         <motion.div
-          className="absolute top-0 left-0 z-20 pointer-events-none"
+          className="absolute top-0 left-0 z-20 pointer-events-none hidden md:block"
           style={{ x, y }}
         >
           <motion.div
@@ -126,71 +134,55 @@ export default function ProductCard({ product }) {
               scale: isHovered ? 1 : 0.4,
             }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg shadow-black/10"
+            className="w-14 h-14 rounded-full bg-[#0E4FB3] text-white border border-white/40 flex items-center justify-center shadow-xl"
           >
-            <motion.svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              viewBox="0 0 20 20"
-              fill="none"
-              style={{ rotate }}
-            >
-              <path d="M1 1H19M19 1V19M19 1L1 19" stroke="#0797CE" strokeWidth="2.5" strokeLinecap="square" />
-            </motion.svg>
+            <motion.div style={{ rotate }}>
+              <ArrowUpRight className="w-6 h-6 stroke-[2.5]" />
+            </motion.div>
           </motion.div>
         </motion.div>
 
-        {/* Text content - slides up on hover */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out z-10">
-          <h3 className="font-sans text-[1.65rem] sm:text-[1.85rem] font-bold tracking-tight text-white m-0 leading-tight">
-            {product.name}
-          </h3>
+        {/* Content Box */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-7 z-10 flex flex-col gap-3">
+          <div className="space-y-1">
+            <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-[#E8A840] font-bold block">
+              {product.category || 'Passenger'} {product.subCategory ? `· ${product.subCategory}` : ''}
+            </span>
+            <h3 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-white m-0 leading-tight group-hover:text-[#E8A840] transition-colors duration-300">
+              {product.name}
+            </h3>
+          </div>
 
-          {/* Category */}
-          <p className="m-0 mt-1.5 text-[13px] text-white/60 leading-relaxed font-light">
-            {product.category || 'Core'} {product.subCategory ? `· ${product.subCategory}` : ''}
-          </p>
-
-          {/* Specs row */}
-          <div className="flex items-center gap-5 mt-4 pt-3 border-t border-white/10">
-            <div className="flex items-center gap-1.5 text-[#0797CE]">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                <path d="M2 17l10 5 10-5" />
-                <path d="M2 12l10 5 10-5" />
-              </svg>
-              <span className="text-[12px] font-medium text-white/70">{capacitySpec.split(' (')[0]}</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-[#0797CE]">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-              </svg>
-              <span className="text-[12px] font-medium text-white/70">{speedSpec.split(' - ')[0]}</span>
+          {/* Specifications row */}
+          <div className="flex items-center justify-between pt-3 border-t border-white/15 text-xs text-white/80">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-1 font-mono text-[11px] text-white/90">
+                <Layers className="w-3.5 h-3.5 text-[#0E4FB3]" />
+                {capacitySpec.split(' (')[0]}
+              </span>
+              <span className="inline-flex items-center gap-1 font-mono text-[11px] text-white/90">
+                <Gauge className="w-3.5 h-3.5 text-[#E8A840]" />
+                {speedSpec.split(' - ')[0]}
+              </span>
             </div>
 
-            {/* Color swatches */}
+            {/* Color Swatches */}
             {colors.length > 0 && (
-              <div className="flex items-center gap-1 ml-auto">
+              <div className="flex items-center gap-1">
                 {colors.map((c, i) => (
                   <span
                     key={i}
-                    className="w-3 h-3 rounded-full border border-white/30 shadow-sm"
+                    className="w-3 h-3 rounded-full border border-white/40 shadow-xs"
                     style={{ backgroundColor: c.hex || '#ccc' }}
                     title={c.name}
                   />
                 ))}
-                {product.colorVariants?.length > 4 && (
-                  <span className="font-mono text-[9px] text-white/50 tracking-wider ml-0.5">
-                    +{product.colorVariants.length - 4}
-                  </span>
-                )}
               </div>
             )}
           </div>
         </div>
 
-      </div>
+      </motion.div>
     </Link>
   )
 }

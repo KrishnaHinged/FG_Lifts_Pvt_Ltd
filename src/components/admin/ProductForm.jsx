@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Trash2, HelpCircle } from 'lucide-react'
+import Link from 'next/link'
+import { Plus, Trash2, HelpCircle, UploadCloud, Image as ImageIcon } from 'lucide-react'
 import View360Uploader from './View360Uploader'
+import MediaGalleryModal from './MediaGalleryModal'
 
 export default function ProductForm({ product = null, onSubmit, isLoading = false }) {
   const [activeTab, setActiveTab] = useState('basic')
@@ -33,8 +35,9 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
   const [applications, setApplications] = useState(product?.applications || ['Residential'])
   const availableApps = ['Residential', 'Commercial', 'Industrial', 'Hospital', 'Hospitality', 'Luxury']
 
-  // Image list (dynamic URLs)
+  // Image list (dynamic URLs & gallery picker state)
   const [images, setImages] = useState(product?.images || [{ url: '', alt: '' }])
+  const [activeGalleryImageIndex, setActiveGalleryImageIndex] = useState(null)
 
   // Color & Finish variants list (dynamic)
   const [colorVariants, setColorVariants] = useState(product?.colorVariants || [
@@ -164,8 +167,14 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
     { id: 'configurator', label: '360° Configurator' }
   ]
 
+  const handleFormKeyDown = (e) => {
+    if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+      e.preventDefault()
+    }
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
+    <form onSubmit={handleSubmit} onKeyDown={handleFormKeyDown} className="space-y-6 max-w-4xl mx-auto">
       
       {/* Form Tabs Nav */}
       <div className="flex border-b border-gray-200 gap-6">
@@ -468,46 +477,97 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
           {/* Product photos slideshow list */}
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <span className="font-sans font-semibold text-sm text-gray-800">Public Photo Gallery Slideshow</span>
+              <span className="font-sans font-bold text-xs uppercase tracking-wider text-gray-700">Public Photo Gallery Slideshow</span>
               <button
                 type="button"
                 onClick={addImage}
-                className="inline-flex items-center gap-1 bg-fg-blue-lt text-fg-blue px-3 py-1.5 rounded-lg font-bold text-xs cursor-pointer border-none hover:bg-fg-blue/10 transition-colors"
+                className="inline-flex items-center gap-1 bg-[#0E4FB3]/10 text-[#0E4FB3] px-3.5 py-1.5 rounded-lg font-bold text-xs cursor-pointer border-none hover:bg-[#0E4FB3]/20 transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Add Image Row
               </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {images.map((img, i) => (
-                <div key={i} className="flex gap-3 items-center">
-                  <input
-                    type="text"
-                    value={img.url}
-                    onChange={(e) => handleImageChange(i, 'url', e.target.value)}
-                    placeholder="Image URL (e.g. /images/products/gold.jpg)"
-                    required
-                    className="flex-1 px-3.5 py-2 rounded-xl border border-gray-200 bg-white font-sans text-xs outline-none focus:border-fg-blue"
-                  />
-                  <input
-                    type="text"
-                    value={img.alt}
-                    onChange={(e) => handleImageChange(i, 'alt', e.target.value)}
-                    placeholder="Alt Description Text"
-                    className="flex-1 px-3.5 py-2 rounded-xl border border-gray-200 bg-white font-sans text-xs outline-none focus:border-fg-blue"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(i)}
-                    disabled={images.length === 1}
-                    className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-gray-50 disabled:opacity-40 cursor-pointer bg-transparent border-none"
+                <div key={i} className="border border-gray-200 rounded-2xl p-4 bg-gray-50/50 flex flex-col gap-3 relative group">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-gray-400 font-bold">Image Card #{i + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeImage(i)}
+                      disabled={images.length === 1}
+                      className="p-1 rounded text-gray-400 hover:text-red-600 disabled:opacity-40 cursor-pointer bg-transparent border-none"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Dropzone Card */}
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); e.stopPropagation() }}
+                    onDrop={(e) => {
+                      e.preventDefault(); e.stopPropagation()
+                      const files = e.dataTransfer.files
+                      if (files && files.length > 0) {
+                        const file = files[0]
+                        const reader = new FileReader()
+                        reader.onload = (evt) => handleImageChange(i, 'url', evt.target.result)
+                        reader.readAsDataURL(file)
+                      }
+                    }}
+                    onClick={() => setActiveGalleryImageIndex(i)}
+                    className="relative w-full aspect-video rounded-xl border-2 border-dashed border-gray-200 hover:border-[#0E4FB3] bg-white overflow-hidden flex flex-col items-center justify-center cursor-pointer transition-all group/preview"
                   >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                    {img.url ? (
+                      <div className="relative w-full h-full">
+                        <img src={img.url} alt={img.alt || `Photo ${i + 1}`} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center text-white font-sans text-xs font-bold gap-2">
+                          <ImageIcon className="w-4 h-4" />
+                          Change from Gallery
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-1.5 text-center p-3">
+                        <UploadCloud className="w-7 h-7 text-gray-400 group-hover/preview:text-[#0E4FB3] transition-colors" />
+                        <span className="font-sans text-xs font-bold text-gray-700">Click or drop to upload</span>
+                        <span className="font-mono text-[9px] text-[#0E4FB3] uppercase font-bold">Pick from Media Gallery</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* URL Input & Alt text */}
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={img.url}
+                      onChange={(e) => handleImageChange(i, 'url', e.target.value)}
+                      placeholder="Or enter Image URL (e.g. /images/hero-bg.jpg)"
+                      className="w-full px-3.5 py-2 rounded-xl border border-gray-200 bg-white font-mono text-xs outline-none focus:border-[#0E4FB3]"
+                    />
+                    <input
+                      type="text"
+                      value={img.alt}
+                      onChange={(e) => handleImageChange(i, 'alt', e.target.value)}
+                      placeholder="Alt Description Text (e.g. Front View)"
+                      className="w-full px-3.5 py-2 rounded-xl border border-gray-200 bg-white font-sans text-xs outline-none focus:border-[#0E4FB3]"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
+
+            {/* Media Gallery Modal for IMAGES tab */}
+            <MediaGalleryModal
+              isOpen={activeGalleryImageIndex !== null}
+              onClose={() => setActiveGalleryImageIndex(null)}
+              title={`Select Photo for Image #${(activeGalleryImageIndex ?? 0) + 1}`}
+              onSelect={(url) => {
+                if (activeGalleryImageIndex !== null) {
+                  handleImageChange(activeGalleryImageIndex, 'url', url)
+                }
+              }}
+            />
           </div>
         </div>
       )}
@@ -652,15 +712,24 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
         </div>
       )}
 
-      {/* Form Submission Button */}
-      <div className="flex justify-end gap-3 select-none">
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="bg-fg-blue text-white rounded-full px-8 py-3 font-sans font-bold text-sm no-underline shadow-sm hover:shadow-md hover:bg-fg-blue/90 transition-all duration-300 cursor-pointer border-none outline-none disabled:opacity-50 flex items-center gap-2"
-        >
-          {isLoading ? 'Saving Changes...' : 'Save Product Listing'}
-        </button>
+      {/* Sticky Floating Action Bar */}
+      <div className="sticky bottom-6 flex justify-end items-center gap-4 z-40 select-none pt-6">
+        <div className="bg-white/95 backdrop-blur-xl border border-gray-200 p-2 px-6 rounded-full shadow-2xl flex items-center gap-3">
+          <Link
+            href="/admin/products"
+            className="font-mono text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-900 px-4 py-2 rounded-full hover:bg-gray-100 transition-colors no-underline"
+          >
+            Cancel
+          </Link>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="bg-[#E8600A] hover:bg-[#d55406] text-white rounded-full px-8 py-3 font-sans font-bold text-xs uppercase tracking-wider no-underline shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer border-none outline-none disabled:opacity-50 flex items-center gap-2"
+          >
+            {isLoading ? 'Publishing...' : 'Publish Product'}
+          </button>
+        </div>
       </div>
 
     </form>

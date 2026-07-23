@@ -85,15 +85,18 @@ export default function ProductDetailClient({ product, related = [] }) {
               has360View={product.has360View}
               panoramaUrl="/images/360-gold.png"
               colorVariants={product.colorVariants ? product.colorVariants.map(v => {
-                let panorama = '/images/360-gold.png';
-                if (v.name.toLowerCase().includes('rose')) {
-                  panorama = '/images/360-rose-gold.png';
-                } else if (v.name.toLowerCase().includes('silver') || v.name.toLowerCase().includes('steel') || v.name.toLowerCase().includes('grey')) {
-                  panorama = '/images/360-silver.png';
+                let panorama = v.panoramaImages?.sphere || '/images/360-gold.png';
+                if (!v.panoramaImages?.sphere) {
+                  if (v.name?.toLowerCase().includes('rose')) {
+                    panorama = '/images/360-rose-gold.png';
+                  } else if (v.name?.toLowerCase().includes('silver') || v.name?.toLowerCase().includes('steel') || v.name?.toLowerCase().includes('grey')) {
+                    panorama = '/images/360-silver.png';
+                  }
                 }
                 return {
                   color: v.hex,
                   label: v.name,
+                  panoramaImages: v.panoramaImages || {},
                   panorama
                 };
               }) : []}
@@ -170,7 +173,7 @@ export default function ProductDetailClient({ product, related = [] }) {
 
       {/* Embed Quote Form at bottom */}
       <div className="border-t border-[#E8E2DA] mt-24 pt-16">
-        <ContactSection />
+        <ContactSection productName={product.name} elevatorType={product.category} />
       </div>
     </div>
   )

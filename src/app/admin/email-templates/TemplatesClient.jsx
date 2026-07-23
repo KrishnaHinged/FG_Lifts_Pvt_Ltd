@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, ChevronUp, Mail, FileCode, CheckCircle } from 'lucide-react'
+import { ChevronDown, ChevronUp, Mail, FileCode, Sparkles, RefreshCw } from 'lucide-react'
 import EmailTemplateEditor from '@/components/admin/EmailTemplateEditor'
 
 export default function TemplatesClient({ initialTemplates = [], currentAdmin }) {
   const [templates, setTemplates] = useState(initialTemplates)
   const [expandedId, setExpandedId] = useState(null)
+  const [isSeeding, setIsSeeding] = useState(false)
 
   const handleRefresh = async () => {
     try {
@@ -20,6 +21,21 @@ export default function TemplatesClient({ initialTemplates = [], currentAdmin })
     }
   }
 
+  const handleSeedTemplates = async () => {
+    setIsSeeding(true)
+    try {
+      const res = await fetch('/api/admin/email-templates', { method: 'POST' })
+      const data = await res.json()
+      if (data.success && data.templates) {
+        setTemplates(data.templates)
+      }
+    } catch {
+      console.error('Failed to seed default email templates')
+    } finally {
+      setIsSeeding(false)
+    }
+  }
+
   const handleSave = () => {
     handleRefresh()
   }
@@ -28,13 +44,27 @@ export default function TemplatesClient({ initialTemplates = [], currentAdmin })
     <div className="space-y-6 select-none max-w-4xl mx-auto">
       
       {/* Top Header */}
-      <div className="space-y-1">
-        <h1 className="font-sans font-bold text-gray-900 text-2xl tracking-tight leading-none">
-          Email Templates
-        </h1>
-        <p className="text-gray-500 font-sans text-sm">
-          Customize system notifications, CRM client responses and verification layouts.
-        </p>
+      <div className="flex items-start justify-between">
+        <div className="space-y-1">
+          <h1 className="font-sans font-bold text-gray-900 text-2xl tracking-tight leading-none">
+            Email Templates
+          </h1>
+          <p className="text-gray-500 font-sans text-sm">
+            Customize system notifications, CRM client responses and verification layouts.
+          </p>
+        </div>
+
+        {templates.length > 0 && (
+          <button
+            type="button"
+            onClick={handleSeedTemplates}
+            disabled={isSeeding}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl font-mono text-xs font-bold text-[#0E4FB3] bg-blue-50 border border-blue-100 hover:bg-blue-100/70 transition cursor-pointer border-none"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSeeding ? 'animate-spin' : ''}`} />
+            {isSeeding ? 'Restoring...' : 'Restore Defaults'}
+          </button>
+        )}
       </div>
 
       {/* Templates Accordion Grid list */}
@@ -44,7 +74,7 @@ export default function TemplatesClient({ initialTemplates = [], currentAdmin })
           
           return (
             <div
-              key={template._id}
+              key={template._id || template.code}
               className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden transition-all duration-300"
             >
               {/* Accordion trigger row header */}
@@ -82,8 +112,28 @@ export default function TemplatesClient({ initialTemplates = [], currentAdmin })
             </div>
           )
         })}
+
         {templates.length === 0 && (
-          <p className="font-mono text-xs text-gray-400 text-center py-12">No system templates found.</p>
+          <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center space-y-4 shadow-2xs">
+            <div className="w-12 h-12 rounded-full bg-blue-50 text-[#0E4FB3] mx-auto flex items-center justify-center">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-sans font-bold text-gray-900 text-base m-0">No System Email Templates Found</h3>
+              <p className="font-sans text-xs text-gray-500 m-0 mt-1">
+                Populate your environment with default notification templates for inquiries, CRM leads, and newsletters.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleSeedTemplates}
+              disabled={isSeeding}
+              className="inline-flex items-center gap-2 bg-[#0E4FB3] hover:bg-[#0b3e8e] text-white px-6 py-2.5 rounded-full font-sans font-bold text-xs uppercase tracking-wider transition cursor-pointer border-none shadow-sm disabled:opacity-50"
+            >
+              <Sparkles className="w-4 h-4" />
+              {isSeeding ? 'Seeding Templates...' : 'Seed Default Email Templates'}
+            </button>
+          </div>
         )}
       </div>
 
