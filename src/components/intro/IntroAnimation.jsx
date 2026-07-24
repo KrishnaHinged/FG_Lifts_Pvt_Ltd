@@ -11,8 +11,8 @@ function TypewriterInstruction() {
   const hindi = "मुख्य स्क्रीन पर जाने के लिए स्क्रॉल करें"
 
   return (
-    <div className="intro-instruction fixed left-8 sm:left-16 md:left-24 top-1/2 -translate-y-1/2 z-45 max-w-xs sm:max-w-2xl pointer-events-none text-left select-none opacity-100">
-      <div className="space-y-5">
+    <div className="intro-instruction fixed left-6 sm:left-12 md:left-20 top-1/2 -translate-y-1/2 z-45 max-w-[calc(100vw-32px)] sm:max-w-3xl md:max-w-4xl pointer-events-none text-left select-none opacity-100">
+      <div className="space-y-4 sm:space-y-5">
         <motion.div 
           initial={{ width: 0 }}
           animate={{ width: 48 }}
@@ -20,26 +20,26 @@ function TypewriterInstruction() {
           className="h-[2px] bg-[#0E4FB3] opacity-80" 
         />
         
-        <div className="flex flex-col gap-3 drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
+        <div className="flex flex-col gap-2.5 sm:gap-3 drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
           {/* English Text */}
-          <div className="relative inline-block w-max">
+          <div className="relative inline-block w-max max-w-full">
             <motion.h3 
               initial={{ clipPath: "inset(0 100% 0 0)" }}
               animate={{ clipPath: "inset(0 0% 0 0)" }}
               transition={{ duration: 1.2, ease: "linear", delay: 0.5 }}
-              className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold uppercase tracking-tight text-white m-0 leading-tight whitespace-nowrap"
+              className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold uppercase tracking-tight text-white m-0 leading-tight whitespace-nowrap overflow-visible"
             >
               {english}
             </motion.h3>
           </div>
           
           {/* Hindi Text */}
-          <div className="relative inline-block w-max">
+          <div className="relative inline-block w-max max-w-full">
             <motion.h3 
               initial={{ clipPath: "inset(0 100% 0 0)" }}
               animate={{ clipPath: "inset(0 0% 0 0)" }}
               transition={{ duration: 2.0, ease: "linear", delay: 1.8 }}
-              className="font-sans text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-wide text-white/90 m-0 leading-tight whitespace-nowrap"
+              className="font-sans text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold tracking-wide text-white/90 m-0 leading-tight whitespace-nowrap overflow-visible"
             >
               {hindi}
             </motion.h3>
@@ -293,16 +293,21 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
       )}
 
       {/* 3. Fixed Overlay Container (Animate Video Playback Here) */}
-      <div className="cinematic-container fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-40 bg-[#111111] transition-all duration-500">
+      <div className="cinematic-container fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-40 bg-[#040C1A] transition-all duration-500">
         
+        {/* Luxury Dark Ambient Background Layer */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#06152F] via-[#0A2244] to-[#020914] z-0" />
+
         {/* Single H.264 intra-frame compiled MP4 video */}
         <video
           ref={videoRef}
           src="/videos/intro/intro.mp4"
-          playsInline
+          autoPlay
+          loop
           muted
+          playsInline
           preload="auto"
-          className="absolute inset-0 w-full h-full object-cover opacity-100"
+          className="absolute inset-0 w-full h-full object-cover opacity-90 z-10"
         />
         
         {/* Blue Vignette Shadow Overlay (No heavy black) */}
