@@ -527,7 +527,7 @@ const defaultTemplates = [
 async function seed() {
   try {
     console.log('Connecting to database...');
-    await mongoose.connect(MONGODB_URI);
+    await mongoose.connect(MONGODB_URI, { dbName: 'fglifts' });
     console.log('Connected to MongoDB.');
 
     // 1. Seed default Super Admin if not exists
