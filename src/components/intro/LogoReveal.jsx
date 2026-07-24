@@ -9,7 +9,7 @@ export default function LogoReveal({ companyName }) {
       {/* Branded Logo Image Card */}
       <div className="logo-title w-[280px] h-[158px] relative mb-6">
         <Image
-          src="/images/logo.jpg"
+          src="/images/logo.png"
           alt="FG Lifts Logo"
           fill
           className="object-contain"

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 
 import { FOOTER } from '@/constants/footer'
@@ -69,9 +70,15 @@ export default function Footer() {
             variants={columnVariants}
             className="col-span-12 lg:col-span-5 flex flex-col items-start"
           >
-            <h4 className="font-mono text-[14px] uppercase tracking-[0.2em] text-[#F5F0EB]/40 m-0 mb-6 font-medium">
-              {FOOTER.SECTIONS.COMPANY.TITLE}
-            </h4>
+            <div className="bg-white px-3 py-1.5 rounded-lg flex items-center justify-center border border-neutral-800 mb-6">
+              <Image 
+                src="/images/logo.png" 
+                alt="FG Lifts Logo" 
+                width={120} 
+                height={28} 
+                className="object-contain h-[24px] w-auto"
+              />
+            </div>
             <p className="font-sans text-[15px] leading-relaxed text-[#F5F0EB]/50 m-0 max-w-[340px]">
               {FOOTER.SECTIONS.COMPANY.TEXT}
             </p>

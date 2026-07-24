@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -27,7 +28,7 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY
-      
+
       // Toggle scrolled state for glassmorphic cream background
       setScrolled(currentScrollY > 50)
 
@@ -84,8 +85,8 @@ export default function Navbar() {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 24 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: {
         duration: 0.7,
@@ -98,34 +99,37 @@ export default function Navbar() {
     <>
       <motion.nav
         initial={{ y: -150, x: "-50%", opacity: 0 }}
-        animate={{ 
-          y: isVisible ? 0 : -150, 
+        animate={{
+          y: isVisible ? 0 : -150,
           x: "-50%",
           opacity: 1
         }}
-        transition={{ 
+        transition={{
           y: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
           opacity: { duration: 0.8, delay: 0.1 }
         }}
-        className={`fixed top-6 left-1/2 z-50 w-[calc(100%-48px)] lg:w-[calc(100%-96px)] max-w-[1440px] h-[88px] rounded-full flex items-center justify-between px-10 transition-all duration-500 select-none ${
-          scrolled
-            ? 'bg-[#F5F0EB]/70 backdrop-blur-[20px] shadow-sm border border-[#E8E2DA]/30'
-            : 'bg-transparent border border-transparent shadow-none'
-        }`}
+        className={`fixed top-6 left-1/2 z-50 w-[calc(100%-48px)] lg:w-[calc(100%-96px)] max-w-[1440px] h-[88px] rounded-full flex items-center justify-between px-10 transition-all duration-500 select-none ${scrolled
+          ? 'bg-[#F5F0EB]/70 backdrop-blur-[20px] shadow-sm border border-[#E8E2DA]/30'
+          : 'bg-transparent border border-transparent shadow-none'
+          }`}
       >
-        {/* Typographic Luxury Logo */}
+        {/* Logo Image & Brand Link */}
         <motion.div
           initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
-          <Link 
-            href={ROUTES.home} 
-            className={`font-display text-[17px] tracking-[0.25em] font-medium uppercase transition-colors duration-500 no-underline ${
-              isDark ? 'text-[#F5F0EB] hover:text-white' : 'text-[#111111] hover:text-[#111111]/70'
-            }`}
-          >
-            {COMPANY.SHORT_NAME.toUpperCase()}
+          <Link href={ROUTES.home} className="flex items-center no-underline">
+            <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center justify-center border border-neutral-100/80">
+              <Image
+                src="/images/logo.png"
+                alt="FG Lifts Logo"
+                width={150}
+                height={42}
+                className="object-contain h-[26px] w-auto"
+                priority
+              />
+            </div>
           </Link>
         </motion.div>
 
@@ -142,21 +146,18 @@ export default function Navbar() {
               >
                 <Link
                   href={link.href}
-                  className={`group relative py-1 text-[16px] font-medium tracking-[0.05em] uppercase transition-colors duration-[450ms] ease-out no-underline ${
-                    isDark
-                      ? 'text-[#F5F0EB]/75 hover:text-[#F5F0EB]'
-                      : 'text-[#111111]/70 hover:text-[#111111]'
-                  }`}
+                  className={`group relative py-1 text-[16px] font-medium tracking-[0.05em] uppercase transition-colors duration-[450ms] ease-out no-underline ${isDark
+                    ? 'text-[#F5F0EB]/75 hover:text-[#F5F0EB]'
+                    : 'text-[#111111]/70 hover:text-[#111111]'
+                    }`}
                 >
                   <span className="inline-block transition-transform duration-[450ms] ease-out group-hover:-translate-y-[2px]">
                     {link.label}
                   </span>
-                  <span 
-                    className={`absolute bottom-[-6px] left-1/2 h-[1px] -translate-x-1/2 transition-all duration-[450ms] ease-out ${
-                      isActive ? 'w-4' : 'w-0 group-hover:w-4'
-                    } ${
-                      isDark ? 'bg-[#F5F0EB]' : 'bg-[#111111]'
-                    }`}
+                  <span
+                    className={`absolute bottom-[-6px] left-1/2 h-[1px] -translate-x-1/2 transition-all duration-[450ms] ease-out ${isActive ? 'w-4' : 'w-0 group-hover:w-4'
+                      } ${isDark ? 'bg-[#F5F0EB]' : 'bg-[#111111]'
+                      }`}
                   />
                 </Link>
               </motion.div>
@@ -173,11 +174,10 @@ export default function Navbar() {
         >
           <Link
             href={`${ROUTES.home}#contact`}
-            className={`inline-flex items-center justify-center h-[46px] px-[28px] rounded-full text-xs font-medium uppercase tracking-[0.15em] no-underline transition-all duration-500 ${
-              isDark
-                ? 'border border-[#F5F0EB]/30 text-[#F5F0EB] hover:bg-[#F5F0EB]/10 hover:border-[#F5F0EB]/65'
-                : 'bg-[#0B1B33] text-[#F5F0EB] hover:bg-[#152A4A] shadow-sm'
-            }`}
+            className={`inline-flex items-center justify-center h-[46px] px-[28px] rounded-full text-xs font-medium uppercase tracking-[0.15em] no-underline transition-all duration-500 ${isDark
+              ? 'border border-[#F5F0EB]/30 text-[#F5F0EB] hover:bg-[#F5F0EB]/10 hover:border-[#F5F0EB]/65'
+              : 'bg-[#0B1B33] text-[#F5F0EB] hover:bg-[#152A4A] shadow-sm'
+              }`}
           >
             Get a Quote
           </Link>
@@ -186,9 +186,8 @@ export default function Navbar() {
         {/* Minimal Mobile Menu Trigger */}
         <button
           onClick={() => setMobileOpen(true)}
-          className={`lg:hidden font-mono text-[13px] uppercase tracking-[0.2em] font-medium transition-colors duration-500 bg-transparent border-none cursor-pointer focus:outline-none ${
-            isDark ? 'text-[#F5F0EB]/85 hover:text-white' : 'text-[#111111]/85 hover:text-[#111111]'
-          }`}
+          className={`lg:hidden font-mono text-[13px] uppercase tracking-[0.2em] font-medium transition-colors duration-500 bg-transparent border-none cursor-pointer focus:outline-none ${isDark ? 'text-[#F5F0EB]/85 hover:text-white' : 'text-[#111111]/85 hover:text-[#111111]'
+            }`}
           aria-label="Open menu"
         >
           Menu
@@ -207,9 +206,17 @@ export default function Navbar() {
           >
             {/* Top header row */}
             <div className="flex items-center justify-between w-full max-w-[1440px] mx-auto">
-              <span className="font-display text-[17px] tracking-[0.25em] font-medium uppercase text-[#111111]">
-                {COMPANY.SHORT_NAME.toUpperCase()}
-              </span>
+              <Link href={ROUTES.home} onClick={() => setMobileOpen(false)} className="no-underline">
+                <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center justify-center border border-neutral-200/50">
+                  <Image
+                    src="/images/logo.png"
+                    alt="FG Lifts Logo"
+                    width={110}
+                    height={26}
+                    className="object-contain h-[22px] w-auto"
+                  />
+                </div>
+              </Link>
               <button
                 onClick={() => setMobileOpen(false)}
                 className="font-mono text-[13px] uppercase tracking-[0.2em] font-medium text-[#111111]/70 hover:text-[#111111] bg-transparent border-none cursor-pointer focus:outline-none py-2"
@@ -220,7 +227,7 @@ export default function Navbar() {
             </div>
 
             {/* Giant Editorial Links */}
-            <motion.div 
+            <motion.div
               variants={containerVariants}
               initial="hidden"
               animate="visible"

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
@@ -8,7 +9,7 @@ import {
   LayoutDashboard,
   Inbox,
   Boxes,
-  Image,
+  Image as ImageIcon,
   BookOpen,
   Mail,
   FileCode,
@@ -40,7 +41,7 @@ const navGroups = [
     title: 'Content CMS',
     items: [
       { label: 'Products', href: '/admin/products', icon: Boxes, permission: [PERMISSIONS.VIEW_PRODUCTS] },
-      { label: 'Gallery', href: '/admin/gallery', icon: Image, permission: [PERMISSIONS.VIEW_GALLERY] },
+      { label: 'Gallery', href: '/admin/gallery', icon: ImageIcon, permission: [PERMISSIONS.VIEW_GALLERY] },
       { label: 'Blog', href: '/admin/blog', icon: BookOpen, permission: [PERMISSIONS.VIEW_BLOG] },
     ],
   },
@@ -101,17 +102,15 @@ export default function AdminSidebar({ admin }) {
     <aside className="fixed top-0 left-0 bottom-0 w-64 bg-[#EDE8E2]/60 backdrop-blur-xl text-neutral-800 flex flex-col h-screen select-none border-r border-[#E8E2DA] z-40">
       
       {/* Top Header */}
-      <div className="h-16 flex items-center px-6 border-b border-[#E8E2DA] gap-2.5">
-        <div className="w-8 h-8 rounded-lg bg-[#0E4FB3] flex items-center justify-center flex-shrink-0">
-          <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" className="w-4.5 h-4.5 stroke-white">
-            <rect x="4" y="2" width="16" height="20" rx="3" />
-            <path d="M9 12L12 8L15 12" />
-            <path d="M12 8V16" />
-          </svg>
-        </div>
-        <div className="flex flex-col">
-          <span className="font-display text-neutral-900 font-extrabold text-base leading-tight">fg lift<span className="text-[#E8A840]">.</span></span>
-          <span className="font-mono text-[9px] text-neutral-400 uppercase tracking-widest leading-none font-bold">ADMIN PANEL</span>
+      <div className="h-16 flex items-center px-6 border-b border-[#E8E2DA] gap-3">
+        <div className="bg-white px-2.5 py-1.5 rounded shadow-xs flex items-center justify-center border border-neutral-200">
+          <Image 
+            src="/images/logo.png" 
+            alt="FG Lifts Logo" 
+            width={110} 
+            height={26} 
+            className="object-contain h-[22px] w-auto"
+          />
         </div>
       </div>
 
