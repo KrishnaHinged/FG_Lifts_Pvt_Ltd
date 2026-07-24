@@ -146,8 +146,10 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
           const video = videoRef.current
           if (!pinWrapper || !scrollAnchor || !video) return
 
-          // Pause video to manually scrub frames
-          video.pause()
+          // Ensure video currentTime starts at 0 for scrubbing
+          try {
+            video.currentTime = 0
+          } catch (e) {}
 
           // Scroll scrubbing timeline
           const masterTimeline = gsap.timeline({
@@ -302,12 +304,11 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
         <video
           ref={videoRef}
           src="/videos/intro/intro.mp4"
-          autoPlay
-          loop
-          muted
           playsInline
+          muted
           preload="auto"
-          className="absolute inset-0 w-full h-full object-cover opacity-90 z-10"
+          controls={false}
+          className="absolute inset-0 w-full h-full object-cover opacity-90 z-10 pointer-events-none select-none [&::-webkit-media-controls]:!hidden [&::-webkit-media-controls-start-playback-button]:!hidden"
         />
         
         {/* Blue Vignette Shadow Overlay (No heavy black) */}
