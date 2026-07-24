@@ -66,7 +66,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
   const videoRef = useRef(null)
 
   const [isPreloaded, setIsPreloaded] = useState(false)
-  const [videoDuration, setVideoDuration] = useState(0)
+  const [videoDuration, setVideoDuration] = useState(12)
   const [showSkipButton, setShowSkipButton] = useState(false)
 
   const companyName = settings.companyName || 'FG Lifts'
@@ -79,24 +79,47 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
     }
   }, [onComplete])
 
-  // 2. Track video metadata loading
-  const handleLoadedMetadata = (e) => {
-    const video = e.currentTarget
-    setVideoDuration(video.duration)
-    setIsPreloaded(true)
-  }
-
-  // 2.5. Fallback timer: skip intro if metadata takes more than 4 seconds to load (Vercel CDN / Safari range request compatibility)
+  // 2. Video readiness & metadata initialization hook
   useEffect(() => {
-    if (isPreloaded) return
+    const video = videoRef.current
+    if (!video) return
 
+    const updateDuration = () => {
+      if (video.duration && !isNaN(video.duration) && video.duration > 0) {
+        setVideoDuration(video.duration)
+      }
+      setIsPreloaded(true)
+    }
+
+    // Check if metadata is already available
+    updateDuration()
+
+    // Trigger video load
+    try {
+      video.load()
+    } catch (e) {
+      console.warn('Video load error:', e)
+    }
+
+    video.addEventListener('loadedmetadata', updateDuration)
+    video.addEventListener('loadeddata', updateDuration)
+    video.addEventListener('canplay', updateDuration)
+    video.addEventListener('durationchange', updateDuration)
+
+    // Guaranteed readiness timer: after 1000ms max, show intro animation on screen
     const timer = setTimeout(() => {
-      console.warn("Video metadata loading timed out. Skipping intro animation fallback.")
-      onComplete()
-    }, 4000)
+      updateDuration()
+      setIsPreloaded(true)
+    }, 1000)
 
-    return () => clearTimeout(timer)
-  }, [isPreloaded, onComplete])
+    return () => {
+      video.removeEventListener('loadedmetadata', updateDuration)
+      video.removeEventListener('loadeddata', updateDuration)
+      video.removeEventListener('canplay', updateDuration)
+      video.removeEventListener('durationchange', updateDuration)
+      clearTimeout(timer)
+    }
+  }, [])
 
   // 3. Initialize GSAP ScrollTrigger Master Timeline
   useEffect(() => {
