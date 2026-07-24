@@ -54,4 +54,5 @@ ehthumbs.db
 /scratch/
 scratch/
 *.mp4
+!public/videos/intro/intro.mp4
 *.log
