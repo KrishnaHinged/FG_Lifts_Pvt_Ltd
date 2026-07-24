@@ -299,7 +299,6 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
         <video
           ref={videoRef}
           src="/videos/intro/intro.mp4"
-          onLoadedMetadata={handleLoadedMetadata}
           playsInline
           muted
           preload="auto"
