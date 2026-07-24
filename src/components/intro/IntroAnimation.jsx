@@ -86,6 +86,18 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
     setIsPreloaded(true)
   }
 
+  // 2.5. Fallback timer: skip intro if metadata takes more than 4 seconds to load (Vercel CDN / Safari range request compatibility)
+  useEffect(() => {
+    if (isPreloaded) return
+
+    const timer = setTimeout(() => {
+      console.warn("Video metadata loading timed out. Skipping intro animation fallback.")
+      onComplete()
+    }, 4000)
+
+    return () => clearTimeout(timer)
+  }, [isPreloaded, onComplete])
+
   // 3. Initialize GSAP ScrollTrigger Master Timeline
   useEffect(() => {
     let ctx
