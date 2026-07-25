@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ProductGrid from './ProductGrid'
 import ProductHero from './ProductHero'
@@ -17,56 +17,48 @@ export default function ProductsClient({ initialProducts = [] }) {
   const [activeCapacity, setActiveCapacity] = useState('All')
   const [activeSpeed, setActiveSpeed] = useState('All')
 
-  const [filteredProducts, setFilteredProducts] = useState([])
   const catalogRef = useRef(null)
 
-  // Reset filter selections when tab shifts
-  useEffect(() => {
-    setActiveCategory('All')
-    setActiveCapacity('All')
-    setActiveSpeed('All')
-  }, [activeTab])
-
-  // Filter products reactively when selections change
-  useEffect(() => {
-    let list = initialProducts || []
-
+  // Synchronously compute filtered products during render
+  const filteredProducts = (initialProducts || []).filter((p) => {
     // 1. Filter by category group (tabGroup)
-    list = list.filter((p) => p.tabGroup === activeTab)
+    if (p.tabGroup !== activeTab) return false
 
     // 2. Filter by lift type (category) if not 'All'
-    if (activeCategory !== 'All') {
-      list = list.filter(
-        (p) => p.category?.toLowerCase() === activeCategory.toLowerCase()
-      )
+    if (activeCategory !== 'All' && p.category?.toLowerCase() !== activeCategory.toLowerCase()) {
+      return false
     }
 
     // 3. Filter by capacity spec
     if (activeCapacity !== 'All') {
       const minCap = parseInt(activeCapacity.replace(/\D/g, ''))
-      list = list.filter((p) => {
-        const capSpec = p.specifications?.find(s => s.key === 'Capacity')?.value || ''
-        const matches = capSpec.match(/\d+/g)
-        if (!matches) return false
-        const maxProductCap = Math.max(...matches.map(Number))
-        return maxProductCap >= minCap
-      })
+      const capSpec = p.specifications?.find(s => s.key?.toLowerCase() === 'capacity')?.value || ''
+      const matches = capSpec.match(/\d+/g)
+      if (!matches) return false
+      const maxProductCap = Math.max(...matches.map(Number))
+      if (maxProductCap < minCap) return false
     }
 
     // 4. Filter by speed spec
     if (activeSpeed !== 'All') {
       const minSpeed = parseFloat(activeSpeed.replace(/[^\d.]/g, ''))
-      list = list.filter((p) => {
-        const speedSpec = p.specifications?.find(s => s.key === 'Speed')?.value || ''
-        const matches = speedSpec.match(/\d+(\.\d+)?/g)
-        if (!matches) return false
-        const maxProductSpeed = Math.max(...matches.map(Number))
-        return maxProductSpeed >= minSpeed
-      })
+      const speedSpec = p.specifications?.find(s => s.key?.toLowerCase() === 'speed')?.value || ''
+      const matches = speedSpec.match(/\d+(\.\d+)?/g)
+      if (!matches) return false
+      const maxProductSpeed = Math.max(...matches.map(Number))
+      if (maxProductSpeed < minSpeed) return false
     }
 
-    setFilteredProducts(list)
-  }, [activeTab, activeCategory, activeCapacity, activeSpeed, initialProducts])
+    return true
+  })
+
+  // Batch active tab change and filter resetting synchronously
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId)
+    setActiveCategory('All')
+    setActiveCapacity('All')
+    setActiveSpeed('All')
+  }
 
   // Scroll to catalog section on Search button click
   const handleSearchScroll = () => {
@@ -87,7 +79,7 @@ export default function ProductsClient({ initialProducts = [] }) {
       {/* 2. Glassmorphic Filter & Configurator Bar */}
       <ProductFilterBar
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleTabChange}
         activeCategory={activeCategory}
         setActiveCategory={setActiveCategory}
         activeCapacity={activeCapacity}
