@@ -16,7 +16,8 @@ import {
   Users,
   History,
   LogOut,
-  ArrowLeft
+  ArrowLeft,
+  MessageSquareQuote
 } from 'lucide-react'
 
 const navGroups = [
@@ -43,6 +44,7 @@ const navGroups = [
       { label: 'Products', href: '/admin/products', icon: Boxes, permission: [PERMISSIONS.VIEW_PRODUCTS] },
       { label: 'Gallery', href: '/admin/gallery', icon: ImageIcon, permission: [PERMISSIONS.VIEW_GALLERY] },
       { label: 'Blog', href: '/admin/blog', icon: BookOpen, permission: [PERMISSIONS.VIEW_BLOG] },
+      { label: 'Testimonials', href: '/admin/testimonials', icon: MessageSquareQuote, permission: [PERMISSIONS.VIEW_TESTIMONIALS] },
     ],
   },
   {

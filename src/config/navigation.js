@@ -35,6 +35,7 @@ export const navigationConfig = {
     { label: 'CMS Products', href: routesConfig.admin.products, icon: 'Package' },
     { label: 'CMS Gallery', href: routesConfig.admin.gallery, icon: 'Image' },
     { label: 'CMS Blog', href: routesConfig.admin.blog, icon: 'FileText' },
+    { label: 'CMS Testimonials', href: routesConfig.admin.testimonials, icon: 'MessageSquareQuote' },
     { label: 'Newsletter', href: routesConfig.admin.newsletter, icon: 'Mail' },
     { label: 'Team Accounts', href: routesConfig.admin.users, icon: 'ShieldAlert' },
     { label: 'Email Templates', href: routesConfig.admin.emailTemplates, icon: 'Code2' },

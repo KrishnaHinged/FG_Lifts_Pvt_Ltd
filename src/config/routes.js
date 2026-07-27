@@ -23,13 +23,17 @@ export const routesConfig = {
     newsletter: '/admin/newsletter',
     users: '/admin/users',
     emailTemplates: '/admin/email-templates',
-    logs: '/admin/logs'
+    logs: '/admin/logs',
+    testimonials: '/admin/testimonials',
+    newTestimonial: '/admin/testimonials/new',
+    editTestimonial: (id) => `/admin/testimonials/${id}/edit`
   },
   api: {
     contact: '/api/contact',
     newsletter: '/api/newsletter',
     blog: '/api/blog',
     products: '/api/products',
+    testimonials: '/api/testimonials',
     admin: {
       auth: {
         login: '/api/admin/auth/login',
@@ -65,6 +69,10 @@ export const routesConfig = {
       },
       logs: {
         base: '/api/admin/logs'
+      },
+      testimonials: {
+        base: '/api/admin/testimonials',
+        detail: (id) => `/api/admin/testimonials/${id}`
       }
     }
   }
