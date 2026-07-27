@@ -112,12 +112,22 @@ const BlogPostSchema = new mongoose.Schema({
   relatedSlugs:  [String]
 }, { timestamps: true });
 
+const TestimonialSchema = new mongoose.Schema({
+  name:      { type: String, required: true },
+  title:     { type: String, required: true },
+  quote:     { type: String, required: true },
+  bgColor:   { type: String, default: 'bg-[#1A1A1A] text-white' },
+  isActive:  { type: Boolean, default: true },
+  sortOrder: { type: Number, default: 0 }
+}, { timestamps: true });
+
 // Models lookup or compile
 const Admin = mongoose.models.Admin || mongoose.model('Admin', AdminSchema);
 const EmailTemplate = mongoose.models.EmailTemplate || mongoose.model('EmailTemplate', EmailTemplateSchema);
 const Product = mongoose.models.Product || mongoose.model('Product', ProductSchema);
 const GalleryProject = mongoose.models.GalleryProject || mongoose.model('GalleryProject', GalleryProjectSchema);
 const BlogPost = mongoose.models.BlogPost || mongoose.model('BlogPost', BlogPostSchema);
+const Testimonial = mongoose.models.Testimonial || mongoose.model('Testimonial', TestimonialSchema);
 
 const mockProducts = [
   {
@@ -524,6 +534,37 @@ const defaultTemplates = [
   }
 ];
 
+const mockTestimonials = [
+  {
+    quote: '"Whisper-quiet operations and clean architectural integration. The villa lift they installed is simply exceptional."',
+    name: 'Rajesh Patel',
+    title: 'Homeowner, Ahmedabad',
+    bgColor: 'bg-[#1A1A1A] text-white',
+    sortOrder: 1
+  },
+  {
+    quote: '"The customized gold-finish glass capsule lift is the design centerpiece of our luxury retail experience center."',
+    name: 'Ananya Sharma',
+    title: 'VP Projects, Greenfield Group',
+    bgColor: 'bg-[#0E4FB3] text-white',
+    sortOrder: 2
+  },
+  {
+    quote: '"FG Lifts has been our trusted partner for commercial high-rises. Exceptional performance under peak loads."',
+    name: 'Vikram Shah',
+    title: 'Director, Shah Towers',
+    bgColor: 'bg-[#1A1A1A] text-white',
+    sortOrder: 3
+  },
+  {
+    quote: '"From structural consulting to commissioning, they solved our vertical shaft space constraints with complete ease."',
+    name: 'Amit Desai',
+    title: 'Principal Architect, Studio AD',
+    bgColor: 'bg-[#0797CE] text-black',
+    sortOrder: 4
+  }
+];
+
 async function seed() {
   try {
     console.log('Connecting to database...');
@@ -616,6 +657,17 @@ async function seed() {
         console.log(`Seeded blog post: ${postData.title}`);
       } else {
         console.log(`Blog post "${postData.title}" already exists in DB. Preserving user data...`);
+      }
+    }
+
+    console.log('Seeding testimonials (preserving existing)...');
+    for (const testData of mockTestimonials) {
+      const existingTestimonial = await Testimonial.findOne({ name: testData.name, quote: testData.quote });
+      if (!existingTestimonial) {
+        await Testimonial.create(testData);
+        console.log(`Seeded testimonial for: ${testData.name}`);
+      } else {
+        console.log(`Testimonial for "${testData.name}" already exists in DB. Preserving user data...`);
       }
     }
 

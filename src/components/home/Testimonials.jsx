@@ -1,11 +1,12 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Section from '@/components/layouts/Section'
 import Container from '@/components/layouts/Container'
 import Grid from '@/components/layouts/Grid'
 
-const col1 = [
+const fallbackTestimonials = [
   {
     quote: '"Whisper-quiet operations and clean architectural integration. The villa lift they installed is simply exceptional."',
     name: 'Rajesh Patel',
@@ -20,16 +21,6 @@ const col1 = [
     bgColor: 'bg-[#0E4FB3] text-white',
     avatar: 'AS'
   },
-  {
-    quote: '"FG Lifts has been our trusted partner for commercial high-rises. Exceptional performance under peak loads."',
-    name: 'Vikram Shah',
-    title: 'Director, Shah Towers',
-    bgColor: 'bg-[#1A1A1A] text-white',
-    avatar: 'VS'
-  }
-]
-
-const col2 = [
   {
     quote: '"FG Lifts has been our trusted partner for commercial high-rises. Exceptional performance under peak loads."',
     name: 'Vikram Shah',
@@ -43,37 +34,6 @@ const col2 = [
     title: 'Principal Architect, Studio AD',
     bgColor: 'bg-[#0797CE] text-black',
     avatar: 'AD'
-  },
-  {
-    quote: '"Whisper-quiet operations and clean architectural integration. The villa lift they installed is simply exceptional."',
-    name: 'Rajesh Patel',
-    title: 'Homeowner, Ahmedabad',
-    bgColor: 'bg-[#1A1A1A] text-white',
-    avatar: 'RP'
-  }
-]
-
-const col3 = [
-  {
-    quote: '"The customized gold-finish glass capsule lift is the design centerpiece of our luxury retail experience center."',
-    name: 'Ananya Sharma',
-    title: 'VP Projects, Greenfield Group',
-    bgColor: 'bg-[#0E4FB3] text-white',
-    avatar: 'AS'
-  },
-  {
-    quote: '"Whisper-quiet operations and clean architectural integration. The villa lift they installed is simply exceptional."',
-    name: 'Rajesh Patel',
-    title: 'Homeowner, Ahmedabad',
-    bgColor: 'bg-[#1A1A1A] text-white',
-    avatar: 'RP'
-  },
-  {
-    quote: '"FG Lifts has been our trusted partner for commercial high-rises. Exceptional performance under peak loads."',
-    name: 'Vikram Shah',
-    title: 'Director, Shah Towers',
-    bgColor: 'bg-[#1A1A1A] text-white',
-    avatar: 'VS'
   }
 ]
 
@@ -89,7 +49,7 @@ function TestimonialCard({ item }) {
         <div className={`w-10 h-10 rounded-full flex items-center justify-center font-mono text-xs font-bold ${
           item.bgColor.includes('bg-[#E8A840]') ? 'bg-black/10 text-black' : 'bg-white/10 text-white'
         }`}>
-          {item.avatar}
+          {item.avatar || (item.name ? item.name.trim().split(/\s+/).map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'RP')}
         </div>
         <div>
           <h4 className={`font-sans text-sm font-bold m-0 ${isDarkBg ? 'text-white' : 'text-black'}`}>
@@ -105,6 +65,52 @@ function TestimonialCard({ item }) {
 }
 
 export default function Testimonials() {
+  const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchTestimonials() {
+      try {
+        const res = await fetch('/api/testimonials')
+        const data = await res.json()
+        if (data.success && data.testimonials && data.testimonials.length > 0) {
+          setItems(data.testimonials)
+        }
+      } catch (err) {
+        console.error('Failed to fetch testimonials:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchTestimonials()
+  }, [])
+
+  const activeList = items.length > 0 ? items : fallbackTestimonials
+
+  const col1 = []
+  const col2 = []
+  const col3 = []
+
+  activeList.forEach((item, index) => {
+    if (index % 3 === 0) col1.push(item)
+    else if (index % 3 === 1) col2.push(item)
+    else col3.push(item)
+  })
+
+  // Ensure loop items (at least 6 per column for vertical marquee infinite scroll)
+  const getLoopItems = (colItems) => {
+    if (colItems.length === 0) return []
+    let repeated = [...colItems]
+    while (repeated.length < 6) {
+      repeated = [...repeated, ...colItems]
+    }
+    return repeated
+  }
+
+  const loopCol1 = getLoopItems(col1)
+  const loopCol2 = getLoopItems(col2)
+  const loopCol3 = getLoopItems(col3)
+
   return (
     <Section background="dark" size="none" className="py-[120px] select-none overflow-hidden relative">
       <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-[radial-gradient(circle,rgba(14,79,179,0.06),transparent_60%)] blur-[100px] pointer-events-none" />
@@ -128,7 +134,7 @@ export default function Testimonials() {
           {/* Column 1: Slides Up */}
           <div className="flex flex-col gap-6 overflow-hidden h-full col-span-3 md:col-span-1">
             <div className="flex flex-col gap-6 animate-marquee-y">
-              {[...col1, ...col1, ...col1].map((item, idx) => (
+              {loopCol1.map((item, idx) => (
                 <TestimonialCard key={`col1-${idx}`} item={item} />
               ))}
             </div>
@@ -137,7 +143,7 @@ export default function Testimonials() {
           {/* Column 2: Slides Down */}
           <div className="flex flex-col gap-6 overflow-hidden h-full col-span-3 md:col-span-1">
             <div className="flex flex-col gap-6 animate-marquee-y-reverse">
-              {[...col2, ...col2, ...col2].map((item, idx) => (
+              {loopCol2.map((item, idx) => (
                 <TestimonialCard key={`col2-${idx}`} item={item} />
               ))}
             </div>
@@ -146,7 +152,7 @@ export default function Testimonials() {
           {/* Column 3: Slides Up */}
           <div className="flex flex-col gap-6 overflow-hidden h-full col-span-3 md:col-span-1">
             <div className="flex flex-col gap-6 animate-marquee-y">
-              {[...col3, ...col3, ...col3].map((item, idx) => (
+              {loopCol3.map((item, idx) => (
                 <TestimonialCard key={`col3-${idx}`} item={item} />
               ))}
             </div>

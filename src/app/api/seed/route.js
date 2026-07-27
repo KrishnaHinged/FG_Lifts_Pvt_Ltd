@@ -6,6 +6,7 @@ import BlogPost from '@/models/BlogPost'
 import Admin from '@/models/Admin'
 import { hashPassword } from '@/lib/auth'
 import EmailTemplate from '@/models/EmailTemplate'
+import Testimonial from '@/models/Testimonial'
 
 const mockProducts = [
   // SYSTEMS
@@ -621,6 +622,37 @@ const defaultTemplates = [
   }
 ]
 
+const mockTestimonials = [
+  {
+    quote: '"Whisper-quiet operations and clean architectural integration. The villa lift they installed is simply exceptional."',
+    name: 'Rajesh Patel',
+    title: 'Homeowner, Ahmedabad',
+    bgColor: 'bg-[#1A1A1A] text-white',
+    sortOrder: 1
+  },
+  {
+    quote: '"The customized gold-finish glass capsule lift is the design centerpiece of our luxury retail experience center."',
+    name: 'Ananya Sharma',
+    title: 'VP Projects, Greenfield Group',
+    bgColor: 'bg-[#0E4FB3] text-white',
+    sortOrder: 2
+  },
+  {
+    quote: '"FG Lifts has been our trusted partner for commercial high-rises. Exceptional performance under peak loads."',
+    name: 'Vikram Shah',
+    title: 'Director, Shah Towers',
+    bgColor: 'bg-[#1A1A1A] text-white',
+    sortOrder: 3
+  },
+  {
+    quote: '"From structural consulting to commissioning, they solved our vertical shaft space constraints with complete ease."',
+    name: 'Amit Desai',
+    title: 'Principal Architect, Studio AD',
+    bgColor: 'bg-[#0797CE] text-black',
+    sortOrder: 4
+  }
+]
+
 export async function GET() {
   try {
     await connectDB()
@@ -666,7 +698,17 @@ export async function GET() {
       }
     }
 
-    // 5. Seed default Super Admin if missing
+    // 5. Seed Testimonials if missing
+    const seededTestimonials = []
+    for (const testData of mockTestimonials) {
+      const exists = await Testimonial.findOne({ name: testData.name, quote: testData.quote })
+      if (!exists) {
+        const created = await Testimonial.create(testData)
+        seededTestimonials.push(created)
+      }
+    }
+
+    // 6. Seed default Super Admin if missing
     let adminEmail = 'admin@fglift.com'
     const existingAdmin = await Admin.findOne({ email: adminEmail })
     if (!existingAdmin) {
@@ -687,6 +729,7 @@ export async function GET() {
       projectsSeeded: seededProjects.length,
       postsSeeded: seededPosts.length,
       templatesSeeded: seededTemplates.length,
+      testimonialsSeeded: seededTestimonials.length,
       adminSeeded: adminEmail
     })
   } catch (err) {
