@@ -68,7 +68,7 @@ const SubscriberRow = memo(function SubscriberRow({
   )
 })
 
-export default function SubscriberTable({
+export default memo(function SubscriberTable({
   subscribers = [],
   currentPage,
   totalPages,
@@ -141,4 +141,4 @@ export default function SubscriberTable({
 
     </div>
   )
-}
+})

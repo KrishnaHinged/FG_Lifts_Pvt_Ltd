@@ -1,10 +1,11 @@
 'use client'
 
+import { memo } from 'react'
 import { usePathname } from 'next/navigation'
 import AdminSidebar from './AdminSidebar'
 import AdminTopbar from './AdminTopbar'
 
-export default function AdminLayoutShell({ admin, children }) {
+export default memo(function AdminLayoutShell({ admin, children }) {
   const pathname = usePathname()
 
   // If on login or forgot-password route, render full-screen without admin sidebar or topbar
@@ -19,10 +20,16 @@ export default function AdminLayoutShell({ admin, children }) {
   return (
     <div className="admin min-h-screen bg-[#F5F0EB] relative overflow-hidden select-none">
       
-      {/* Background Ambient Blur Balls for entire admin area */}
+      {/* Background Ambient Color Wash — use opacity gradients instead of blur-[150px] for GPU perf */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute -bottom-[20%] -left-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tr from-[#0E4FB3]/[0.05] to-[#0797CE]/[0.01] blur-[150px] transform-gpu" />
-        <div className="absolute -top-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-br from-[#E8A840]/[0.05] to-[#EDE8E2]/[0.01] blur-[150px] transform-gpu" />
+        <div
+          className="absolute -bottom-[20%] -left-[10%] w-[60vw] h-[60vw] rounded-full transform-gpu"
+          style={{ background: 'radial-gradient(circle, rgba(14,79,179,0.04) 0%, rgba(7,151,206,0.005) 60%, transparent 80%)' }}
+        />
+        <div
+          className="absolute -top-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full transform-gpu"
+          style={{ background: 'radial-gradient(circle, rgba(232,168,64,0.04) 0%, rgba(237,232,226,0.005) 60%, transparent 80%)' }}
+        />
       </div>
 
       <div className="relative z-10 flex">
@@ -36,4 +43,4 @@ export default function AdminLayoutShell({ admin, children }) {
       </div>
     </div>
   )
-}
+})

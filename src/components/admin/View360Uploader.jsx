@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { Rotate3d, Upload, Check, Image as ImageIcon } from 'lucide-react'
 import MediaGalleryModal from './MediaGalleryModal'
 import { compressImage } from '@/utils/image'
 
-export default function View360Uploader({ variant, onChange }) {
+export default memo(function View360Uploader({ variant, onChange }) {
   const [activePickerKey, setActivePickerKey] = useState(null) // null | key name
 
   if (!variant) return null
@@ -210,4 +210,4 @@ export default function View360Uploader({ variant, onChange }) {
 
     </div>
   )
-}
+})

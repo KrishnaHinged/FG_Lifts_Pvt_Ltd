@@ -5,6 +5,9 @@ import { createAuditLog } from '@/services/audit.service'
 import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
 
+// Allow longer execution time for large 360° texture payloads
+export const maxDuration = 60
+
 export async function GET(req, { params }) {
   try {
     const { id } = await params

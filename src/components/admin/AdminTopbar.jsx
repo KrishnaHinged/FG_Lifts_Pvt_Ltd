@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, memo } from 'react'
+import { useState, useEffect, useRef, memo, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 import { Bell, Command } from 'lucide-react'
 import CommandPalette from './CommandPalette'
@@ -10,6 +10,7 @@ export default memo(function AdminTopbar({ admin }) {
   const pathname = usePathname()
   const [pendingCount, setPendingCount] = useState(0)
   const [showNotifications, setShowNotifications] = useState(false)
+  const hasFetched = useRef(false)
 
   // Determine current page title based on pathname
   const getPageTitle = () => {
@@ -18,8 +19,11 @@ export default memo(function AdminTopbar({ admin }) {
     return pageSegment.charAt(0).toUpperCase() + pageSegment.slice(1)
   }
 
-  // Fetch pending inquiries count to populate notification badge
+  // Fetch pending inquiries count ONCE on mount — not on every pathname change
   useEffect(() => {
+    if (hasFetched.current) return
+    hasFetched.current = true
+
     async function fetchPending() {
       try {
         const res = await fetch('/api/admin/inquiries?status=New')
@@ -31,7 +35,7 @@ export default memo(function AdminTopbar({ admin }) {
       }
     }
     fetchPending()
-  }, [pathname])
+  }, [])
 
   const getInitials = (name = '') => {
     return name
@@ -42,9 +46,17 @@ export default memo(function AdminTopbar({ admin }) {
       .toUpperCase()
   }
 
+  const toggleNotifications = useCallback(() => {
+    setShowNotifications(prev => !prev)
+  }, [])
+
+  const closeNotifications = useCallback(() => {
+    setShowNotifications(false)
+  }, [])
+
   return (
     <>
-      <header className="sticky top-0 z-30 h-16 bg-[#F5F0EB]/60 backdrop-blur-xl border-b border-[#E8E2DA] px-6 lg:px-8 flex items-center justify-between select-none">
+      <header className="sticky top-0 z-30 h-16 bg-[#F5F0EB] border-b border-[#E8E2DA] px-6 lg:px-8 flex items-center justify-between select-none">
         
         {/* Left - Page Title */}
         <div className="flex items-center gap-4">
@@ -57,7 +69,7 @@ export default memo(function AdminTopbar({ admin }) {
         <div className="flex items-center gap-4 sm:gap-6">
           
           {/* Command Palette Trigger indicator */}
-          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#E8E2DA] bg-white/50 backdrop-blur-md text-[10px] font-mono text-[#7A7A7A]">
+          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#E8E2DA] bg-white/50 text-[10px] font-mono text-[#7A7A7A]">
             <Command size={12} />
             <span>Press</span>
             <kbd className="bg-white border border-[#E8E2DA] px-1 rounded shadow-2xs font-bold text-[#111111]">Ctrl + K</kbd>
@@ -67,7 +79,7 @@ export default memo(function AdminTopbar({ admin }) {
           {/* Notification Bell */}
           <div className="relative">
             <button
-              onClick={() => setShowNotifications(!showNotifications)}
+              onClick={toggleNotifications}
               className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-neutral-100 transition cursor-pointer border-none bg-transparent"
               title="Notifications"
             >
@@ -110,7 +122,7 @@ export default memo(function AdminTopbar({ admin }) {
       {/* Notification Center Drawer */}
       <NotificationCenter
         isOpen={showNotifications}
-        onClose={() => setShowNotifications(false)}
+        onClose={closeNotifications}
       />
     </>
   )

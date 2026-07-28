@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { Bell, Check, Trash2, X, Info, AlertTriangle, CheckCircle } from 'lucide-react'
 
 const sampleNotifications = [
@@ -9,7 +9,7 @@ const sampleNotifications = [
   { id: 3, title: 'Outbox Alert', message: '2 email notifications pending delivery in worker queue.', time: '3h ago', type: 'warning', read: true }
 ]
 
-export default function NotificationCenter({ isOpen, onClose }) {
+export default memo(function NotificationCenter({ isOpen, onClose }) {
   const [notifications, setNotifications] = useState(sampleNotifications)
 
   if (!isOpen) return null
@@ -81,4 +81,4 @@ export default function NotificationCenter({ isOpen, onClose }) {
 
     </div>
   )
-}
+})

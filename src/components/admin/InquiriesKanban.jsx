@@ -181,7 +181,7 @@ const KanbanCardItem = memo(function KanbanCardItem({
   )
 })
 
-export default function InquiriesKanban({ inquiries = [], admins = [], currentAdmin, onUpdate }) {
+export default memo(function InquiriesKanban({ inquiries = [], admins = [], currentAdmin, onUpdate }) {
   const [activeMenuId, setActiveMenuId] = useState(null)
   const [activeAssignId, setActiveAssignId] = useState(null)
   const [updatingId, setUpdatingId] = useState(null)
@@ -347,4 +347,4 @@ export default function InquiriesKanban({ inquiries = [], admins = [], currentAd
       </div>
     </DragDropContext>
   )
-}
+})

@@ -117,7 +117,7 @@ const InquiryTableRow = memo(function InquiryTableRow({
   )
 })
 
-export default function InquiriesTable({
+export default memo(function InquiriesTable({
   inquiries = [],
   admins = [],
   currentAdmin,
@@ -354,4 +354,4 @@ export default function InquiriesTable({
       />
     </div>
   )
-}
+})

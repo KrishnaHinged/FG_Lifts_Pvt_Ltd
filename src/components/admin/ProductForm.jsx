@@ -958,7 +958,7 @@ export default memo(function ProductForm({ product = null, onSubmit, isLoading =
 
       {/* Floating Action Bar */}
       <div className="fixed bottom-6 right-8 z-50 select-none">
-        <div className="bg-white/95 backdrop-blur-xl border border-gray-200/80 p-2.5 px-6 rounded-full shadow-2xl flex items-center gap-4">
+        <div className="bg-white border border-gray-200/80 p-2.5 px-6 rounded-full shadow-2xl flex items-center gap-4">
           <Link
             href="/admin/products"
             className="font-mono text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-900 px-4 py-2 rounded-full hover:bg-gray-100 transition-colors no-underline"

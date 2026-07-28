@@ -102,7 +102,7 @@ export default memo(function AdminSidebar({ admin }) {
   }
 
   return (
-    <aside className="fixed top-0 left-0 bottom-0 w-64 bg-[#EDE8E2]/60 backdrop-blur-xl text-neutral-800 flex flex-col h-screen select-none border-r border-[#E8E2DA] z-40">
+    <aside className="fixed top-0 left-0 bottom-0 w-64 bg-[#EDE8E2] text-neutral-800 flex flex-col h-screen select-none border-r border-[#E8E2DA] z-40">
       
       {/* Top Header */}
       <div className="h-20 flex items-center px-6 border-b border-[#E8E2DA]">
@@ -162,7 +162,7 @@ export default memo(function AdminSidebar({ admin }) {
 
       {/* User Footer Profile */}
       {admin && (
-        <div className="p-4 border-t border-[#E8E2DA] bg-white/20 backdrop-blur-md flex flex-col gap-3">
+        <div className="p-4 border-t border-[#E8E2DA] bg-white/40 flex flex-col gap-3">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-[#0E4FB3] flex items-center justify-center text-white text-xs font-bold font-sans">
               {admin.name.slice(0, 2).toUpperCase()}

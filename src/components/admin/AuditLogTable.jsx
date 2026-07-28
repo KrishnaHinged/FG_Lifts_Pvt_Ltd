@@ -105,7 +105,7 @@ const AuditLogRow = memo(function AuditLogRow({ log, isExpanded, onToggleExpand 
   )
 })
 
-export default function AuditLogTable({ logs = [], currentPage, totalPages, onPageChange, itemsPerPage = 50, onLimitChange }) {
+export default memo(function AuditLogTable({ logs = [], currentPage, totalPages, onPageChange, itemsPerPage = 50, onLimitChange }) {
   const [expandedLogId, setExpandedLogId] = useState(null)
 
   const handleToggleExpand = useCallback((id) => {
@@ -187,4 +187,4 @@ export default function AuditLogTable({ logs = [], currentPage, totalPages, onPa
       )}
     </div>
   )
-}
+})
