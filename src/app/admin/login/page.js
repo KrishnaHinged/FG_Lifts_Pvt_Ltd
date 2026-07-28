@@ -36,7 +36,7 @@ export default function LoginPage() {
         router.push(redirectPath)
         router.refresh()
       } else {
-        setErrorMsg('Invalid email or password.')
+        setErrorMsg(data.error || 'Invalid email or password.')
       }
     } catch {
       setErrorMsg('Network error. Try again.')
@@ -77,42 +77,6 @@ export default function LoginPage() {
             <p className="font-sans text-sm text-neutral-500 mt-2 m-0">
               Access the administrative dashboard and CRM controls.
             </p>
-          </div>
-
-          {/* Quick Seed Credentials Box */}
-          <div className="bg-white/80 border border-[#E8E2DA] rounded-2xl p-3.5 mb-6 shadow-xs">
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-mono text-[10px] text-neutral-400 uppercase tracking-wider font-bold">
-                Default Seed Admin Credentials
-              </span>
-              <span className="font-mono text-[9px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
-                Ready to Login
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail('admin@fglifts.com')
-                  setPassword('FGLift@Admin2025!')
-                }}
-                className="bg-[#0E4FB3]/10 hover:bg-[#0E4FB3]/20 text-[#0E4FB3] font-mono text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer border-none font-medium flex items-center gap-1.5"
-              >
-                <span>admin@fglifts.com</span>
-                <span className="text-[10px] opacity-70">(Primary)</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail('admin@fglift.com')
-                  setPassword('adminpassword')
-                }}
-                className="bg-neutral-200/70 hover:bg-neutral-300/70 text-neutral-700 font-mono text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer border-none font-medium flex items-center gap-1.5"
-              >
-                <span>admin@fglift.com</span>
-                <span className="text-[10px] opacity-70">(Backup)</span>
-              </button>
-            </div>
           </div>
 
           {/* Error Message Alert */}

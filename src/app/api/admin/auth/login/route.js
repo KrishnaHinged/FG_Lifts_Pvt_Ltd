@@ -51,6 +51,15 @@ export async function POST(req) {
       return NextResponse.json({ error: err.error || 'Invalid credentials.' }, { status: 401 })
     }
     console.error('Admin login API endpoint error:', err)
-    return NextResponse.json({ error: err?.message || 'Server error during login.' }, { status: 500 })
+
+    // Detect MongoDB Atlas IP whitelist / connection errors
+    const errMsg = err?.message || ''
+    if (errMsg.includes('whitelist') || errMsg.includes('Could not connect') || errMsg.includes('ECONNREFUSED') || errMsg.includes('MongoServerSelectionError')) {
+      return NextResponse.json({
+        error: 'Database connection failed. Please ensure the server IP is whitelisted in MongoDB Atlas Network Access (set 0.0.0.0/0 for Vercel).'
+      }, { status: 503 })
+    }
+
+    return NextResponse.json({ error: 'Server error during login. Please try again.' }, { status: 500 })
   }
 }
