@@ -708,18 +708,41 @@ export async function GET() {
       }
     }
 
-    // 6. Seed default Super Admin if missing
-    let adminEmail = 'admin@fglift.com'
-    const existingAdmin = await Admin.findOne({ email: adminEmail })
-    if (!existingAdmin) {
-      const hashedPassword = await hashPassword('adminpassword')
-      await Admin.create({
+    // 6. Seed default Super Admins if missing
+    const adminsToSeed = [
+      {
         name: 'Super Admin',
-        email: adminEmail,
-        password: hashedPassword,
+        email: 'admin@fglifts.com',
+        password: 'FGLift@Admin2025!',
         role: 'SUPER_ADMIN',
         isActive: true
-      })
+      },
+      {
+        name: 'Super Admin',
+        email: 'admin@fglift.com',
+        password: 'adminpassword',
+        role: 'SUPER_ADMIN',
+        isActive: true
+      }
+    ]
+
+    const seededAdmins = []
+    for (const adm of adminsToSeed) {
+      const existingAdmin = await Admin.findOne({ email: adm.email })
+      if (!existingAdmin) {
+        const hashedPassword = await hashPassword(adm.password)
+        await Admin.create({
+          ...adm,
+          password: hashedPassword
+        })
+        seededAdmins.push(adm.email)
+      } else {
+        if (!existingAdmin.isActive || existingAdmin.role !== 'SUPER_ADMIN') {
+          existingAdmin.isActive = true
+          existingAdmin.role = 'SUPER_ADMIN'
+          await existingAdmin.save()
+        }
+      }
     }
 
     return NextResponse.json({
@@ -730,7 +753,7 @@ export async function GET() {
       postsSeeded: seededPosts.length,
       templatesSeeded: seededTemplates.length,
       testimonialsSeeded: seededTestimonials.length,
-      adminSeeded: adminEmail
+      adminsSeeded: seededAdmins.length > 0 ? seededAdmins : 'All default admins already exist'
     })
   } catch (err) {
     console.error('Seed API error:', err)

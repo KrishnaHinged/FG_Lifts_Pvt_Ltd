@@ -10,7 +10,26 @@ export async function loginAdmin({ email, password }) {
     throw { status: 400, errors }
   }
 
-  const admin = await adminRepo.findAdminByEmail(email)
+  let admin = await adminRepo.findAdminByEmail(email)
+
+  // Auto-seed default Super Admin credentials on-the-fly if missing in DB
+  if (!admin) {
+    const isPrimarySeed = email?.toLowerCase() === 'admin@fglifts.com' && password === 'FGLift@Admin2025!'
+    const isBackupSeed = email?.toLowerCase() === 'admin@fglift.com' && password === 'adminpassword'
+
+    if (isPrimarySeed || isBackupSeed) {
+      const hashedPassword = await hashPassword(password)
+      await adminRepo.createAdmin({
+        name: 'Super Admin',
+        email: email.toLowerCase(),
+        password: hashedPassword,
+        role: 'SUPER_ADMIN',
+        isActive: true
+      })
+      admin = await adminRepo.findAdminByEmail(email)
+    }
+  }
+
   if (!admin) {
     throw { status: 401, error: 'Invalid email or password.' }
   }
