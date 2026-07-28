@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, memo } from 'react'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
-export default function TestimonialForm({ testimonial = null, onSubmit }) {
+export default memo(function TestimonialForm({ testimonial = null, onSubmit }) {
   const [name, setName] = useState(testimonial?.name || '')
   const [title, setTitle] = useState(testimonial?.title || '')
   const [quote, setQuote] = useState(testimonial?.quote || '')
@@ -256,4 +256,4 @@ export default function TestimonialForm({ testimonial = null, onSubmit }) {
       </div>
     </form>
   )
-}
+})

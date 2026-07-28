@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
@@ -63,7 +64,7 @@ const navGroups = [
   },
 ]
 
-export default function AdminSidebar({ admin }) {
+export default memo(function AdminSidebar({ admin }) {
   const pathname = usePathname()
   const router = useRouter()
   const role = admin?.role
@@ -189,4 +190,4 @@ export default function AdminSidebar({ admin }) {
 
     </aside>
   )
-}
+})

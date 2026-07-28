@@ -1,19 +1,27 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, memo } from 'react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { Calendar, Tag, BookOpen, Clock, Loader2, Save } from 'lucide-react'
 import { hasPermission } from '@/permissions/permissions'
 import { PERMISSIONS } from '@/permissions/roles'
+import { useDebouncedValue } from '@/hooks/useDebounce'
 
 // Dynamically import MDEditor to prevent SSR window issues
 const MDEditor = dynamic(
   () => import('@uiw/react-md-editor').then((mod) => mod.default),
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-64 bg-gray-50 animate-pulse border border-gray-200 rounded-xl flex items-center justify-center font-mono text-xs text-gray-400">
+        Loading Markdown Editor...
+      </div>
+    )
+  }
 )
 
-export default function BlogEditor({ post = null, currentAdmin, onSubmit, isLoading = false }) {
+export default memo(function BlogEditor({ post = null, currentAdmin, onSubmit, isLoading = false }) {
   const [title, setTitle] = useState(post?.title || '')
   const [slug, setSlug] = useState(post?.slug || '')
   const [excerpt, setExcerpt] = useState(post?.excerpt || '')
@@ -37,20 +45,21 @@ export default function BlogEditor({ post = null, currentAdmin, onSubmit, isLoad
   const [wordCount, setWordCount] = useState(0)
   const [readTime, setReadTime] = useState(1)
 
+  const debouncedContent = useDebouncedValue(content, 300)
+
   useEffect(() => {
-    // Strip markdown formatting simple estimate
-    const cleanText = content.replace(/[#*`_\[\]]/g, '')
+    const cleanText = debouncedContent.replace(/[#*`_\[\]]/g, '')
     const words = cleanText.trim() ? cleanText.trim().split(/\s+/).length : 0
     setWordCount(words)
     setReadTime(Math.max(1, Math.ceil(words / 200)))
-  }, [content])
+  }, [debouncedContent])
 
-  const handleTitleChange = (val) => {
+  const handleTitleChange = useCallback((val) => {
     setTitle(val)
     if (!post) {
       setSlug(val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''))
     }
-  }
+  }, [post])
 
   const handleTagKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -308,4 +317,4 @@ export default function BlogEditor({ post = null, currentAdmin, onSubmit, isLoad
       </div>
     </div>
   )
-}
+})

@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, memo } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 
-export default function GalleryProjectForm({ project = null, products = [], onSubmit, isLoading = false }) {
+export default memo(function GalleryProjectForm({ project = null, products = [], onSubmit, isLoading = false }) {
   const [title, setTitle] = useState(project?.title || '')
   const [slug, setSlug] = useState(project?.slug || '')
   const [location, setLocation] = useState(project?.location || '')
@@ -285,4 +285,4 @@ export default function GalleryProjectForm({ project = null, products = [], onSu
 
     </form>
   )
-}
+})

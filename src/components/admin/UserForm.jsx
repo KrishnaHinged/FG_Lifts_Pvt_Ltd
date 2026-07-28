@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, memo } from 'react'
 import { X, Loader2 } from 'lucide-react'
 
-export default function UserForm({ admin = null, currentAdmin, onSubmit, onClose }) {
+export default memo(function UserForm({ admin = null, currentAdmin, onSubmit, onClose }) {
   const [name, setName] = useState(admin?.name || '')
   const [email, setEmail] = useState(admin?.email || '')
   const [role, setRole] = useState(admin?.role || 'SALES_EXECUTIVE')
@@ -327,4 +327,4 @@ export default function UserForm({ admin = null, currentAdmin, onSubmit, onClose
       </div>
     </div>
   )
-}
+})

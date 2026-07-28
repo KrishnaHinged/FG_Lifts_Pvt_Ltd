@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback, memo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, LayoutDashboard, Inbox, Boxes, Image, BookOpen, Mail, Users, History, X } from 'lucide-react'
 
@@ -16,7 +16,7 @@ const commands = [
   { label: 'Audit Logs', href: '/admin/logs', icon: History, category: 'System' },
 ]
 
-export default function CommandPalette() {
+export default memo(function CommandPalette() {
   const [isOpen, setIsOpen] = useState(false)
   const [search, setSearch] = useState('')
   const router = useRouter()
@@ -35,16 +35,20 @@ export default function CommandPalette() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  const filteredCommands = commands.filter((cmd) =>
-    cmd.label.toLowerCase().includes(search.toLowerCase()) ||
-    cmd.category.toLowerCase().includes(search.toLowerCase())
-  )
+  const filteredCommands = useMemo(() => {
+    const query = search.trim().toLowerCase()
+    if (!query) return commands
+    return commands.filter((cmd) =>
+      cmd.label.toLowerCase().includes(query) ||
+      cmd.category.toLowerCase().includes(query)
+    )
+  }, [search])
 
-  const handleSelect = (href) => {
+  const handleSelect = useCallback((href) => {
     setIsOpen(false)
     setSearch('')
     router.push(href)
-  }
+  }, [router])
 
   if (!isOpen) return null
 
@@ -101,15 +105,13 @@ export default function CommandPalette() {
           )}
         </div>
 
-        {/* Footer info */}
-        <div className="px-4 py-2.5 bg-[#EDE8E2]/40 border-t border-[#E8E2DA] flex items-center justify-between text-[10px] font-mono text-[#7A7A7A]">
-          <span>Navigation Shortcut</span>
-          <div className="flex items-center gap-1">
-            <kbd className="bg-white border border-[#E8E2DA] px-1.5 py-0.5 rounded shadow-xs">ESC</kbd> to close
-          </div>
+        {/* Footer */}
+        <div className="px-4 py-2 bg-[#F9F8F6] border-t border-[#E8E2DA] flex items-center justify-between font-mono text-[10px] text-[#7A7A7A]">
+          <span>Tip: Press <kbd className="px-1.5 py-0.5 bg-white border border-[#E8E2DA] rounded text-[#111111]">Cmd + K</kbd> anywhere</span>
+          <span>ESC to close</span>
         </div>
 
       </div>
     </div>
   )
-}
+})

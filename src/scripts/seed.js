@@ -32,6 +32,19 @@ const ImageSchema = new mongoose.Schema({
   alt:   String
 }, { _id: false });
 
+const ColorFinishTextureSchema = new mongoose.Schema({
+  finishName: String,
+  panoramaImages: {
+    sphere:  String,
+    front:   String,
+    back:    String,
+    left:    String,
+    right:   String,
+    ceiling: String,
+    floor:   String,
+  }
+}, { _id: false });
+
 const ColorVariantSchema = new mongoose.Schema({
   name:  String,
   hex:   String,
@@ -44,12 +57,14 @@ const ColorVariantSchema = new mongoose.Schema({
     ceiling: String,
     floor:   String,
   },
+  finishTextures: [ColorFinishTextureSchema],
   isActive: { type: Boolean, default: true }
 }, { _id: false });
 
 const FinishVariantSchema = new mongoose.Schema({
-  name:     String,
-  isActive: { type: Boolean, default: true }
+  name:        String,
+  description: String,
+  isActive:    { type: Boolean, default: true }
 }, { _id: false });
 
 const ProductSchema = new mongoose.Schema({
@@ -197,8 +212,8 @@ const mockProducts = [
       }
     ],
     finishVariants: [
-      { name: 'Mirror Finish', isActive: true },
-      { name: 'Hairline Finish', isActive: true }
+      { name: 'Mirror Finish', description: 'Highly reflective mirror-like polished stainless steel surface', isActive: true },
+      { name: 'Hairline Finish', description: 'Elegant brushed texture finish with fine linear scratch patterns', isActive: true }
     ],
     isFeatured: true,
     badge: '360° View',
@@ -312,8 +327,8 @@ const mockProducts = [
       }
     ],
     finishVariants: [
-      { name: 'Mirror Finish', isActive: true },
-      { name: 'Satin Finish', isActive: true }
+      { name: 'Mirror Finish', description: 'Highly reflective mirror-like polished stainless steel surface', isActive: true },
+      { name: 'Satin Finish', description: 'Soft matte non-reflective texture providing an industrial premium feel', isActive: true }
     ],
     isFeatured: false,
     badge: '360° View',
@@ -566,117 +581,136 @@ const mockTestimonials = [
 ];
 
 async function seed() {
+  const isReset = process.argv.includes('--reset') || process.env.RESET_DB === 'true'
+
   try {
-    console.log('Connecting to database...');
-    await mongoose.connect(MONGODB_URI, { dbName: 'fglifts' });
-    console.log('Connected to MongoDB.');
+    console.log('Connecting to database...')
+    await mongoose.connect(MONGODB_URI, { dbName: 'fglifts' })
+    console.log(`Connected to MongoDB. Mode: ${isReset ? 'RESET (force update defaults)' : 'NON-DESTRUCTIVE (preserving all user content)'}`)
 
     // 1. Seed default Super Admin if not exists
-    const existingAdmin = await Admin.findOne({ email: 'admin@fglifts.com' });
+    const existingAdmin = await Admin.findOne({ email: 'admin@fglifts.com' })
     if (!existingAdmin) {
-      const salt = await bcrypt.genSalt(12);
-      const hashedPassword = await bcrypt.hash('FGLift@Admin2025!', salt);
+      const salt = await bcrypt.genSalt(12)
+      const hashedPassword = await bcrypt.hash('FGLift@Admin2025!', salt)
       await Admin.create({
         name: 'Super Admin',
         email: 'admin@fglifts.com',
         password: hashedPassword,
         role: 'SUPER_ADMIN',
         isActive: true
-      });
-      console.log('Seeded default Super Admin account: admin@fglifts.com');
+      })
+      console.log('Seeded default Super Admin account: admin@fglifts.com')
+    } else if (isReset && existingAdmin.role !== 'SUPER_ADMIN') {
+      existingAdmin.role = 'SUPER_ADMIN'
+      await existingAdmin.save()
+      console.log('Upgraded existing admin@fglifts.com to SUPER_ADMIN.')
     } else {
-      if (existingAdmin.role !== 'SUPER_ADMIN') {
-        existingAdmin.role = 'SUPER_ADMIN';
-        await existingAdmin.save();
-        console.log('Upgraded existing admin@fglifts.com to SUPER_ADMIN.');
-      } else {
-        console.log('Default Super Admin already exists. Skipping...');
-      }
+      console.log('Default Super Admin already exists. Skipping...')
     }
 
     // Upgrade/create admin@fglift.com too for backward compatibility
-    const oldAdmin = await Admin.findOne({ email: 'admin@fglift.com' });
+    const oldAdmin = await Admin.findOne({ email: 'admin@fglift.com' })
     if (!oldAdmin) {
-      const salt = await bcrypt.genSalt(12);
-      const hashedPassword = await bcrypt.hash('adminpassword', salt);
+      const salt = await bcrypt.genSalt(12)
+      const hashedPassword = await bcrypt.hash('adminpassword', salt)
       await Admin.create({
         name: 'Super Admin',
         email: 'admin@fglift.com',
         password: hashedPassword,
         role: 'SUPER_ADMIN',
         isActive: true
-      });
-      console.log('Seeded backup Super Admin account: admin@fglift.com');
+      })
+      console.log('Seeded backup Super Admin account: admin@fglift.com')
     }
 
     // 2. Seed email templates
     for (const temp of defaultTemplates) {
-      const existingTemp = await EmailTemplate.findOne({ name: temp.name });
+      const existingTemp = await EmailTemplate.findOne({ name: temp.name })
       if (!existingTemp) {
-        await EmailTemplate.create(temp);
-        console.log(`Seeded email template: ${temp.name}`);
+        await EmailTemplate.create(temp)
+        console.log(`Seeded email template: ${temp.name}`)
+      } else if (isReset) {
+        Object.assign(existingTemp, temp)
+        await existingTemp.save()
+        console.log(`Updated email template "${temp.name}" (RESET mode).`)
       } else {
-        console.log(`Email template ${temp.name} already exists. Skipping...`);
+        console.log(`Email template "${temp.name}" already exists. Skipping...`)
       }
     }
 
     // 3. Seed Products, Projects, Blog Posts (preserving existing MongoDB data)
-    console.log('Seeding products (preserving existing)...');
+    console.log('Seeding products...')
     for (const prodData of mockProducts) {
-      const existingProduct = await Product.findOne({ slug: prodData.slug });
+      const existingProduct = await Product.findOne({ slug: prodData.slug })
       if (!existingProduct) {
-        await Product.create(prodData);
-        console.log(`Seeded product: ${prodData.name}`);
+        await Product.create(prodData)
+        console.log(`Seeded product: ${prodData.name}`)
+      } else if (isReset) {
+        Object.assign(existingProduct, prodData)
+        await existingProduct.save()
+        console.log(`Product "${prodData.name}" updated (RESET mode).`)
       } else {
-        console.log(`Product "${prodData.name}" already exists in DB. Preserving user data...`);
+        console.log(`Product "${prodData.name}" already exists in DB. Skipping to preserve user content.`)
       }
     }
 
-    console.log('Seeding projects (preserving existing)...');
+    console.log('Seeding projects...')
     for (const projData of mockProjects) {
-      const existingProject = await GalleryProject.findOne({ title: projData.title });
+      const existingProject = await GalleryProject.findOne({ title: projData.title })
       if (!existingProject) {
-        await GalleryProject.create(projData);
-        console.log(`Seeded project: ${projData.title}`);
+        await GalleryProject.create(projData)
+        console.log(`Seeded project: ${projData.title}`)
+      } else if (isReset) {
+        Object.assign(existingProject, projData)
+        await existingProject.save()
+        console.log(`Project "${projData.title}" updated (RESET mode).`)
       } else {
-        console.log(`Project "${projData.title}" already exists in DB. Preserving user data...`);
+        console.log(`Project "${projData.title}" already exists in DB. Skipping to preserve user content.`)
       }
     }
 
-    console.log('Seeding blog posts (preserving existing)...');
+    console.log('Seeding blog posts...')
     for (const postData of mockBlogPosts) {
-      const existingPost = await BlogPost.findOne({ slug: postData.slug });
+      const existingPost = await BlogPost.findOne({ slug: postData.slug })
       if (!existingPost) {
-        const post = new BlogPost(postData);
-        // Auto compute read time before save
+        const post = new BlogPost(postData)
         if (post.content) {
-          const wordCount = post.content.replace(/<[^>]+>/g, '').split(/\s+/).length;
-          post.readTime = Math.max(1, Math.ceil(wordCount / 200));
+          const wordCount = post.content.replace(/<[^>]+>/g, '').split(/\s+/).length
+          post.readTime = Math.max(1, Math.ceil(wordCount / 200))
         }
-        await post.save();
-        console.log(`Seeded blog post: ${postData.title}`);
+        await post.save()
+        console.log(`Seeded blog post: ${postData.title}`)
+      } else if (isReset) {
+        Object.assign(existingPost, postData)
+        await existingPost.save()
+        console.log(`Blog post "${postData.title}" updated (RESET mode).`)
       } else {
-        console.log(`Blog post "${postData.title}" already exists in DB. Preserving user data...`);
+        console.log(`Blog post "${postData.title}" already exists in DB. Skipping to preserve user content.`)
       }
     }
 
-    console.log('Seeding testimonials (preserving existing)...');
+    console.log('Seeding testimonials...')
     for (const testData of mockTestimonials) {
-      const existingTestimonial = await Testimonial.findOne({ name: testData.name, quote: testData.quote });
+      const existingTestimonial = await Testimonial.findOne({ name: testData.name, quote: testData.quote })
       if (!existingTestimonial) {
-        await Testimonial.create(testData);
-        console.log(`Seeded testimonial for: ${testData.name}`);
+        await Testimonial.create(testData)
+        console.log(`Seeded testimonial for: ${testData.name}`)
+      } else if (isReset) {
+        Object.assign(existingTestimonial, testData)
+        await existingTestimonial.save()
+        console.log(`Testimonial for "${testData.name}" updated (RESET mode).`)
       } else {
-        console.log(`Testimonial for "${testData.name}" already exists in DB. Preserving user data...`);
+        console.log(`Testimonial for "${testData.name}" already exists in DB. Skipping to preserve user content.`)
       }
     }
 
-    console.log('Database seeding successfully finished!');
+    console.log('Database seeding successfully finished!')
   } catch (err) {
-    console.error('Seeding failed:', err);
+    console.error('Seeding failed:', err)
   } finally {
-    await mongoose.disconnect();
-    console.log('Disconnected from MongoDB.');
+    await mongoose.disconnect()
+    console.log('Disconnected from MongoDB.')
   }
 }
 

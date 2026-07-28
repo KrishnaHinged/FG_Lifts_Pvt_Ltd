@@ -4,7 +4,24 @@ import { useRef, useEffect, useState, useCallback } from 'react'
 import * as THREE from 'three'
 import { Rotate3d, ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize } from 'lucide-react'
 
-export default function Lift360Viewer({ panoramaUrl = '/images/360-gold.png', colorVariants = [] }) {
+export default function Lift360Viewer({
+  panoramaUrl = '/images/360-gold.png',
+  colorVariants = [],
+  finishVariants = [],
+  activeVariant: propActiveVariant,
+  setActiveVariant: propSetActiveVariant,
+  activeFinish: propActiveFinish,
+  setActiveFinish: propSetActiveFinish
+}) {
+  // Fallbacks to local state if props are not provided
+  const [localActiveVariant, localSetActiveVariant] = useState(0)
+  const [localActiveFinish, localSetActiveFinish] = useState(0)
+
+  const activeVariant = propActiveVariant !== undefined ? propActiveVariant : localActiveVariant
+  const setActiveVariant = propSetActiveVariant || localSetActiveVariant
+  const activeFinish = propActiveFinish !== undefined ? propActiveFinish : localActiveFinish
+  const setActiveFinish = propSetActiveFinish || localSetActiveFinish
+
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const rendererRef = useRef(null)
@@ -19,7 +36,6 @@ export default function Lift360Viewer({ panoramaUrl = '/images/360-gold.png', co
   const isFocusedRef = useRef(false)
 
   const [loading, setLoading] = useState(true)
-  const [activeVariant, setActiveVariant] = useState(0)
   const [isActivated, setIsActivated] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -139,20 +155,45 @@ export default function Lift360Viewer({ panoramaUrl = '/images/360-gold.png', co
   }, [])
 
   const activeVariantObj = colorVariants[activeVariant] || {}
-  const activePanoImages = activeVariantObj.panoramaImages || {}
+  const activeFinishes = finishVariants.filter(f => f.isActive)
+  const selectedFinishObj = activeFinishes[activeFinish]
+
+  // Look up finish-specific panorama images
+  let activePanoImages = activeVariantObj.panoramaImages || {}
+  if (selectedFinishObj) {
+    const finishTex = (activeVariantObj.finishTextures || []).find(
+      ft => ft.finishName === selectedFinishObj.name
+    )
+    if (finishTex && finishTex.panoramaImages && Object.keys(finishTex.panoramaImages).length > 0) {
+      activePanoImages = finishTex.panoramaImages
+    }
+  }
+
   const textureKey = JSON.stringify({
     variantIndex: activeVariant,
+    finishName: selectedFinishObj?.name || 'default',
     pano: activePanoImages,
-    sphere: activeVariantObj.panorama || panoramaUrl
+    sphere: activePanoImages.sphere || activeVariantObj.panorama || panoramaUrl
   })
 
-  // Load / swap 3D elevator cabin room textures when activeVariant or colorVariants change
+  // Load / swap 3D elevator cabin room textures when activeVariant, activeFinish, or colorVariants change
   useEffect(() => {
     if (!sceneRef.current) return
     setLoading(true)
 
     const activeVariantObj = colorVariants[activeVariant] || {}
-    const activePanoImages = activeVariantObj.panoramaImages || {}
+    const activeFinishes = finishVariants.filter(f => f.isActive)
+    const selectedFinishObj = activeFinishes[activeFinish]
+
+    let activePanoImages = activeVariantObj.panoramaImages || {}
+    if (selectedFinishObj) {
+      const finishTex = (activeVariantObj.finishTextures || []).find(
+        ft => ft.finishName === selectedFinishObj.name
+      )
+      if (finishTex && finishTex.panoramaImages && Object.keys(finishTex.panoramaImages).length > 0) {
+        activePanoImages = finishTex.panoramaImages
+      }
+    }
 
     const hasCubicSides = Boolean(
       activePanoImages.front ||
@@ -216,7 +257,7 @@ export default function Lift360Viewer({ panoramaUrl = '/images/360-gold.png', co
       })
     } else {
       // Sphere equirectangular mode fallback
-      const sphereUrl = activeVariantObj.panorama || panoramaUrl || '/images/360-gold.png'
+      const sphereUrl = activePanoImages.sphere || activeVariantObj.panorama || panoramaUrl || '/images/360-gold.png'
       loader.load(
         sphereUrl,
         (texture) => {
@@ -394,27 +435,7 @@ export default function Lift360Viewer({ panoramaUrl = '/images/360-gold.png', co
         </span>
       </div>
 
-      {/* Color Variants Selector */}
-      {colorVariants.length > 1 && (
-        <div className="absolute bottom-4 left-4 flex items-center gap-2 z-20">
-          <span className="font-mono text-[10px] text-white/50 tracking-wider uppercase mr-1">
-            Finish:
-          </span>
-          {colorVariants.map((v, i) => (
-            <button
-              key={i}
-              onClick={() => setActiveVariant(i)}
-              className={`w-7 h-7 rounded-full cursor-pointer border-2 transition-all duration-200 ${
-                i === activeVariant
-                  ? 'border-fg-blue scale-110 shadow-blue'
-                  : 'border-white/30 hover:border-white/60'
-              }`}
-              style={{ backgroundColor: v.color || '#888' }}
-              title={v.label || `Variant ${i + 1}`}
-            />
-          ))}
-        </div>
-      )}
+
 
       {/* Mobile Interaction Activator Overlay */}
       {isMobile && !isActivated && (

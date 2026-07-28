@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, memo } from 'react'
 import Link from 'next/link'
-import { Plus, Trash2, HelpCircle, UploadCloud, Image as ImageIcon } from 'lucide-react'
+import { Plus, Trash2, HelpCircle, UploadCloud, Image as ImageIcon, Sliders, Sparkles, Box, Info, Search } from 'lucide-react'
 import View360Uploader from './View360Uploader'
 import MediaGalleryModal from './MediaGalleryModal'
 
-export default function ProductForm({ product = null, onSubmit, isLoading = false }) {
+export default memo(function ProductForm({ product = null, onSubmit, isLoading = false }) {
   const [activeTab, setActiveTab] = useState('basic')
   
   // Basic states
@@ -23,8 +23,24 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
   const [sortOrder, setSortOrder] = useState(product?.sortOrder || 0)
   const [brochureUrl, setBrochureUrl] = useState(product?.brochureUrl || '')
   const [has360View, setHas360View] = useState(!!product?.has360View)
-  const [defaultColor, setDefaultColor] = useState(product?.defaultColor || '')
-  const [defaultFinish, setDefaultFinish] = useState(product?.defaultFinish || '')
+  const [defaultColor, setDefaultColor] = useState(() => {
+    if (product?.defaultColor) return product.defaultColor
+    const initialColors = product?.colorVariants || [
+      { name: 'Champagne Gold', hex: '#C9A84C', isActive: true, panoramaImages: {}, finishTextures: [] }
+    ]
+    return initialColors.find(c => c.isActive)?.name || initialColors[0]?.name || ''
+  })
+  const [metaTitle, setMetaTitle] = useState(product?.metaTitle || '')
+  const [metaDescription, setMetaDescription] = useState(product?.metaDescription || '')
+  const [metaKeywords, setMetaKeywords] = useState(product?.metaKeywords || '')
+  const [defaultFinish, setDefaultFinish] = useState(() => {
+    if (product?.defaultFinish) return product.defaultFinish
+    const initialFinishes = product?.finishVariants || [
+      { name: 'Mirror Finish', description: 'Highly reflective mirror-like polished stainless steel surface', isActive: true },
+      { name: 'Hairline Finish', description: 'Elegant brushed texture finish with fine linear scratch patterns', isActive: true }
+    ]
+    return initialFinishes.find(f => f.isActive)?.name || initialFinishes[0]?.name || ''
+  })
 
   // Dynamic lists
   const [specifications, setSpecifications] = useState(product?.specifications || [{ key: '', value: '' }])
@@ -41,12 +57,13 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
 
   // Color & Finish variants list (dynamic)
   const [colorVariants, setColorVariants] = useState(product?.colorVariants || [
-    { name: 'Champagne Gold', hex: '#C9A84C', isActive: true, panoramaImages: {} }
+    { name: 'Champagne Gold', hex: '#C9A84C', isActive: true, panoramaImages: {}, finishTextures: [] }
   ])
   const [finishVariants, setFinishVariants] = useState(product?.finishVariants || [
-    { name: 'Mirror Finish', isActive: true },
-    { name: 'Hairline Finish', isActive: true }
+    { name: 'Mirror Finish', description: 'Highly reflective mirror-like polished stainless steel surface', isActive: true },
+    { name: 'Hairline Finish', description: 'Elegant brushed texture finish with fine linear scratch patterns', isActive: true }
   ])
+  const [selectedFinishForColor, setSelectedFinishForColor] = useState({})
 
   // Auto-generate slug from name if name shifts and slug matches original name conversion
   const handleNameChange = (val) => {
@@ -98,29 +115,84 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
 
   // Color variants list helpers
   const addColorVariant = () => {
-    setColorVariants([...colorVariants, { name: '', hex: '#888888', isActive: true, panoramaImages: {} }])
+    setColorVariants([...colorVariants, { name: '', hex: '#888888', isActive: true, panoramaImages: {}, finishTextures: [] }])
   }
-  const removeColorVariant = (idx) => setColorVariants(colorVariants.filter((_, i) => i !== idx))
+  const removeColorVariant = (idx) => {
+    const deletedColor = colorVariants[idx]
+    const remaining = colorVariants.filter((_, i) => i !== idx)
+    setColorVariants(remaining)
+
+    if (defaultColor === deletedColor.name) {
+      const nextDefault = remaining.find(c => c.isActive)?.name || remaining[0]?.name || ''
+      setDefaultColor(nextDefault)
+    }
+  }
   const handleColorChange = (idx, field, val) => {
     const list = [...colorVariants]
+    const oldName = list[idx].name
     list[idx][field] = val
     setColorVariants(list)
+
+    if (field === 'name' && defaultColor === oldName) {
+      setDefaultColor(val)
+    }
+    if (field === 'isActive' && !val && defaultColor === oldName) {
+      const nextDefault = list.find(c => c.isActive && c.name !== oldName)?.name || list.find(c => c.name !== oldName)?.name || ''
+      setDefaultColor(nextDefault)
+    }
   }
-  const handleColorUploaderChange = (idx, updatedVal) => {
+  const handleColorUploaderChangeWithFinish = (colorIdx, updatedVirtual) => {
+    const selectedFinish = selectedFinishForColor[colorIdx] || 'default'
     const list = [...colorVariants]
-    list[idx] = updatedVal
+    const c = list[colorIdx]
+
+    if (selectedFinish === 'default') {
+      c.panoramaImages = updatedVirtual.panoramaImages
+    } else {
+      if (!c.finishTextures) c.finishTextures = []
+      const index = c.finishTextures.findIndex(ft => ft.finishName === selectedFinish)
+      if (index > -1) {
+        c.finishTextures[index] = {
+          finishName: selectedFinish,
+          panoramaImages: updatedVirtual.panoramaImages
+        }
+      } else {
+        c.finishTextures.push({
+          finishName: selectedFinish,
+          panoramaImages: updatedVirtual.panoramaImages
+        })
+      }
+    }
     setColorVariants(list)
   }
 
   // Finish variants list helpers
   const addFinishVariant = () => {
-    setFinishVariants([...finishVariants, { name: '', isActive: true }])
+    setFinishVariants([...finishVariants, { name: '', description: '', isActive: true }])
   }
-  const removeFinishVariant = (idx) => setFinishVariants(finishVariants.filter((_, i) => i !== idx))
+  const removeFinishVariant = (idx) => {
+    const deletedFinish = finishVariants[idx]
+    const remaining = finishVariants.filter((_, i) => i !== idx)
+    setFinishVariants(remaining)
+
+    if (defaultFinish === deletedFinish.name) {
+      const nextDefault = remaining.find(f => f.isActive)?.name || remaining[0]?.name || ''
+      setDefaultFinish(nextDefault)
+    }
+  }
   const handleFinishChange = (idx, field, val) => {
     const list = [...finishVariants]
+    const oldName = list[idx].name
     list[idx][field] = val
     setFinishVariants(list)
+
+    if (field === 'name' && defaultFinish === oldName) {
+      setDefaultFinish(val)
+    }
+    if (field === 'isActive' && !val && defaultFinish === oldName) {
+      const nextDefault = list.find(f => f.isActive && f.name !== oldName)?.name || list.find(f => f.name !== oldName)?.name || ''
+      setDefaultFinish(nextDefault)
+    }
   }
 
   const handleSubmit = (e) => {
@@ -131,6 +203,18 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
     const cleanImages = images.filter(img => img.url.trim())
     const cleanColors = colorVariants.filter(c => c.name.trim())
     const cleanFinishes = finishVariants.filter(f => f.name.trim())
+
+    // Ensure defaultColor is set to one of the clean colors
+    let finalDefaultColor = defaultColor
+    if (cleanColors.length > 0 && !cleanColors.some(c => c.name === finalDefaultColor)) {
+      finalDefaultColor = cleanColors.find(c => c.isActive)?.name || cleanColors[0]?.name || ''
+    }
+
+    // Ensure defaultFinish is set to one of the clean finishes
+    let finalDefaultFinish = defaultFinish
+    if (cleanFinishes.length > 0 && !cleanFinishes.some(f => f.name === finalDefaultFinish)) {
+      finalDefaultFinish = cleanFinishes.find(f => f.isActive)?.name || cleanFinishes[0]?.name || ''
+    }
 
     const payload = {
       name,
@@ -146,8 +230,11 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
       sortOrder: Number(sortOrder) || 0,
       brochureUrl,
       has360View,
-      defaultColor,
-      defaultFinish,
+      defaultColor: finalDefaultColor,
+      defaultFinish: finalDefaultFinish,
+      metaTitle,
+      metaDescription,
+      metaKeywords,
       specifications: cleanSpecs,
       features,
       applications,
@@ -160,11 +247,12 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
   }
 
   const tabs = [
-    { id: 'basic', label: 'Basic Info' },
-    { id: 'specs', label: 'Specifications' },
-    { id: 'features', label: 'Features & Apps' },
-    { id: 'images', label: 'Images' },
-    { id: 'configurator', label: '360° Configurator' }
+    { id: 'basic', label: 'Basic Info', icon: Info, description: 'Core details' },
+    { id: 'specs', label: 'Specs', icon: Sliders, description: 'Specifications' },
+    { id: 'features', label: 'Features & Apps', icon: Sparkles, description: 'Highlights' },
+    { id: 'images', label: 'Images', icon: ImageIcon, description: 'Visual assets' },
+    { id: 'seo', label: 'SEO Settings', icon: Search, description: 'Metadata tuning' },
+    { id: 'configurator', label: '360° Config', icon: Box, description: '3D textures' }
   ]
 
   const handleFormKeyDown = (e) => {
@@ -177,20 +265,35 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
     <form onSubmit={handleSubmit} onKeyDown={handleFormKeyDown} className="space-y-6 max-w-4xl mx-auto">
       
       {/* Form Tabs Nav */}
-      <div className="flex border-b border-gray-200 gap-6">
+      <div className="flex flex-wrap gap-2 bg-gray-50/50 p-2 rounded-2xl border border-gray-200/65 mb-8 select-none">
         {tabs.map(t => {
           if (t.id === 'configurator' && !has360View) return null
           const active = activeTab === t.id
+          const IconComp = t.icon
           return (
             <button
               key={t.id}
               type="button"
               onClick={() => setActiveTab(t.id)}
-              className={`pb-3 font-sans font-semibold text-xs uppercase tracking-wider cursor-pointer bg-transparent border-none outline-none select-none ${
-                active ? 'text-fg-blue border-b-2 border-fg-blue' : 'text-gray-400 hover:text-gray-700'
+              className={`flex-1 min-w-[130px] flex items-center gap-2.5 px-3 py-2 rounded-xl text-left cursor-pointer border-none outline-none select-none transition-all duration-300 ${
+                active 
+                  ? 'bg-white text-[#0E4FB3] shadow-xs ring-1 ring-black/5' 
+                  : 'bg-transparent text-gray-500 hover:text-gray-900 hover:bg-gray-100/50'
               }`}
             >
-              {t.label}
+              <div className={`p-1.5 rounded-lg flex items-center justify-center transition-colors duration-300 shrink-0 ${
+                active ? 'bg-[#0E4FB3]/10 text-[#0E4FB3]' : 'bg-gray-200/50 text-gray-400'
+              }`}>
+                <IconComp className="w-3.5 h-3.5" />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="font-sans font-bold text-[11px] uppercase tracking-wider block truncate">
+                  {t.label}
+                </span>
+                <span className="font-sans text-[8px] text-gray-400 font-normal block truncate mt-0.5">
+                  {t.description}
+                </span>
+              </div>
             </button>
           )
         })}
@@ -571,6 +674,63 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
           </div>
         </div>
       )}
+      {/* Tab: SEO Settings */}
+      {activeTab === 'seo' && (
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-6">
+          <div className="border-b border-gray-150 pb-3 flex items-center gap-2">
+            <Search className="w-4 h-4 text-[#0E4FB3]" />
+            <span className="font-sans font-bold text-xs uppercase tracking-wider text-gray-700">Search Engine Optimization (SEO)</span>
+          </div>
+
+          <p className="text-xs text-gray-500 font-sans leading-relaxed">
+            Fine-tune search engine indexability and visibility. Providing custom values will override the automatically generated metadata for this product page.
+          </p>
+
+          <div className="space-y-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="font-mono text-[9px] uppercase tracking-wider text-gray-400 font-bold">Meta Title Tag</label>
+              <input
+                type="text"
+                value={metaTitle}
+                onChange={(e) => setMetaTitle(e.target.value)}
+                placeholder="e.g. AeroLux Luxury Elevator | High-Speed Traction Passenger Lifts"
+                className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white font-sans text-sm text-gray-900 outline-none focus:border-fg-blue w-full"
+              />
+              <span className="font-sans text-[10px] text-gray-400">
+                Recommended length: 50-60 characters. Current: {metaTitle.length} characters.
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="font-mono text-[9px] uppercase tracking-wider text-gray-400 font-bold">Meta Description</label>
+              <textarea
+                value={metaDescription}
+                onChange={(e) => setMetaDescription(e.target.value)}
+                placeholder="e.g. Discover AeroLux, our premier high-speed traction elevator engineered for elite luxury residential and corporate skyscrapers. Custom 3D finishes available."
+                rows={3}
+                className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white font-sans text-sm text-gray-900 outline-none focus:border-fg-blue w-full resize-y"
+              />
+              <span className="font-sans text-[10px] text-gray-400">
+                Recommended length: 150-160 characters. Current: {metaDescription.length} characters.
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="font-mono text-[9px] uppercase tracking-wider text-gray-400 font-bold">Meta Keywords</label>
+              <input
+                type="text"
+                value={metaKeywords}
+                onChange={(e) => setMetaKeywords(e.target.value)}
+                placeholder="e.g. luxury elevators, capsule lift, passenger lift manufacturer, commercial traction lift"
+                className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white font-sans text-sm text-gray-900 outline-none focus:border-fg-blue w-full"
+              />
+              <span className="font-sans text-[10px] text-gray-400">
+                Comma-separated list of primary search keywords.
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Tab 5: 360 Configurator */}
       {activeTab === 'configurator' && has360View && (
@@ -578,23 +738,29 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="font-mono text-[9px] uppercase tracking-wider text-gray-400 font-bold">Default Color Name</label>
-              <input
-                type="text"
+              <select
                 value={defaultColor}
                 onChange={(e) => setDefaultColor(e.target.value)}
-                placeholder="e.g. Champagne Gold"
-                className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white font-sans text-sm text-gray-900 outline-none focus:border-fg-blue w-full"
-              />
+                className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white font-sans text-sm text-gray-900 outline-none focus:border-fg-blue w-full cursor-pointer"
+              >
+                <option value="">Select Default Color</option>
+                {colorVariants.filter(c => c.name.trim()).map((c, idx) => (
+                  <option key={idx} value={c.name}>{c.name}</option>
+                ))}
+              </select>
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="font-mono text-[9px] uppercase tracking-wider text-gray-400 font-bold">Default Material Finish</label>
-              <input
-                type="text"
+              <select
                 value={defaultFinish}
                 onChange={(e) => setDefaultFinish(e.target.value)}
-                placeholder="e.g. Mirror Finish"
-                className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white font-sans text-sm text-gray-900 outline-none focus:border-fg-blue w-full"
-              />
+                className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white font-sans text-sm text-gray-900 outline-none focus:border-fg-blue w-full cursor-pointer"
+              >
+                <option value="">Select Default Finish</option>
+                {finishVariants.filter(f => f.name.trim()).map((f, idx) => (
+                  <option key={idx} value={f.name}>{f.name}</option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -653,11 +819,56 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
                     </button>
                   </div>
 
-                  {/* 360 view coordinates uploader panel */}
-                  <View360Uploader
-                    variant={c}
-                    onChange={(updated) => handleColorUploaderChange(i, updated)}
-                  />
+                  {/* Select Finish to upload textures for */}
+                  <div className="flex items-center gap-2.5 pb-2 pt-1 border-t border-gray-200/60">
+                    <span className="font-sans text-xs font-bold text-gray-600 font-mono tracking-wider uppercase text-[10px]">Upload Textures for:</span>
+                    <select
+                      value={(() => {
+                        const activeOptions = finishVariants.filter(f => f.name.trim() && f.isActive)
+                        const selFinish = selectedFinishForColor[i] || 'default'
+                        const isSelFinishValid = selFinish === 'default' || activeOptions.some(f => f.name === selFinish)
+                        return isSelFinishValid ? selFinish : 'default'
+                      })()}
+                      onChange={(e) => {
+                        setSelectedFinishForColor(prev => ({
+                          ...prev,
+                          [i]: e.target.value
+                        }))
+                      }}
+                      className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white font-sans text-xs font-semibold outline-none focus:border-fg-blue text-gray-700 cursor-pointer"
+                    >
+                      <option value="default">Default / Base Color</option>
+                      {finishVariants.filter(f => f.name.trim() && f.isActive).map(f => (
+                        <option key={f.name} value={f.name}>{f.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {(() => {
+                    const activeOptions = finishVariants.filter(f => f.name.trim() && f.isActive)
+                    const selFinish = selectedFinishForColor[i] || 'default'
+                    const isSelFinishValid = selFinish === 'default' || activeOptions.some(f => f.name === selFinish)
+                    const currentFinish = isSelFinishValid ? selFinish : 'default'
+
+                    let virtualVariant = c
+                    if (currentFinish !== 'default') {
+                      const finishTex = (c.finishTextures || []).find(ft => ft.finishName === currentFinish) || {
+                        finishName: currentFinish,
+                        panoramaImages: {}
+                      }
+                      virtualVariant = {
+                        name: `${c.name} (${currentFinish})`,
+                        panoramaImages: finishTex.panoramaImages
+                      }
+                    }
+                    return (
+                      <View360Uploader
+                        key={`${i}-${currentFinish}`}
+                        variant={virtualVariant}
+                        onChange={(updatedVirtual) => handleColorUploaderChangeWithFinish(i, updatedVirtual)}
+                      />
+                    )
+                  })()}
                 </div>
               ))}
             </div>
@@ -677,34 +888,62 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
               </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               {finishVariants.map((f, i) => (
-                <div key={i} className="flex gap-3 items-center">
-                  <input
-                    type="text"
-                    value={f.name}
-                    onChange={(e) => handleFinishChange(i, 'name', e.target.value)}
-                    placeholder="Texture Finish Name (e.g. Mirror Finish)"
-                    required
-                    className="flex-1 px-3.5 py-2 rounded-xl border border-gray-200 bg-white font-sans text-xs outline-none focus:border-fg-blue"
-                  />
-                  <div className="flex items-center gap-2 select-none">
+                <div key={i} className="border border-gray-200/80 rounded-xl p-4 bg-gray-50/30 space-y-3">
+                  <div className="flex gap-3 items-center">
                     <input
-                      type="checkbox"
-                      checked={!!f.isActive}
-                      onChange={(e) => handleFinishChange(i, 'isActive', e.target.checked)}
-                      className="rounded border-gray-300 text-fg-blue focus:ring-fg-blue"
+                      type="text"
+                      value={f.name}
+                      onChange={(e) => handleFinishChange(i, 'name', e.target.value)}
+                      placeholder="Texture Finish Name (e.g. Mirror Finish)"
+                      required
+                      className="flex-1 px-3.5 py-2 rounded-lg border border-gray-200 bg-white font-sans text-xs outline-none focus:border-fg-blue"
                     />
-                    <span className="font-sans text-xs font-semibold text-gray-500">Active</span>
+                    <div className="flex items-center gap-2 select-none">
+                      <input
+                        type="checkbox"
+                        checked={!!f.isActive}
+                        onChange={(e) => handleFinishChange(i, 'isActive', e.target.checked)}
+                        className="rounded border-gray-300 text-fg-blue focus:ring-fg-blue"
+                      />
+                      <span className="font-sans text-xs font-semibold text-gray-500">Active</span>
+                    </div>
+                    <div className="flex items-center gap-2 select-none">
+                      <input
+                        type="radio"
+                        name="defaultFinishRadio"
+                        checked={defaultFinish === f.name}
+                        onChange={() => {
+                          if (f.name.trim()) {
+                            setDefaultFinish(f.name)
+                            if (!f.isActive) {
+                              handleFinishChange(i, 'isActive', true)
+                            }
+                          }
+                        }}
+                        className="w-4 h-4 rounded-full border-gray-300 text-fg-blue focus:ring-fg-blue cursor-pointer"
+                      />
+                      <span className="font-sans text-xs font-semibold text-gray-500">Default</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeFinishVariant(i)}
+                      disabled={finishVariants.length === 1}
+                      className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-gray-50 disabled:opacity-40 cursor-pointer bg-transparent border-none"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => removeFinishVariant(i)}
-                    disabled={finishVariants.length === 1}
-                    className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-gray-50 disabled:opacity-40 cursor-pointer bg-transparent border-none"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex flex-col gap-1">
+                    <input
+                      type="text"
+                      value={f.description || ''}
+                      onChange={(e) => handleFinishChange(i, 'description', e.target.value)}
+                      placeholder="Finish Description (e.g. Elegant brushed texture finish)"
+                      className="px-3.5 py-2 rounded-lg border border-gray-200 bg-white font-sans text-xs outline-none focus:border-fg-blue w-full"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -712,9 +951,9 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
         </div>
       )}
 
-      {/* Sticky Floating Action Bar */}
-      <div className="sticky bottom-6 flex justify-end items-center gap-4 z-40 select-none pt-6">
-        <div className="bg-white/95 backdrop-blur-xl border border-gray-200 p-2 px-6 rounded-full shadow-2xl flex items-center gap-3">
+      {/* Floating Action Bar */}
+      <div className="fixed bottom-6 right-8 z-50 select-none">
+        <div className="bg-white/95 backdrop-blur-xl border border-gray-200/80 p-2.5 px-6 rounded-full shadow-2xl flex items-center gap-4">
           <Link
             href="/admin/products"
             className="font-mono text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-900 px-4 py-2 rounded-full hover:bg-gray-100 transition-colors no-underline"
@@ -727,11 +966,14 @@ export default function ProductForm({ product = null, onSubmit, isLoading = fals
             disabled={isLoading}
             className="bg-[#E8600A] hover:bg-[#d55406] text-white rounded-full px-8 py-3 font-sans font-bold text-xs uppercase tracking-wider no-underline shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer border-none outline-none disabled:opacity-50 flex items-center gap-2"
           >
-            {isLoading ? 'Publishing...' : 'Publish Product'}
+            {isLoading ? (
+              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : null}
+            {isLoading ? 'Saving...' : (product ? 'Update Product' : 'Publish Product')}
           </button>
         </div>
       </div>
 
     </form>
   )
-}
+})

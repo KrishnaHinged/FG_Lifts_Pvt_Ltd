@@ -1,5 +1,18 @@
 import mongoose from 'mongoose'
 
+const ColorFinishTextureSchema = new mongoose.Schema({
+  finishName: { type: String, required: true },
+  panoramaImages: {
+    sphere:  String,
+    front:   String,
+    back:    String,
+    left:    String,
+    right:   String,
+    ceiling: String,
+    floor:   String,
+  }
+}, { _id: false })
+
 const ColorVariantSchema = new mongoose.Schema({
   name:  { type: String, required: true },   // e.g. "Champagne Gold"
   hex:   { type: String },                   // e.g. "#C9A84C"
@@ -12,12 +25,14 @@ const ColorVariantSchema = new mongoose.Schema({
     ceiling: String,
     floor:   String,
   },
+  finishTextures: [ColorFinishTextureSchema],
   isActive: { type: Boolean, default: true }
 }, { _id: false })
 
 const FinishVariantSchema = new mongoose.Schema({
-  name:     { type: String, required: true },  // Mirror / Hairline / Brushed / Satin
-  isActive: { type: Boolean, default: true }
+  name:        { type: String, required: true },  // Mirror / Hairline / Brushed / Satin
+  description: { type: String },                  // Description e.g. "Elegant brushed texture finish"
+  isActive:    { type: Boolean, default: true }
 }, { _id: false })
 
 const SpecSchema = new mongoose.Schema({
@@ -47,6 +62,9 @@ const ProductSchema = new mongoose.Schema({
   has360View:     { type: Boolean, default: false },
   defaultColor:   { type: String },
   defaultFinish:  { type: String },
+  metaTitle:      { type: String },
+  metaDescription:{ type: String },
+  metaKeywords:   { type: String },
   colorVariants:  [ColorVariantSchema],
   finishVariants: [FinishVariantSchema],
   isFeatured:     { type: Boolean, default: false },

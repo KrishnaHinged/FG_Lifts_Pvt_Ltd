@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo, memo } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
@@ -20,7 +20,7 @@ const defaultMediaLibrary = [
   { url: '/images/services-collage.png', title: 'High-Speed Traction Machine', category: 'Components' },
 ]
 
-export default function MediaGalleryModal({ isOpen, onClose, onSelect, title = "Select Image from Gallery", aspectRatio = null }) {
+export default memo(function MediaGalleryModal({ isOpen, onClose, onSelect, title = "Select Image from Gallery", aspectRatio = null }) {
   const [mounted, setMounted] = useState(false)
   const [activeTab, setActiveTab] = useState('gallery') // gallery | upload | url
   const [searchTerm, setSearchTerm] = useState('')
@@ -48,13 +48,20 @@ export default function MediaGalleryModal({ isOpen, onClose, onSelect, title = "
     }
   }, [isOpen])
 
-  if (!isOpen || !mounted) return null
+  const allMedia = useMemo(() => {
+    return [...uploadedImages, ...defaultMediaLibrary]
+  }, [uploadedImages])
 
-  const allMedia = [...uploadedImages, ...defaultMediaLibrary]
-  const filteredMedia = allMedia.filter(item => 
-    item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.category.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredMedia = useMemo(() => {
+    const term = searchTerm.toLowerCase().trim()
+    if (!term) return allMedia
+    return allMedia.filter(item => 
+      item.title.toLowerCase().includes(term) ||
+      item.category.toLowerCase().includes(term)
+    )
+  }, [allMedia, searchTerm])
+
+  if (!isOpen || !mounted) return null
 
   const handleFileUpload = (e) => {
     const files = e.target.files
@@ -543,4 +550,4 @@ export default function MediaGalleryModal({ isOpen, onClose, onSelect, title = "
   )
 
   return createPortal(modalContent, document.body)
-}
+})

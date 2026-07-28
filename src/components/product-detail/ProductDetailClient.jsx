@@ -84,6 +84,9 @@ export default function ProductDetailClient({ product, related = [] }) {
               images={product.images} 
               has360View={product.has360View}
               panoramaUrl="/images/360-gold.png"
+              defaultColor={product.defaultColor}
+              defaultFinish={product.defaultFinish}
+              finishVariants={product.finishVariants || []}
               colorVariants={product.colorVariants ? product.colorVariants.map(v => {
                 let panorama = v.panoramaImages?.sphere || '/images/360-gold.png';
                 if (!v.panoramaImages?.sphere) {
@@ -97,6 +100,7 @@ export default function ProductDetailClient({ product, related = [] }) {
                   color: v.hex,
                   label: v.name,
                   panoramaImages: v.panoramaImages || {},
+                  finishTextures: v.finishTextures || [],
                   panorama
                 };
               }) : []}

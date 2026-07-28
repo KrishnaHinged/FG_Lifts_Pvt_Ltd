@@ -7,12 +7,18 @@ export async function generateMetadata({ params }) {
     const { slug } = await params
     const product = await getProductBySlug(slug)
     if (!product) return { title: 'Product Not Found | FG Lift' }
+
+    const title = product.metaTitle || `${product.name} | FG Lift Pvt. Ltd.`
+    const description = product.metaDescription || product.description?.slice(0, 155) || `${product.name} — premium elevator solution by FG Lift.`
+    const keywords = product.metaKeywords || ''
+
     return {
-      title: `${product.name} | FG Lift Pvt. Ltd.`,
-      description: product.description?.slice(0, 155) || `${product.name} — premium elevator solution by FG Lift.`,
+      title,
+      description,
+      keywords,
       openGraph: {
-        title: product.name,
-        description: product.tagline || product.description?.slice(0, 100) || '',
+        title: product.metaTitle || product.name,
+        description: product.metaDescription || product.tagline || product.description?.slice(0, 100) || '',
         images: [product.images?.[0]?.url || '/images/og-home.jpg'],
       },
     }

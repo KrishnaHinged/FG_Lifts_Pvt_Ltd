@@ -41,8 +41,8 @@ const mockProducts = [
       { name: 'Space Silver', hex: '#A6A6A6', isActive: true }
     ],
     finishVariants: [
-      { name: 'Mirror Finish', isActive: true },
-      { name: 'Hairline Finish', isActive: true }
+      { name: 'Mirror Finish', description: 'Highly reflective mirror-like polished stainless steel surface', isActive: true },
+      { name: 'Hairline Finish', description: 'Elegant brushed texture finish with fine linear scratch patterns', isActive: true }
     ],
     isFeatured: true,
     badge: '360° View',
@@ -132,8 +132,8 @@ const mockProducts = [
       { name: 'Rose Gold', hex: '#B76E79', isActive: true }
     ],
     finishVariants: [
-      { name: 'Mirror Finish', isActive: true },
-      { name: 'Satin Finish', isActive: true }
+      { name: 'Mirror Finish', description: 'Highly reflective mirror-like polished stainless steel surface', isActive: true },
+      { name: 'Satin Finish', description: 'Soft matte non-reflective texture providing an industrial premium feel', isActive: true }
     ],
     isFeatured: false,
     badge: '360° View',
@@ -653,58 +653,95 @@ const mockTestimonials = [
   }
 ]
 
-export async function GET() {
+export async function GET(req) {
   try {
     await connectDB()
+    const { searchParams } = new URL(req.url || 'http://localhost/api/seed')
+    const isReset = searchParams.get('reset') === 'true' || process.env.RESET_DB === 'true'
 
     // 1. Seed Products if missing (preserving existing user data)
-    const seededProducts = []
+    let seededProductsCount = 0
+    let skippedProductsCount = 0
     for (const prodData of mockProducts) {
       const exists = await Product.findOne({ slug: prodData.slug })
       if (!exists) {
-        const created = await Product.create(prodData)
-        seededProducts.push(created)
+        await Product.create(prodData)
+        seededProductsCount++
+      } else if (isReset) {
+        Object.assign(exists, prodData)
+        await exists.save()
+        seededProductsCount++
+      } else {
+        skippedProductsCount++
       }
     }
 
     // 2. Seed Projects if missing
-    const seededProjects = []
+    let seededProjectsCount = 0
+    let skippedProjectsCount = 0
     for (const projData of mockProjects) {
       const exists = await GalleryProject.findOne({ title: projData.title })
       if (!exists) {
-        const created = await GalleryProject.create(projData)
-        seededProjects.push(created)
+        await GalleryProject.create(projData)
+        seededProjectsCount++
+      } else if (isReset) {
+        Object.assign(exists, projData)
+        await exists.save()
+        seededProjectsCount++
+      } else {
+        skippedProjectsCount++
       }
     }
 
     // 3. Seed Email Templates if missing
-    const seededTemplates = []
+    let seededTemplatesCount = 0
+    let skippedTemplatesCount = 0
     for (const temp of defaultTemplates) {
       const exists = await EmailTemplate.findOne({ name: temp.name })
       if (!exists) {
-        const created = await EmailTemplate.create(temp)
-        seededTemplates.push(created)
+        await EmailTemplate.create(temp)
+        seededTemplatesCount++
+      } else if (isReset) {
+        Object.assign(exists, temp)
+        await exists.save()
+        seededTemplatesCount++
+      } else {
+        skippedTemplatesCount++
       }
     }
 
     // 4. Seed Blog posts if missing (with readTime calculation)
-    const seededPosts = []
+    let seededPostsCount = 0
+    let skippedPostsCount = 0
     for (const postData of mockBlogPosts) {
       const exists = await BlogPost.findOne({ slug: postData.slug })
       if (!exists) {
         const post = new BlogPost(postData)
         await post.save()
-        seededPosts.push(post)
+        seededPostsCount++
+      } else if (isReset) {
+        Object.assign(exists, postData)
+        await exists.save()
+        seededPostsCount++
+      } else {
+        skippedPostsCount++
       }
     }
 
     // 5. Seed Testimonials if missing
-    const seededTestimonials = []
+    let seededTestimonialsCount = 0
+    let skippedTestimonialsCount = 0
     for (const testData of mockTestimonials) {
       const exists = await Testimonial.findOne({ name: testData.name, quote: testData.quote })
       if (!exists) {
-        const created = await Testimonial.create(testData)
-        seededTestimonials.push(created)
+        await Testimonial.create(testData)
+        seededTestimonialsCount++
+      } else if (isReset) {
+        Object.assign(exists, testData)
+        await exists.save()
+        seededTestimonialsCount++
+      } else {
+        skippedTestimonialsCount++
       }
     }
 
@@ -747,13 +784,16 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
-      message: 'Database seeded safely. Existing MongoDB data preserved.',
-      productsSeeded: seededProducts.length,
-      projectsSeeded: seededProjects.length,
-      postsSeeded: seededPosts.length,
-      templatesSeeded: seededTemplates.length,
-      testimonialsSeeded: seededTestimonials.length,
-      adminsSeeded: seededAdmins.length > 0 ? seededAdmins : 'All default admins already exist'
+      mode: isReset ? 'RESET' : 'NON_DESTRUCTIVE',
+      message: isReset ? 'Default records reset.' : 'Database seeded safely. All user content preserved.',
+      summary: {
+        products: { insertedOrUpdated: seededProductsCount, skipped: skippedProductsCount },
+        projects: { insertedOrUpdated: seededProjectsCount, skipped: skippedProjectsCount },
+        posts: { insertedOrUpdated: seededPostsCount, skipped: skippedPostsCount },
+        templates: { insertedOrUpdated: seededTemplatesCount, skipped: skippedTemplatesCount },
+        testimonials: { insertedOrUpdated: seededTestimonialsCount, skipped: skippedTestimonialsCount },
+        adminsSeeded: seededAdmins.length > 0 ? seededAdmins : 'All default admins exist'
+      }
     })
   } catch (err) {
     console.error('Seed API error:', err)

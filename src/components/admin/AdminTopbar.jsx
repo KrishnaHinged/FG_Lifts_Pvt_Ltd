@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 import { usePathname } from 'next/navigation'
-import { Search, Bell, Command } from 'lucide-react'
+import { Bell, Command } from 'lucide-react'
 import CommandPalette from './CommandPalette'
 import NotificationCenter from './NotificationCenter'
 
-export default function AdminTopbar({ admin }) {
+export default memo(function AdminTopbar({ admin }) {
   const pathname = usePathname()
   const [pendingCount, setPendingCount] = useState(0)
   const [showNotifications, setShowNotifications] = useState(false)
@@ -114,4 +114,4 @@ export default function AdminTopbar({ admin }) {
       />
     </>
   )
-}
+})

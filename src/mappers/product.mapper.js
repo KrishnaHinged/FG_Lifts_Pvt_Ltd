@@ -25,6 +25,9 @@ export function mapToProductDTO(product) {
     has360View: !!product.has360View,
     defaultColor: product.defaultColor || '',
     defaultFinish: product.defaultFinish || '',
+    metaTitle: product.metaTitle || '',
+    metaDescription: product.metaDescription || '',
+    metaKeywords: product.metaKeywords || '',
     colorVariants: (product.colorVariants || []).map(c => {
       const pano = {}
       if (c.panoramaImages && typeof c.panoramaImages === 'object' && !Array.isArray(c.panoramaImages)) {
@@ -38,15 +41,33 @@ export function mapToProductDTO(product) {
           pano[`img_${idx}`] = getAssetUrl(url)
         })
       }
+
+      const finishTextures = (c.finishTextures || []).map(ft => {
+        const ftPano = {}
+        if (ft.panoramaImages && typeof ft.panoramaImages === 'object') {
+          Object.keys(ft.panoramaImages).forEach(k => {
+            if (ft.panoramaImages[k]) {
+              ftPano[k] = getAssetUrl(ft.panoramaImages[k])
+            }
+          })
+        }
+        return {
+          finishName: ft.finishName,
+          panoramaImages: ftPano
+        }
+      })
+
       return {
         name: c.name,
         hex: c.hex,
         panoramaImages: pano,
+        finishTextures,
         isActive: !!c.isActive
       }
     }),
     finishVariants: (product.finishVariants || []).map(f => ({
       name: f.name,
+      description: f.description || '',
       isActive: !!f.isActive
     })),
     isFeatured: !!product.isFeatured,
