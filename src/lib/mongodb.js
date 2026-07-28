@@ -1,8 +1,7 @@
 import mongoose from 'mongoose'
 
-const MONGODB_URI = process.env.MONGODB_URI
-
-if (!MONGODB_URI) throw new Error('MONGODB_URI not set in .env')
+const DEFAULT_MONGODB_URI = 'mongodb+srv://salesfirozgerelevator_db_user:yPvOETDfYwwCoJjT@cluster0.6zok6qu.mongodb.net/'
+const MONGODB_URI = process.env.MONGODB_URI || DEFAULT_MONGODB_URI
 
 let cached = global.mongoose || { conn: null, promise: null }
 global.mongoose = cached
