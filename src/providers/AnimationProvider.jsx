@@ -7,8 +7,12 @@ const AnimationContext = createContext(null)
 
 export function AnimationProvider({ children }) {
   const { prefersReducedMotion } = useViewport()
-  const [animationsEnabled, setAnimationsEnabled] = useState(!prefersReducedMotion)
+  const [animationsEnabled, setAnimationsEnabled] = useState(true)
   const [speedMultiplier, setSpeedMultiplier] = useState(1.0) // 0.5 for slow motion, 2.0 for fast, etc.
+
+  React.useEffect(() => {
+    setAnimationsEnabled(!prefersReducedMotion)
+  }, [prefersReducedMotion])
 
   const toggleAnimations = () => {
     setAnimationsEnabled(prev => !prev)

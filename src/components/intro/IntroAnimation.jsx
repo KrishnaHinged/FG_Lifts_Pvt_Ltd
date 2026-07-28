@@ -13,17 +13,17 @@ function TypewriterInstruction() {
   return (
     <div className="intro-instruction fixed left-6 sm:left-12 md:left-20 top-1/2 -translate-y-1/2 z-45 max-w-[calc(100vw-32px)] sm:max-w-3xl md:max-w-4xl pointer-events-none text-left select-none opacity-100">
       <div className="space-y-4 sm:space-y-5">
-        <motion.div 
+        <motion.div
           initial={{ width: 0 }}
           animate={{ width: 48 }}
           transition={{ duration: 0.8, ease: "circOut", delay: 0.2 }}
-          className="h-[2px] bg-[#0E4FB3] opacity-80" 
+          className="h-[2px] bg-[#0E4FB3] opacity-80"
         />
-        
+
         <div className="flex flex-col gap-2.5 sm:gap-3 drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
           {/* English Text */}
           <div className="relative inline-block w-max max-w-full">
-            <motion.h3 
+            <motion.h3
               initial={{ clipPath: "inset(0 100% 0 0)" }}
               animate={{ clipPath: "inset(0 0% 0 0)" }}
               transition={{ duration: 1.2, ease: "linear", delay: 0.5 }}
@@ -32,10 +32,10 @@ function TypewriterInstruction() {
               {english}
             </motion.h3>
           </div>
-          
+
           {/* Hindi Text */}
           <div className="relative inline-block w-max max-w-full">
-            <motion.h3 
+            <motion.h3
               initial={{ clipPath: "inset(0 100% 0 0)" }}
               animate={{ clipPath: "inset(0 0% 0 0)" }}
               transition={{ duration: 2.0, ease: "linear", delay: 1.8 }}
@@ -47,7 +47,7 @@ function TypewriterInstruction() {
         </div>
 
         {/* Action description HUD */}
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 4, duration: 1 }}
@@ -64,6 +64,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
   const pinWrapperRef = useRef(null)
   const scrollAnchorRef = useRef(null)
   const videoRef = useRef(null)
+  const completionTriggeredRef = useRef(false)
 
   const [isPreloaded, setIsPreloaded] = useState(false)
   const [videoDuration, setVideoDuration] = useState(12)
@@ -149,9 +150,11 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
           // Ensure video currentTime starts at 0 for scrubbing
           try {
             video.currentTime = 0
-          } catch (e) {}
+          } catch (e) { }
 
-          // Scroll scrubbing timeline
+          const videoPhaseEnd = 0.65 // Video scrubbing finishes at 65% scroll progress
+
+          // Master ScrollTrigger timeline normalized to 100 units
           const masterTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: scrollAnchor,
@@ -162,63 +165,80 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
               onUpdate: (self) => {
                 const progress = self.progress
 
-                // Toggle skip button visibility
+                // Direct synchronous frame scrubbing for HTML5 Video element
+                if (video && videoDuration) {
+                  const vidProgress = Math.min(1, Math.max(0, progress / videoPhaseEnd))
+                  const targetTime = Math.min(videoDuration - 0.05, vidProgress * videoDuration)
+                  if (!isNaN(targetTime) && Math.abs(video.currentTime - targetTime) > 0.02) {
+                    try {
+                      video.currentTime = targetTime
+                    } catch (e) { }
+                  }
+                }
+
+                // Toggle skip button visibility during interactive scroll
                 setShowSkipButton(progress > 0.05 && progress < 0.96)
 
-                // Complete the intro immediately when reaching 99% scroll progress
-                if (progress >= 0.99) {
+                // Final transition lock: pause 1 sec when doors close at 99% progress
+                if (progress >= 0.99 && !completionTriggeredRef.current) {
+                  completionTriggeredRef.current = true
+
+                  if (window.lenis && typeof window.lenis.stop === 'function') {
+                    window.lenis.stop()
+                  }
+
                   setTimeout(() => {
                     onComplete()
-                  }, 10)
+                    if (window.lenis && typeof window.lenis.start === 'function') {
+                      window.lenis.start()
+                    }
+                  }, 500) // 0.5 second pause
                 }
               }
             }
           })
 
-          // Setup video timeline scrubbing
-          masterTimeline.to(video, {
-            currentTime: videoDuration,
-            ease: 'none',
-          })
+          // STEP 1: Instruction HUD fades out early (0% to 12%)
+          masterTimeline.to('.intro-instruction', {
+            opacity: 0,
+            y: -20,
+            duration: 12,
+            ease: 'power2.out'
+          }, 0)
 
-          // Setup overlay text timelines
-          const textTimeline = gsap.timeline({
-            scrollTrigger: {
-              trigger: scrollAnchor,
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: 1.2,
-            }
-          })
+          // STEP 1 & 2: Video plays 0% -> 65%, then pauses on final frame 65% -> 73%
+          // (No overlays scheduled between 12% and 73% - clean view of video)
 
-          textTimeline
-            .to('.intro-instruction', { opacity: 0, duration: 10 }, 0)
-            .to('.logo-reveal', { opacity: 1, duration: 25, ease: 'sine.out' }, 65)
-            .fromTo('.logo-title', 
-              { opacity: 0, y: 15, scale: 0.98 },
-              { opacity: 1, y: 0, scale: 1, duration: 25, ease: 'power3.out' }, 
-              65
+          // STEP 3: Logo Reveal (73% to 90% scroll progress - ONLY after video finishes and pauses)
+          masterTimeline
+            .set('.logo-reveal', { display: 'flex' }, 73)
+            .fromTo('.logo-reveal',
+              { opacity: 0 },
+              { opacity: 1, duration: 7, ease: 'sine.out' },
+              73
             )
-            .to('.logo-reveal', { opacity: 1, duration: 2, ease: 'sine.out' }, 90)
             .fromTo('.logo-title',
-              { opacity: 1, y: 0, scale: 1 },
-              { opacity: 1, y: 0, scale: 1, duration: 2, ease: 'power4.out' },
-              91
+              { opacity: 0, y: 25, scale: 0.94 },
+              { opacity: 1, y: 0, scale: 1, duration: 8, ease: 'power3.out' },
+              74
             )
-            .to('.logo-subtitle', { opacity: 1, duration: 1, ease: 'sine.inOut' }, 92)
-            .to('.logo-glow', { opacity: 0.8, duration: 1.5, ease: 'sine.inOut' }, 91)
-            .to(['.logo-reveal', '.logo-title', '.logo-subtitle', '.logo-glow'], {
-              opacity: 0,
-              y: -15,
-              duration: 1.5,
-              ease: 'power3.in'
-            }, 94.5)
-            .set('.logo-reveal', { display: 'none' }, 96)
+            .fromTo('.logo-subtitle',
+              { opacity: 0, y: 10 },
+              { opacity: 1, y: 0, duration: 6, ease: 'sine.out' },
+              78
+            )
+            .fromTo('.logo-glow',
+              { opacity: 0, scale: 0.8 },
+              { opacity: 0.8, scale: 1, duration: 8, ease: 'sine.inOut' },
+              75
+            )
 
-            // Transition doors split open (96% to 100% scroll progress)
-            .set('.transition-scene', { display: 'flex', flexDirection: 'column' }, 96)
-            .to('.transition-door-top', { y: '-100%', duration: 4.5, ease: 'power4.inOut' }, 96)
-            .to('.transition-door-bottom', { y: '100%', duration: 4.5, ease: 'power4.inOut' }, 96)
+          // STEP 4: Smooth Cinematic Fade-Out of Intro Overlay into Home Screen (90% to 99% scroll progress)
+          masterTimeline.to('.cinematic-container', {
+            opacity: 0,
+            duration: 9,
+            ease: 'power2.inOut'
+          }, 90)
         })
 
         if (!isMounted && ctx) {
@@ -240,12 +260,16 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
   }, [isPreloaded, videoDuration, onComplete])
 
   const handleSkip = () => {
+    completionTriggeredRef.current = true
+    if (window.lenis && typeof window.lenis.start === 'function') {
+      window.lenis.start()
+    }
     onComplete()
   }
 
   return (
     <div ref={pinWrapperRef} className="w-full relative bg-white select-none z-50">
-      
+
       {/* 1. Preloader Overlay */}
       {!isPreloaded && (
         <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-[#111111] px-4">
@@ -273,7 +297,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
               </div>
             </div>
           </div>
-          
+
           <div className="absolute bottom-8 text-[10px] font-mono text-[#6B6B6B] tracking-wider">
             SCROLL TO ENTER EXPERIENCE
           </div>
@@ -296,7 +320,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
 
       {/* 3. Fixed Overlay Container (Animate Video Playback Here) */}
       <div className="cinematic-container fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-40 bg-[#040C1A] transition-all duration-500">
-        
+
         {/* Luxury Dark Ambient Background Layer */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#06152F] via-[#0A2244] to-[#020914] z-0" />
 
@@ -310,7 +334,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
           controls={false}
           className="absolute inset-0 w-full h-full object-cover opacity-90 z-10 pointer-events-none select-none [&::-webkit-media-controls]:!hidden [&::-webkit-media-controls-start-playback-button]:!hidden"
         />
-        
+
         {/* Blue Vignette Shadow Overlay (No heavy black) */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(14,79,179,0.15)_100%)] z-15 pointer-events-none" />
 
@@ -321,9 +345,9 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
       </div>
 
       {/* 4. Scroll trigger anchor in document flow */}
-      <div 
-        ref={scrollAnchorRef} 
-        className="relative w-full h-[300vh] bg-transparent pointer-events-none z-10" 
+      <div
+        ref={scrollAnchorRef}
+        className="relative w-full h-[500vh] bg-transparent pointer-events-none z-10"
       />
     </div>
   )

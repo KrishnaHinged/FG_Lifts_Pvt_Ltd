@@ -104,14 +104,15 @@ export default function AdminSidebar({ admin }) {
     <aside className="fixed top-0 left-0 bottom-0 w-64 bg-[#EDE8E2]/60 backdrop-blur-xl text-neutral-800 flex flex-col h-screen select-none border-r border-[#E8E2DA] z-40">
       
       {/* Top Header */}
-      <div className="h-16 flex items-center px-6 border-b border-[#E8E2DA] gap-3">
-        <div className="bg-white px-2.5 py-1.5 rounded shadow-xs flex items-center justify-center border border-neutral-200">
+      <div className="h-20 flex items-center px-6 border-b border-[#E8E2DA]">
+        <div className="bg-white px-4 py-2.5 rounded-2xl shadow-xs flex items-center justify-center border border-neutral-200 w-full h-14">
           <Image 
             src="/images/logo.png" 
             alt="FG Lifts Logo" 
-            width={110} 
-            height={26} 
-            className="object-contain h-[22px] w-auto"
+            width={150} 
+            height={36} 
+            className="object-contain h-[34px] w-auto"
+            priority
           />
         </div>
       </div>

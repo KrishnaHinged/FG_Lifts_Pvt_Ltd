@@ -7,7 +7,7 @@ export default function LogoReveal({ companyName }) {
     <div className="logo-reveal absolute inset-0 z-25 bg-[#F5F0EB] flex flex-col items-center justify-center text-center px-4 pointer-events-none opacity-0" style={{ display: 'none' }}>
       
       {/* Branded Logo Image Card */}
-      <div className="logo-title w-[280px] h-[158px] relative mb-6">
+      <div className="logo-title w-[280px] h-[158px] relative mb-6 opacity-0">
         <Image
           src="/images/logo.png"
           alt="FG Lifts Logo"
@@ -24,7 +24,7 @@ export default function LogoReveal({ companyName }) {
       </p>
 
       {/* Volumetric glow back-panel */}
-      <div className="logo-glow absolute w-96 h-96 bg-[#0E4FB3]/5 rounded-full blur-[100px] opacity-0 pointer-events-none" />
+      <div className="logo-glow absolute w-96 h-96 bg-[#0E4FB3]/10 rounded-full blur-[100px] opacity-0 pointer-events-none" />
     </div>
   )
 }

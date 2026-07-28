@@ -5,8 +5,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 const ViewportContext = createContext(null)
 
 export function ViewportProvider({ children }) {
-  const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
-  const [height, setHeight] = useState(typeof window !== 'undefined' ? window.innerHeight : 800)
+  const [width, setWidth] = useState(1200)
+  const [height, setHeight] = useState(800)
   const [isTouchDevice, setIsTouchDevice] = useState(false)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
@@ -17,6 +17,9 @@ export function ViewportProvider({ children }) {
       setWidth(window.innerWidth)
       setHeight(window.innerHeight)
     }
+
+    // Measure viewport dimensions immediately on mount (client-side)
+    handleResize()
 
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0)
 

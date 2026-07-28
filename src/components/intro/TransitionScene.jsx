@@ -5,7 +5,7 @@ export default function TransitionScene() {
     <div className="transition-scene absolute inset-0 w-full h-full z-30 hidden flex-col pointer-events-none">
       {/* Top elevator door panel */}
       <div 
-        className="transition-door-top h-1/2 w-full bg-gradient-to-r from-[#1C1D1F] via-[#2A2B2D] to-[#1C1D1F] border-b border-[#E8E2DA]/15 flex items-end justify-center relative transition-all duration-300"
+        className="transition-door-top h-1/2 w-full bg-gradient-to-r from-[#1C1D1F] via-[#2A2B2D] to-[#1C1D1F] border-b border-[#E8E2DA]/15 flex items-end justify-center relative"
       >
         {/* Brushed metal detail stripes */}
         <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#0E4FB3]/30" />
@@ -16,7 +16,7 @@ export default function TransitionScene() {
 
       {/* Bottom elevator door panel */}
       <div 
-        className="transition-door-bottom h-1/2 w-full bg-gradient-to-r from-[#1C1D1F] via-[#2A2B2D] to-[#1C1D1F] border-t border-[#E8E2DA]/15 flex items-start justify-center relative transition-all duration-300"
+        className="transition-door-bottom h-1/2 w-full bg-gradient-to-r from-[#1C1D1F] via-[#2A2B2D] to-[#1C1D1F] border-t border-[#E8E2DA]/15 flex items-start justify-center relative"
       >
         {/* Brushed metal detail stripes */}
         <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-[#0E4FB3]/30" />
