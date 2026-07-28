@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { X, UploadCloud, Check, Search, Image as ImageIcon, Link as LinkIcon, Move, ZoomIn, Crop } from 'lucide-react'
+import { compressImage } from '@/utils/image'
 
 // Built-in media library stock images
 const defaultMediaLibrary = [
@@ -68,8 +69,9 @@ export default memo(function MediaGalleryModal({ isOpen, onClose, onSelect, titl
     if (!files || files.length === 0) return
     const file = files[0]
     const reader = new FileReader()
-    reader.onload = (event) => {
-      const dataUrl = event.target.result
+    reader.onload = async (event) => {
+      const rawDataUrl = event.target.result
+      const dataUrl = await compressImage(rawDataUrl, 1200, 0.7)
       const newMedia = {
         url: dataUrl,
         title: file.name,
@@ -89,8 +91,9 @@ export default memo(function MediaGalleryModal({ isOpen, onClose, onSelect, titl
     if (files && files.length > 0) {
       const file = files[0]
       const reader = new FileReader()
-      reader.onload = (event) => {
-        const dataUrl = event.target.result
+      reader.onload = async (event) => {
+        const rawDataUrl = event.target.result
+        const dataUrl = await compressImage(rawDataUrl, 1200, 0.7)
         const newMedia = {
           url: dataUrl,
           title: file.name,

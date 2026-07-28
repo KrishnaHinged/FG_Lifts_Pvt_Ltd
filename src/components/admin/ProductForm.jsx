@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Plus, Trash2, HelpCircle, UploadCloud, Image as ImageIcon, Sliders, Sparkles, Box, Info, Search } from 'lucide-react'
 import View360Uploader from './View360Uploader'
 import MediaGalleryModal from './MediaGalleryModal'
+import { compressImage } from '@/utils/image'
 
 export default memo(function ProductForm({ product = null, onSubmit, isLoading = false }) {
   const [activeTab, setActiveTab] = useState('basic')
@@ -615,7 +616,11 @@ export default memo(function ProductForm({ product = null, onSubmit, isLoading =
                       if (files && files.length > 0) {
                         const file = files[0]
                         const reader = new FileReader()
-                        reader.onload = (evt) => handleImageChange(i, 'url', evt.target.result)
+                        reader.onload = async (evt) => {
+                          const rawData = evt.target.result
+                          const compressed = await compressImage(rawData, 1200, 0.7)
+                          handleImageChange(i, 'url', compressed)
+                        }
                         reader.readAsDataURL(file)
                       }
                     }}

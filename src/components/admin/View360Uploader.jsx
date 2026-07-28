@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Rotate3d, Upload, Check, Image as ImageIcon } from 'lucide-react'
 import MediaGalleryModal from './MediaGalleryModal'
+import { compressImage } from '@/utils/image'
 
 export default function View360Uploader({ variant, onChange }) {
   const [activePickerKey, setActivePickerKey] = useState(null) // null | key name
@@ -65,8 +66,10 @@ export default function View360Uploader({ variant, onChange }) {
     if (files && files.length > 0) {
       const file = files[0]
       const reader = new FileReader()
-      reader.onload = (event) => {
-        handleFieldChange(key, event.target.result)
+      reader.onload = async (event) => {
+        const rawDataUrl = event.target.result
+        const dataUrl = await compressImage(rawDataUrl, 1200, 0.7)
+        handleFieldChange(key, dataUrl)
       }
       reader.readAsDataURL(file)
     }
