@@ -5,10 +5,12 @@ import { signToken, getCookieOptions } from '@/lib/auth'
 import authConfig from '@/config/auth'
 import { checkRateLimit } from '@/security/rateLimit'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req) {
   try {
     const ip = req.headers.get('x-forwarded-for') || '127.0.0.1'
-    const rateCheck = checkRateLimit(`login:${ip}`, 5, 15 * 60 * 1000) // max 5 attempts per 15 mins
+    const rateCheck = checkRateLimit(`login:${ip}`, 30, 15 * 60 * 1000) // max 30 attempts per 15 mins
     if (!rateCheck.allowed) {
       return NextResponse.json({ error: 'Too many login attempts. Please try again in 15 minutes.' }, { status: 429 })
     }
@@ -41,13 +43,14 @@ export async function POST(req) {
     response.cookies.set(authConfig.cookieName, token, getCookieOptions())
     return response
   } catch (err) {
-    if (err.status === 400) {
-      return NextResponse.json({ error: Object.values(err.errors)[0] || 'Email and password required.' }, { status: 400 })
+    if (err?.status === 400) {
+      const msg = err.error || (err.errors ? (typeof err.errors === 'string' ? err.errors : Object.values(err.errors)[0]) : 'Email and password required.')
+      return NextResponse.json({ error: msg }, { status: 400 })
     }
-    if (err.status === 401) {
+    if (err?.status === 401) {
       return NextResponse.json({ error: err.error || 'Invalid credentials.' }, { status: 401 })
     }
     console.error('Admin login API endpoint error:', err)
-    return NextResponse.json({ error: 'Server error.' }, { status: 500 })
+    return NextResponse.json({ error: err?.message || 'Server error during login.' }, { status: 500 })
   }
 }

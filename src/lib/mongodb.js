@@ -16,8 +16,9 @@ export async function connectDB() {
     })
   }
   cached.conn = await cached.promise
-  if (typeof window === 'undefined') {
-    // Dynamic import to prevent client bundling issues
+  const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' || !!process.env.VERCEL
+  if (typeof window === 'undefined' && !isBuildPhase) {
+    // Dynamic import to prevent client bundling issues in dev/standalone environments
     import('./email-worker.js').then((worker) => {
       worker.startEmailWorker()
     }).catch(err => console.error('Failed to load email worker:', err))

@@ -3,7 +3,16 @@ import Admin from '@/models/Admin'
 
 export async function findAdminByEmail(email) {
   await connectDB()
-  return Admin.findOne({ email, isActive: true }).lean()
+  if (!email) return null
+  const cleanEmail = email.trim().toLowerCase()
+  return Admin.findOne({ email: cleanEmail, isActive: true }).lean()
+}
+
+export async function findAnyAdminByEmail(email) {
+  await connectDB()
+  if (!email) return null
+  const cleanEmail = email.trim().toLowerCase()
+  return Admin.findOne({ email: cleanEmail }).lean()
 }
 
 export async function findAdminById(id) {
