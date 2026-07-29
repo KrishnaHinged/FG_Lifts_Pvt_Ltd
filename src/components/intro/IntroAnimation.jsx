@@ -84,6 +84,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
   const [isPreloaded, setIsPreloaded] = useState(false)
   const [videoDuration, setVideoDuration] = useState(12)
   const [showSkipButton, setShowSkipButton] = useState(false)
+  const [videoSrc, setVideoSrc] = useState('/videos/intro/intro.mp4')
 
   const companyName = settings.companyName || 'FG Lifts'
 
@@ -95,10 +96,24 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
     }
   }, [onComplete])
 
-  // 2. Video readiness & metadata initialization hook
+  // 2. Determine video source based on screen width (mobile/tablet vs desktop)
+  useEffect(() => {
+    const checkScreen = () => {
+      const isMobileOrTablet = window.innerWidth < 1024
+      setVideoSrc(isMobileOrTablet ? '/videos/intro/intro2.mp4' : '/videos/intro/intro.mp4')
+    }
+
+    checkScreen()
+    window.addEventListener('resize', checkScreen)
+    return () => window.removeEventListener('resize', checkScreen)
+  }, [])
+
+  // 3. Video readiness & metadata initialization hook
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
+
+    setIsPreloaded(false)
 
     const updateDuration = () => {
       if (video.duration && !isNaN(video.duration) && video.duration > 0) {
@@ -135,7 +150,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
       video.removeEventListener('durationchange', updateDuration)
       clearTimeout(timer)
     }
-  }, [])
+  }, [videoSrc])
 
   // 3. Initialize GSAP ScrollTrigger Master Timeline
   useEffect(() => {
@@ -349,7 +364,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
         {/* Single H.264 intra-frame compiled MP4 video */}
         <video
           ref={videoRef}
-          src="/videos/intro/intro.mp4"
+          src={videoSrc}
           playsInline
           muted
           preload="auto"

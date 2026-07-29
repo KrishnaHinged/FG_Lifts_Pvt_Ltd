@@ -108,7 +108,7 @@ export default function HomeLiftClient({ initialProducts = [] }) {
       <HomeLiftParameters />
 
       {/* 7. Get a Quote CTA */}
-      <section className="pt-20 px-6 sm:px-10 lg:px-16 max-w-[1200px] mx-auto text-center">
+      {/* <section className="pt-20 px-6 sm:px-10 lg:px-16 max-w-[1200px] mx-auto text-center">
         <div className="bg-gradient-to-br from-[#0B1B33] to-[#0A2647] rounded-[2.5rem] p-10 sm:p-16 text-white shadow-xl relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(232,96,10,0.15)_0%,transparent_60%)] pointer-events-none" />
           <h2 className="m-0 font-display text-3xl sm:text-5xl font-bold uppercase tracking-tight mb-4">
@@ -124,7 +124,7 @@ export default function HomeLiftClient({ initialProducts = [] }) {
             Get a Free Proposal
           </Link>
         </div>
-      </section>
+      </section> */}
     </div>
   )
 }
