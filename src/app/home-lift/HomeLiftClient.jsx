@@ -76,20 +76,20 @@ export default function HomeLiftClient({ initialProducts = [] }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F0EB] text-[#111111] font-sans pb-24 overflow-x-hidden selection:bg-[#0E4FB3] selection:text-white">
+    <div className="min-h-screen bg-[#F5F0EB] text-[#111111] font-sans pb-24 overflow-x-clip selection:bg-[#0E4FB3] selection:text-white">
       {/* 1. Hero Showcase Banner */}
       <HomeLiftHero />
 
       {/* 2. Systems Drive Technology Section */}
-      <HomeLiftSystems 
+      {/* <HomeLiftSystems 
         systems={systems}
         selectedSystem={selectedSystem}
         setSelectedSystem={setSelectedSystem}
         activeSystemDetails={activeSystemDetails}
-      />
+      /> */}
 
       {/* 3. Luxury Cabin Customizer Section */}
-      <HomeLiftCabins 
+      <HomeLiftCabins
         filteredCabins={filteredCabins}
         activeCabinTab={activeCabinTab}
         handleCabinTabChange={handleCabinTabChange}

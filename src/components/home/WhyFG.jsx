@@ -40,7 +40,7 @@ export default function WhyFG() {
   const [hoveredIndex, setHoveredIndex] = useState(null)
 
   return (
-    <Section background="white" size="none" className="py-[120px] select-none border-b border-[#E8E2DA] relative overflow-hidden">
+    <Section background="white" size="none" className="py-[120px] select-none border-b border-[#E8E2DA] relative overflow-clip">
       {/* Background Glowing Ball */}
       <div className="absolute top-[30%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-[radial-gradient(circle,rgba(165,124,240,0.06)_0%,transparent_70%)] blur-[90px] pointer-events-none z-0" />
 

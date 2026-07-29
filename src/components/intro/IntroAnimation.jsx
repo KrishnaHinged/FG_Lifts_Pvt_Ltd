@@ -175,21 +175,10 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
               trigger: scrollAnchor,
               start: 'top top',
               end: 'bottom bottom',
-              scrub: 1.5,
+              scrub: 2.2, // Increased from 1.5 to 2.2 for buttery smooth scroll inertia
               invalidateOnRefresh: true,
               onUpdate: (self) => {
                 const progress = self.progress
-
-                // Direct synchronous frame scrubbing for HTML5 Video element
-                if (video && videoDuration) {
-                  const vidProgress = Math.min(1, Math.max(0, progress / videoPhaseEnd))
-                  const targetTime = Math.min(videoDuration - 0.05, vidProgress * videoDuration)
-                  if (!isNaN(targetTime) && Math.abs(video.currentTime - targetTime) > 0.02) {
-                    try {
-                      video.currentTime = targetTime
-                    } catch (e) { }
-                  }
-                }
 
                 // Toggle skip button visibility during interactive scroll
                 setShowSkipButton(progress > 0.05 && progress < 0.96)
@@ -213,6 +202,24 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
             }
           })
 
+          // STEP 1 & 2: Video scrubbing driven smoothly via a GSAP virtual playhead
+          const playhead = { time: 0 }
+          masterTimeline.to(playhead, {
+            time: videoDuration - 0.05,
+            ease: 'none', // Linear progression mapped to scroll, smoothed by GSAP's scrub inertia
+            duration: 65,
+            onUpdate: () => {
+              if (video && videoDuration) {
+                const targetTime = playhead.time
+                if (!isNaN(targetTime) && Math.abs(video.currentTime - targetTime) > 0.01) {
+                  try {
+                    video.currentTime = targetTime
+                  } catch (e) { }
+                }
+              }
+            }
+          }, 0)
+
           // STEP 1: Instruction HUD fades out early (0% to 12%)
           masterTimeline.to('.intro-instruction', {
             opacity: 0,
@@ -233,13 +240,13 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
               73
             )
             .fromTo('.logo-title',
-              { opacity: 0, y: 50, scale: 0.85 },
-              { opacity: 1, y: 0, scale: 1, duration: 8, ease: 'back.out(2.5)' },
+              { opacity: 0, y: 80, scale: 0.8 },
+              { opacity: 1, y: 0, scale: 1, duration: 10, ease: 'back.out(3.5)' },
               74
             )
             .fromTo('.logo-subtitle',
-              { opacity: 0, y: 15 },
-              { opacity: 1, y: 0, duration: 6, ease: 'back.out(1.8)' },
+              { opacity: 0, y: 25 },
+              { opacity: 1, y: 0, duration: 8, ease: 'back.out(2.5)' },
               78
             )
             .fromTo('.logo-glow',

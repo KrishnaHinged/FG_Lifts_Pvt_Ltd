@@ -120,13 +120,13 @@ export default function Navbar() {
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
           <Link href={ROUTES.home} className="flex items-center no-underline">
-            <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center justify-center border border-neutral-100/80">
+            <div className="bg-white px-5 py-2 rounded-full shadow-sm flex items-center justify-center border border-neutral-100/80">
               <Image
                 src="/images/logo.png"
                 alt="FG Lifts Logo"
-                width={150}
-                height={42}
-                className="object-contain h-[26px] w-auto"
+                width={180}
+                height={50}
+                className="object-contain h-[38px] w-auto"
                 priority
               />
             </div>
@@ -207,13 +207,13 @@ export default function Navbar() {
             {/* Top header row */}
             <div className="flex items-center justify-between w-full max-w-[1440px] mx-auto">
               <Link href={ROUTES.home} onClick={() => setMobileOpen(false)} className="no-underline">
-                <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center justify-center border border-neutral-200/50">
+                <div className="bg-white px-4 py-2 rounded-full shadow-sm flex items-center justify-center border border-neutral-200/50">
                   <Image
                     src="/images/logo.png"
                     alt="FG Lifts Logo"
-                    width={110}
-                    height={26}
-                    className="object-contain h-[22px] w-auto"
+                    width={150}
+                    height={42}
+                    className="object-contain h-[32px] w-auto"
                   />
                 </div>
               </Link>

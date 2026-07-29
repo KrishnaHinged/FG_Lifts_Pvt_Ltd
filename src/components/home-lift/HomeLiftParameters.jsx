@@ -5,9 +5,7 @@ export default function HomeLiftParameters() {
     <section className="py-20 px-6 sm:px-10 lg:px-16 bg-gray-50 border-t border-gray-200">
       <div className="max-w-[1200px] mx-auto">
         <div className="text-center mb-16">
-          <span className="font-mono text-xs tracking-[0.3em] text-[#9A9A9A] uppercase mb-3 block">
-            05 / Parameter Specs
-          </span>
+
           <h2 className="m-0 font-display text-3xl sm:text-5xl font-bold uppercase tracking-tight text-[#111111]">
             Technical Parameters
           </h2>

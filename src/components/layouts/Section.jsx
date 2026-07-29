@@ -13,7 +13,7 @@ export function Section({ children, className = '', background = 'cream', id, ..
   return (
     <section 
       id={id} 
-      className={`relative w-full overflow-hidden py-[120px] lg:py-[180px] ${bgClasses[background]} ${className}`} 
+      className={`relative w-full overflow-clip py-[120px] lg:py-[180px] ${bgClasses[background]} ${className}`} 
       {...props}
     >
       {children}

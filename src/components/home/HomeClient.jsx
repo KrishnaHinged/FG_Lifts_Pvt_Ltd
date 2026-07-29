@@ -58,11 +58,7 @@ export default function HomeClient() {
       )}
 
       {!showIntro && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-        >
+        <div className="w-full">
           <Hero />{/*done redesign*/}
           <BenefitsText />{/*done redesign*/}
           <StatsGrid />
@@ -73,7 +69,7 @@ export default function HomeClient() {
           <GalleryMarquee />{/*done redesign*/}
           <Testimonials />{/*done redesign*/}
           <ContactSection />{/*done redesign*/}
-        </motion.div>
+        </div>
       )}
     </>
   )

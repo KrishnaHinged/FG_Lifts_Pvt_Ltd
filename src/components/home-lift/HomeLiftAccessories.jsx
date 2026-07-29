@@ -7,9 +7,7 @@ export default function HomeLiftAccessories({ configOptions }) {
     <section className="py-20 bg-white px-6 sm:px-10 lg:px-16">
       <div className="max-w-[1200px] mx-auto">
         <div className="text-center mb-16">
-          <span className="font-mono text-xs tracking-[0.3em] text-[#9A9A9A] uppercase mb-3 block">
-            04 / Accessories
-          </span>
+
           <h2 className="m-0 font-display text-3xl sm:text-5xl font-bold uppercase tracking-tight text-[#111111]">
             Premium Customizations
           </h2>
