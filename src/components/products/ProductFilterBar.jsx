@@ -11,7 +11,7 @@ const tabOptions = [
 ]
 
 const categoryOptions = {
-  Systems: ['All', 'Passenger', 'Goods', 'Capsule', 'Home', 'Hospital'],
+  Systems: ['All', 'Passenger', 'Goods', 'Capsule', 'Home', 'Home Lift', 'Hospital'],
   Cabins: ['All', 'Standard', 'Premium', 'Luxury', 'Bespoke'],
   Components: ['All', 'Control Panels', 'Safety Devices', 'Cabin Parts']
 }

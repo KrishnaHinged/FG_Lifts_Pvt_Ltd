@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Plus, Edit, Trash2, Search, Rotate3d, CheckCircle, XCircle } from 'lucide-react'
+import { Plus, Edit, Trash2, Search, Rotate3d } from 'lucide-react'
 import FilterPillBar from '@/components/FilterPillBar'
 import ConfirmModal from '@/components/admin/ConfirmModal'
 import { hasPermission } from '@/permissions/permissions'
@@ -13,15 +13,13 @@ import PageHeader from '@/components/composition/PageHeader'
 import SearchBar from '@/components/forms/SearchBar'
 import Table from '@/components/composition/Table'
 import Badge from '@/components/ui/Badge'
-import PrimaryButton from '@/components/ui/button/PrimaryButton'
-import IconButton from '@/components/ui/button/IconButton'
 
-const categories = ['All', 'Passenger', 'Goods', 'Capsule', 'Home', 'Home Lift', 'Hospital', 'Panoramic']
+const subCategories = ['All', 'Traction Technology', 'Standard Cabin', 'More Cabin Options', 'Panoramic Cabin', 'Art Background Wall']
 
-export default function ProductsClient({ initialProducts = [], currentAdmin }) {
+export default function HomeLiftsClient({ initialProducts = [], currentAdmin }) {
   const [products, setProducts] = useState(initialProducts)
   const [search, setSearch] = useState('')
-  const [activeCategory, setActiveCategory] = useState('All')
+  const [activeSub, setActiveSub] = useState('All')
   const [deleteId, setDeleteId] = useState(null)
   const [togglingId, setTogglingId] = useState(null)
 
@@ -68,8 +66,8 @@ export default function ProductsClient({ initialProducts = [], currentAdmin }) {
   const filtered = products.filter(p => {
     const term = search.toLowerCase()
     const matchesSearch = p.name.toLowerCase().includes(term) || p.slug.toLowerCase().includes(term)
-    const matchesCategory = activeCategory === 'All' || p.category === activeCategory
-    return matchesSearch && matchesCategory
+    const matchesSub = activeSub === 'All' || p.subCategory === activeSub
+    return matchesSearch && matchesSub
   })
 
   const canCreate = hasPermission(currentAdmin, PERMISSIONS.CREATE_PRODUCT)
@@ -81,34 +79,34 @@ export default function ProductsClient({ initialProducts = [], currentAdmin }) {
       
       {/* Top Header */}
       <PageHeader
-        title="Products"
+        title="Home Lifts CMS"
         actions={
           canCreate && (
             <Link
-              href="/admin/products/new"
-              className="inline-flex items-center justify-center font-sans font-bold uppercase tracking-wider transition-all duration-300 bg-[#0E4FB3] text-white hover:bg-[#0b3c8a] active:bg-[#082a63] px-6 py-3 text-[11px] rounded-full no-underline"
+              href="/admin/home-lifts/new"
+              className="inline-flex items-center justify-center font-sans font-bold uppercase tracking-wider transition-all duration-300 bg-[#E8600A] text-white hover:bg-orange-600 px-6 py-3 text-[11px] rounded-full no-underline"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Add Product System
+              Add Home Lift
             </Link>
           )
         }
       />
 
       {/* Search & Category Pills bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-between bg-white border border-[#E8E2DA] rounded-2xl p-4 shadow-sm">
-        <div className="w-full sm:max-w-sm">
+      <div className="flex flex-col xl:flex-row items-stretch xl:items-center gap-4 justify-between bg-white border border-[#E8E2DA] rounded-2xl p-4 shadow-sm">
+        <div className="w-full xl:max-w-sm">
           <SearchBar
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by system name or slug..."
           />
         </div>
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 overflow-x-auto no-scrollbar">
           <FilterPillBar
-            options={categories}
-            active={activeCategory}
-            onChange={setActiveCategory}
+            options={subCategories}
+            active={activeSub}
+            onChange={setActiveSub}
           />
         </div>
       </div>
@@ -119,7 +117,7 @@ export default function ProductsClient({ initialProducts = [], currentAdmin }) {
           <tr className="bg-[#EDE8E2]/50 border-b border-[#E8E2DA]">
             <th className="px-6 py-4 font-mono text-[10px] uppercase tracking-widest text-[#7A7A7A] font-bold" scope="col">Image</th>
             <th className="px-6 py-4 font-mono text-[10px] uppercase tracking-widest text-[#7A7A7A] font-bold" scope="col">System Name</th>
-            <th className="px-6 py-4 font-mono text-[10px] uppercase tracking-widest text-[#7A7A7A] font-bold" scope="col">Category</th>
+            <th className="px-6 py-4 font-mono text-[10px] uppercase tracking-widest text-[#7A7A7A] font-bold" scope="col">Sub Category</th>
             <th className="px-6 py-4 font-mono text-[10px] uppercase tracking-widest text-[#7A7A7A] font-bold" scope="col">Grouping</th>
             <th className="px-6 py-4 font-mono text-[10px] uppercase tracking-widest text-[#7A7A7A] font-bold" scope="col">Status</th>
             <th className="px-6 py-4 font-mono text-[10px] uppercase tracking-widest text-[#7A7A7A] font-bold" scope="col">360° Customizer</th>
@@ -146,7 +144,7 @@ export default function ProductsClient({ initialProducts = [], currentAdmin }) {
                     <span className="text-[10px] text-[#7A7A7A] font-mono">{prod.slug}</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-[#555555] font-semibold">{prod.category}</td>
+                <td className="px-6 py-4 text-[#555555] font-semibold">{prod.subCategory}</td>
                 <td className="px-6 py-4">
                   <Badge variant="neutral">{prod.tabGroup}</Badge>
                 </td>
@@ -181,7 +179,7 @@ export default function ProductsClient({ initialProducts = [], currentAdmin }) {
                   <div className="flex items-center justify-end gap-2">
                     {canEdit && (
                       <Link
-                        href={`/admin/products/${prod._id}/edit`}
+                        href={`/admin/home-lifts/${prod._id}/edit`}
                         className="inline-flex items-center justify-center p-2 min-w-0 rounded-full border border-[#E8E2DA] bg-transparent text-[#111111] hover:border-[#111111] hover:bg-neutral-50 transition-all cursor-pointer outline-none"
                         title="Edit details"
                       >
@@ -205,7 +203,7 @@ export default function ProductsClient({ initialProducts = [], currentAdmin }) {
           {filtered.length === 0 && (
             <tr>
               <td colSpan="7" className="px-6 py-12 text-center text-sm text-[#7A7A7A] font-sans">
-                No products found.
+                No home lifts found.
               </td>
             </tr>
           )}
@@ -215,8 +213,8 @@ export default function ProductsClient({ initialProducts = [], currentAdmin }) {
       {/* Delete Prompt Modal */}
       <ConfirmModal
         isOpen={!!deleteId}
-        title="Delete Product"
-        message="Are you sure you want to permanently delete this system? This action removes all color configurations and specifications data."
+        title="Delete Home Lift"
+        message="Are you sure you want to permanently delete this home lift solution?"
         confirmLabel="Delete"
         onConfirm={handleDelete}
         onClose={() => setDeleteId(null)}

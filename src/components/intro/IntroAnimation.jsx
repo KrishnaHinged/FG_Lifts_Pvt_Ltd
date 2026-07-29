@@ -16,7 +16,7 @@ function TypewriterInstruction() {
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: 48 }}
-          transition={{ duration: 0.8, ease: "circOut", delay: 0.2 }}
+          transition={{ type: "spring", stiffness: 100, damping: 12, delay: 0.1 }}
           className="h-[2px] bg-[#0E4FB3] opacity-80"
         />
 
@@ -24,9 +24,9 @@ function TypewriterInstruction() {
           {/* English Text */}
           <div className="relative inline-block w-max max-w-full">
             <motion.h3
-              initial={{ clipPath: "inset(0 100% 0 0)" }}
-              animate={{ clipPath: "inset(0 0% 0 0)" }}
-              transition={{ duration: 1.2, ease: "linear", delay: 0.5 }}
+              initial={{ opacity: 0, y: 40, scale: 0.92 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ type: "spring", stiffness: 90, damping: 9, mass: 0.8, delay: 0.3 }}
               className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold uppercase tracking-tight text-white m-0 leading-tight whitespace-nowrap overflow-visible"
             >
               {english}
@@ -36,9 +36,9 @@ function TypewriterInstruction() {
           {/* Hindi Text */}
           <div className="relative inline-block w-max max-w-full">
             <motion.h3
-              initial={{ clipPath: "inset(0 100% 0 0)" }}
-              animate={{ clipPath: "inset(0 0% 0 0)" }}
-              transition={{ duration: 2.0, ease: "linear", delay: 1.8 }}
+              initial={{ opacity: 0, y: 25, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ type: "spring", stiffness: 90, damping: 10, mass: 0.8, delay: 0.8 }}
               className="font-sans text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold tracking-wide text-white/90 m-0 leading-tight whitespace-nowrap overflow-visible"
             >
               {hindi}
@@ -48,12 +48,27 @@ function TypewriterInstruction() {
 
         {/* Action description HUD */}
         <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 4, duration: 1 }}
-          className="font-mono text-[9px] sm:text-[10px] tracking-[0.25em] text-white/40 uppercase pl-1 m-0 font-semibold"
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: [0, -4, 0] }}
+          transition={{
+            opacity: { delay: 1.5, duration: 0.5 },
+            y: {
+              repeat: Infinity,
+              duration: 2.0,
+              ease: "easeInOut",
+              delay: 2.0
+            }
+          }}
+          className="font-mono text-[9px] sm:text-[10px] tracking-[0.25em] text-white/40 uppercase pl-1 m-0 font-semibold flex items-center gap-1.5"
         >
-          Interactive Scroll Guide
+          <span>Interactive Scroll Guide</span>
+          <motion.span 
+            animate={{ y: [0, 3, 0] }} 
+            transition={{ repeat: Infinity, duration: 1.0, ease: "easeInOut" }}
+            className="inline-block"
+          >
+            ↓
+          </motion.span>
         </motion.p>
       </div>
     </div>
@@ -218,13 +233,13 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
               73
             )
             .fromTo('.logo-title',
-              { opacity: 0, y: 25, scale: 0.94 },
-              { opacity: 1, y: 0, scale: 1, duration: 8, ease: 'power3.out' },
+              { opacity: 0, y: 50, scale: 0.85 },
+              { opacity: 1, y: 0, scale: 1, duration: 8, ease: 'back.out(2.5)' },
               74
             )
             .fromTo('.logo-subtitle',
-              { opacity: 0, y: 10 },
-              { opacity: 1, y: 0, duration: 6, ease: 'sine.out' },
+              { opacity: 0, y: 15 },
+              { opacity: 1, y: 0, duration: 6, ease: 'back.out(1.8)' },
               78
             )
             .fromTo('.logo-glow',

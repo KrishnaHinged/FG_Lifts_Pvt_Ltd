@@ -1,6 +1,7 @@
 export const routesConfig = {
   home: '/',
   about: '/about',
+  homeLift: '/home-lift',
   products: '/products',
   productDetail: (slug) => `/products/${slug}`,
   gallery: '/gallery',
@@ -14,6 +15,9 @@ export const routesConfig = {
     products: '/admin/products',
     newProduct: '/admin/products/new',
     editProduct: (id) => `/admin/products/${id}/edit`,
+    homeLifts: '/admin/home-lifts',
+    newHomeLift: '/admin/home-lifts/new',
+    editHomeLift: (id) => `/admin/home-lifts/${id}/edit`,
     gallery: '/admin/gallery',
     newProject: '/admin/gallery/new',
     editProject: (id) => `/admin/gallery/${id}/edit`,

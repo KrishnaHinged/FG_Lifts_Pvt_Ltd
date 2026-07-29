@@ -347,7 +347,7 @@ export default memo(function ProductForm({ product = null, onSubmit, isLoading =
                 onChange={(e) => setCategory(e.target.value)}
                 className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white font-sans text-sm outline-none focus:border-fg-blue w-full"
               >
-                {['Passenger', 'Goods', 'Capsule', 'Home', 'Hospital', 'Panoramic'].map(c => (
+                {['Passenger', 'Goods', 'Capsule', 'Home', 'Home Lift', 'Hospital', 'Panoramic'].map(c => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
@@ -356,11 +356,54 @@ export default memo(function ProductForm({ product = null, onSubmit, isLoading =
               <label className="font-mono text-[9px] uppercase tracking-wider text-gray-400 font-bold">Sub Category</label>
               <input
                 type="text"
+                list="subCategory-presets"
                 value={subCategory}
                 onChange={(e) => setSubCategory(e.target.value)}
-                placeholder="e.g. Observation Lifts"
+                placeholder="e.g. Standard Cabin"
                 className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white font-sans text-sm text-gray-900 outline-none focus:border-fg-blue w-full"
               />
+              <datalist id="subCategory-presets">
+                {category === 'Home Lift' && (
+                  <>
+                    <option value="Traction Technology" />
+                    <option value="Standard Cabin" />
+                    <option value="More Cabin Options" />
+                    <option value="Panoramic Cabin" />
+                    <option value="Art Background Wall" />
+                  </>
+                )}
+                {category === 'Passenger' && (
+                  <>
+                    <option value="High Rise Lifts" />
+                    <option value="Low Rise Lifts" />
+                    <option value="MRL Passenger Lifts" />
+                  </>
+                )}
+                {category === 'Goods' && (
+                  <>
+                    <option value="Industrial Freight Lifts" />
+                    <option value="Service Dumbwaiters" />
+                  </>
+                )}
+                {category === 'Capsule' && (
+                  <>
+                    <option value="Observation Lifts" />
+                    <option value="Panoramic Glass Lifts" />
+                  </>
+                )}
+                {category === 'Home' && (
+                  <>
+                    <option value="Luxury Villa Elevators" />
+                    <option value="Pneumatic Vacuum Lifts" />
+                  </>
+                )}
+                {category === 'Hospital' && (
+                  <>
+                    <option value="Bed Elevators" />
+                    <option value="Stretcher Lifts" />
+                  </>
+                )}
+              </datalist>
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="font-mono text-[9px] uppercase tracking-wider text-gray-400 font-bold">Tab Group Grouping</label>

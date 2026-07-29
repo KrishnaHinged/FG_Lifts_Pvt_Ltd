@@ -8,6 +8,7 @@ export const NAVIGATION = Object.freeze({
   NAV_LINKS: Object.freeze([
     { label: 'Home', href: routesConfig.home },
     { label: 'About', href: routesConfig.about },
+    { label: 'Home Lift', href: routesConfig.homeLift },
     { label: 'Products', href: routesConfig.products },
     { label: 'Projects', href: routesConfig.gallery },
     { label: 'Contact', href: `${routesConfig.home}#contact` }

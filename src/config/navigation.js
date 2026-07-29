@@ -4,6 +4,7 @@ export const navigationConfig = {
   navbar: [
     { label: 'Home', href: routesConfig.home },
     { label: 'About Us', href: routesConfig.about },
+    { label: 'Home Lift', href: routesConfig.homeLift },
     { label: 'Elevators & Products', href: routesConfig.products },
     { label: 'Case Studies', href: routesConfig.gallery },
     { label: 'Editorial Blog', href: routesConfig.blog }
@@ -33,6 +34,7 @@ export const navigationConfig = {
     { label: 'Dashboard', href: routesConfig.admin.dashboard, icon: 'LayoutDashboard' },
     { label: 'Leads CRM', href: routesConfig.admin.inquiries, icon: 'Users' },
     { label: 'CMS Products', href: routesConfig.admin.products, icon: 'Package' },
+    { label: 'CMS Home Lifts', href: routesConfig.admin.homeLifts, icon: 'Home' },
     { label: 'CMS Gallery', href: routesConfig.admin.gallery, icon: 'Image' },
     { label: 'CMS Blog', href: routesConfig.admin.blog, icon: 'FileText' },
     { label: 'CMS Testimonials', href: routesConfig.admin.testimonials, icon: 'MessageSquareQuote' },
