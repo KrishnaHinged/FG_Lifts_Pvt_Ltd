@@ -16,7 +16,7 @@ import Badge from '@/components/ui/Badge'
 import PrimaryButton from '@/components/ui/button/PrimaryButton'
 import IconButton from '@/components/ui/button/IconButton'
 
-const categories = ['All', 'Passenger', 'Goods', 'Capsule', 'Home', 'Home Lift', 'Hospital', 'Panoramic']
+const categories = ['All', 'Passenger', 'Goods', 'Capsule', 'Hospital', 'Panoramic']
 
 export default function ProductsClient({ initialProducts = [], currentAdmin }) {
   const [products, setProducts] = useState(initialProducts)
@@ -64,8 +64,10 @@ export default function ProductsClient({ initialProducts = [], currentAdmin }) {
     }
   }
 
-  // Filter products client-side
-  const filtered = products.filter(p => {
+  // Filter products client-side (exclude Home Lift products from Products tab)
+  const nonHomeLifts = products.filter(p => p.category !== 'Home Lift' && p.category !== 'Home')
+
+  const filtered = nonHomeLifts.filter(p => {
     const term = search.toLowerCase()
     const matchesSearch = p.name.toLowerCase().includes(term) || p.slug.toLowerCase().includes(term)
     const matchesCategory = activeCategory === 'All' || p.category === activeCategory

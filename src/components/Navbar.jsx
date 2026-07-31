@@ -20,6 +20,38 @@ export default function Navbar() {
   const pathname = usePathname()
   const lastScrollY = useRef(0)
 
+  const handleNavClick = (href, e) => {
+    setMobileOpen(false)
+    if (!href) return
+
+    const hashIndex = href.indexOf('#')
+    if (hashIndex !== -1) {
+      const hash = href.substring(hashIndex)
+      const targetPath = href.substring(0, hashIndex) || '/'
+
+      if (pathname === targetPath || (pathname === '/' && targetPath === '/')) {
+        const el = document.querySelector(hash)
+        if (el) {
+          if (e) e.preventDefault()
+          if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+            window.lenis.scrollTo(el, { offset: 0, duration: 1.2 })
+          } else {
+            el.scrollIntoView({ behavior: 'smooth' })
+          }
+          window.history.pushState(null, '', href)
+          return
+        }
+      }
+    } else {
+      if (typeof window !== 'undefined') {
+        window.scrollTo(0, 0)
+        if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+          window.lenis.scrollTo(0, { immediate: true })
+        }
+      }
+    }
+  }
+
   // Determine if the current route has a dark background at the top of the page.
   // Home ('/') and Blog ('/blog') pages start with dark hero designs.
   const isDarkBgAtTop = pathname === '/' || pathname.startsWith('/blog')
@@ -123,7 +155,7 @@ export default function Navbar() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
-          <Link href={ROUTES.home} className="flex items-center no-underline">
+          <Link href={ROUTES.home} onClick={(e) => handleNavClick(ROUTES.home, e)} className="flex items-center no-underline">
             <div className="bg-white px-5 py-2 rounded-full shadow-sm flex items-center justify-center border border-neutral-100/80">
               <Image
                 src="/images/logo.png"
@@ -150,6 +182,7 @@ export default function Navbar() {
               >
                 <Link
                   href={link.href}
+                  onClick={(e) => handleNavClick(link.href, e)}
                   className={`group relative py-1 text-[16px] font-medium tracking-[0.05em] uppercase transition-colors duration-[450ms] ease-out no-underline ${isDark
                     ? 'text-[#F5F0EB]/75 hover:text-[#F5F0EB]'
                     : 'text-[#111111]/70 hover:text-[#111111]'
@@ -178,6 +211,7 @@ export default function Navbar() {
         >
           <Link
             href={`${ROUTES.home}#contact`}
+            onClick={(e) => handleNavClick(`${ROUTES.home}#contact`, e)}
             className={`inline-flex items-center justify-center h-[46px] px-[28px] rounded-full text-xs font-medium uppercase tracking-[0.15em] no-underline transition-all duration-500 ${isDark
               ? 'border border-[#F5F0EB]/30 text-[#F5F0EB] hover:bg-[#F5F0EB]/10 hover:border-[#F5F0EB]/65'
               : 'bg-[#0B1B33] text-[#F5F0EB] hover:bg-[#152A4A] shadow-sm'
@@ -210,7 +244,7 @@ export default function Navbar() {
           >
             {/* Top header row */}
             <div className="flex items-center justify-between w-full max-w-[1440px] mx-auto">
-              <Link href={ROUTES.home} onClick={() => setMobileOpen(false)} className="no-underline">
+              <Link href={ROUTES.home} onClick={(e) => handleNavClick(ROUTES.home, e)} className="no-underline">
                 <div className="bg-white px-4 py-2 rounded-full shadow-sm flex items-center justify-center border border-neutral-200/50">
                   <Image
                     src="/images/logo.png"
@@ -246,7 +280,7 @@ export default function Navbar() {
                 >
                   <Link
                     href={link.href}
-                    onClick={() => setMobileOpen(false)}
+                    onClick={(e) => handleNavClick(link.href, e)}
                     className="font-display text-[40px] font-light uppercase tracking-wide text-[#111111] hover:text-[#111111]/60 no-underline transition-colors duration-300 block"
                   >
                     {link.label}
@@ -259,7 +293,7 @@ export default function Navbar() {
             <div className="flex flex-col items-center gap-4 w-full max-w-[1440px] mx-auto">
               <Link
                 href={`${ROUTES.home}#contact`}
-                onClick={() => setMobileOpen(false)}
+                onClick={(e) => handleNavClick(`${ROUTES.home}#contact`, e)}
                 className="w-full sm:w-[280px] text-center inline-flex items-center justify-center h-[48px] bg-[#0B1B33] text-[#F5F0EB] px-8 rounded-full text-xs font-semibold tracking-wider uppercase no-underline hover:bg-[#152A4A] transition-colors duration-300 shadow-sm"
               >
                 Get a Quote

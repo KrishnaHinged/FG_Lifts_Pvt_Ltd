@@ -14,18 +14,21 @@ export function LoadingProvider({ children }) {
 
   const isAdmin = pathname?.startsWith('/admin')
 
-  // Show loader on initial page load for non-admin pages
-  const [loading, setLoading] = useState(() => {
-    if (typeof window === 'undefined' || isAdmin) return false
-    // On home page, if intro hasn't played yet, let IntroAnimation run first
-    if (pathname === '/' && sessionStorage.getItem('fg_intro_played') !== 'true') {
-      return false
-    }
-    return true
-  })
+  // Always initialize loading state to false so SSR HTML matches initial Client hydration
+  const [loading, setLoading] = useState(false)
 
   const startLoading = () => setLoading(true)
-  const stopLoading = () => setLoading(false)
+  const stopLoading = () => {
+    setLoading(false)
+    if (typeof window !== 'undefined') {
+      if (!window.location.hash) {
+        window.scrollTo(0, 0)
+        if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+          window.lenis.scrollTo(0, { immediate: true })
+        }
+      }
+    }
+  }
 
   // Listen to pathname changes
   useEffect(() => {
@@ -37,6 +40,13 @@ export function LoadingProvider({ children }) {
     if (prevPathRef.current !== pathname) {
       prevPathRef.current = pathname
       setLoading(true)
+
+      if (typeof window !== 'undefined') {
+        window.scrollTo(0, 0)
+        if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+          window.lenis.scrollTo(0, { immediate: true })
+        }
+      }
     }
   }, [pathname, isAdmin])
 

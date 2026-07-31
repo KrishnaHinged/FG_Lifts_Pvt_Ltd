@@ -15,6 +15,10 @@ export function LenisProvider({ children }) {
   useEffect(() => {
     if (isAdmin) return
 
+    if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual'
+    }
+
     const lenisInstance = new Lenis({
       lerp: 0.08,
       smoothWheel: true,
@@ -42,6 +46,54 @@ export function LenisProvider({ children }) {
       }
     }
   }, [isAdmin])
+
+  // Reset scroll to top on route change, or scroll to target element if hash exists
+  useEffect(() => {
+    if (isAdmin || typeof window === 'undefined') return
+
+    const hash = window.location.hash
+
+    if (hash && hash.length > 1) {
+      let attempts = 0
+      const maxAttempts = 20
+
+      const checkAndScroll = () => {
+        const targetEl = document.querySelector(hash)
+        if (targetEl) {
+          if (lenis && typeof lenis.scrollTo === 'function') {
+            lenis.scrollTo(targetEl, { offset: 0, duration: 1.2 })
+          } else {
+            targetEl.scrollIntoView({ behavior: 'smooth' })
+          }
+        } else if (attempts < maxAttempts) {
+          attempts++
+          setTimeout(checkAndScroll, 50)
+        }
+      }
+
+      checkAndScroll()
+      return
+    }
+
+    const resetScroll = () => {
+      window.scrollTo(0, 0)
+      if (lenis && typeof lenis.scrollTo === 'function') {
+        lenis.scrollTo(0, { immediate: true })
+      }
+    }
+
+    resetScroll()
+
+    const timer1 = setTimeout(resetScroll, 50)
+    const timer2 = setTimeout(resetScroll, 150)
+    const timer3 = setTimeout(resetScroll, 300)
+
+    return () => {
+      clearTimeout(timer1)
+      clearTimeout(timer2)
+      clearTimeout(timer3)
+    }
+  }, [pathname, lenis, isAdmin])
 
   const scrollTo = (target, options = {}) => {
     if (lenis) lenis.scrollTo(target, options)

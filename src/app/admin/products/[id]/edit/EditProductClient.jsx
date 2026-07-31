@@ -2,9 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import ProductForm from '@/components/admin/ProductForm'
-import { ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
+import PimShell from '@/components/admin/pim/PimShell'
 import { uploadImageToMedia, isBase64DataUrl } from '@/utils/mediaUpload'
 
 /**
@@ -123,25 +121,12 @@ export default function EditProductClient({ product }) {
   }
 
   return (
-    <div className="space-y-6 select-none">
+    <div className="space-y-4 select-none">
       
-      {/* Header bar */}
-      <div className="flex items-center gap-3">
-        <Link
-          href="/admin/products"
-          className="p-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-500 hover:text-gray-900 cursor-pointer transition-colors inline-block"
-        >
-          <ArrowLeft className="w-4 h-4" />
-        </Link>
-        <h1 className="font-sans font-bold text-gray-900 text-2xl tracking-tight leading-none m-0">
-          Edit Product: {product.name}
-        </h1>
-      </div>
-
       {/* Status message */}
       {statusMsg && (
-        <div className="bg-blue-50 border border-blue-100 text-blue-700 font-mono text-xs px-4 py-2.5 rounded-xl max-w-4xl mx-auto leading-relaxed flex items-center gap-2">
-          <span className="w-4 h-4 border-2 border-blue-300 border-t-blue-700 rounded-full animate-spin shrink-0" />
+        <div className="bg-[#0E4FB3]/10 border border-[#0E4FB3]/20 text-[#0E4FB3] font-mono text-xs px-4 py-2.5 rounded-xl max-w-4xl mx-auto leading-relaxed flex items-center gap-2">
+          <span className="w-4 h-4 border-2 border-[#0E4FB3]/30 border-t-[#0E4FB3] rounded-full animate-spin shrink-0" />
           {statusMsg}
         </div>
       )}
@@ -154,7 +139,7 @@ export default function EditProductClient({ product }) {
       )}
 
       {/* Form manager */}
-      <ProductForm
+      <PimShell
         product={product}
         onSubmit={handleSubmit}
         isLoading={isLoading}

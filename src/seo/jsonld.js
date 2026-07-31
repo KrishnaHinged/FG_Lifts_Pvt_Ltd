@@ -21,7 +21,7 @@ export function buildOrganizationSchema() {
     ],
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+91-9876543210',
+      telephone: '+91-7046055586',
       contactType: 'customer service',
       areaServed: 'IN',
       availableLanguage: ['English', 'Hindi', 'Gujarati']
@@ -36,7 +36,7 @@ export function buildLocalBusinessSchema() {
     '@id': `${BASE_URL}/#localbusiness`,
     name: 'FG Lift Pvt. Ltd.',
     image: `${BASE_URL}/images/projects-collage.png`,
-    telephone: '+91-9876543210',
+    telephone: '+91-7046055586',
     email: 'info@fglift.com',
     address: {
       '@type': 'PostalAddress',

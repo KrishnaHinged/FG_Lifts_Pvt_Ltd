@@ -11,6 +11,7 @@ export function ScrollProvider({ children }) {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
+    if (window.location.pathname.startsWith('/admin')) return
 
     let lastScrollVal = window.scrollY
     let ticking = false

@@ -5,13 +5,15 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Search, ChevronDown } from 'lucide-react'
 
 const tabOptions = [
+  { id: 'All', label: 'All Products' },
   { id: 'Systems', label: 'Our Systems' },
   { id: 'Cabins', label: 'Luxury Cabins' },
   { id: 'Components', label: 'Components & Kits' }
 ]
 
 const categoryOptions = {
-  Systems: ['All', 'Passenger', 'Goods', 'Capsule', 'Home', 'Home Lift', 'Hospital'],
+  All: ['All', 'Passenger', 'Goods', 'Capsule', 'Hospital', 'Standard', 'Premium', 'Luxury', 'Bespoke', 'Control Panels', 'Safety Devices'],
+  Systems: ['All', 'Passenger', 'Goods', 'Capsule', 'Hospital'],
   Cabins: ['All', 'Standard', 'Premium', 'Luxury', 'Bespoke'],
   Components: ['All', 'Control Panels', 'Safety Devices', 'Cabin Parts']
 }

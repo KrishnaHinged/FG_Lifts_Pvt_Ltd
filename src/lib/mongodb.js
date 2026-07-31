@@ -4,7 +4,7 @@ const MONGODB_URI = process.env.MONGODB_URI
 
 if (!MONGODB_URI) throw new Error('MONGODB_URI not set in .env')
 
-let cached = global.mongoose || { conn: null, promise: null }
+let cached = global.mongoose || { conn: null, promise: null, activeUri: null }
 global.mongoose = cached
 
 export async function connectDB() {
@@ -25,31 +25,41 @@ export async function connectDB() {
     }
   }
 
-  // If disconnected or disconnecting, reset and reconnect
+  // Reuse previously successful URI (e.g. local DB) or default to MONGODB_URI
+  const LOCAL_URI = 'mongodb://127.0.0.1:27017/fglifts'
+  const targetUri = cached.activeUri || MONGODB_URI
+
   try {
-    cached.promise = mongoose.connect(MONGODB_URI, {
+    cached.promise = mongoose.connect(targetUri, {
       bufferCommands: false,
       dbName: 'fglifts',
-      serverSelectionTimeoutMS: 4000, // Fail fast after 4 seconds
-      connectTimeoutMS: 4000
+      serverSelectionTimeoutMS: 1200,
+      connectTimeoutMS: 1200
     })
     cached.conn = await cached.promise
+    cached.activeUri = targetUri
   } catch (err) {
-    console.warn(`[MongoDB] Atlas connection failed (${err.message}). Trying local database fallback...`)
-    const LOCAL_URI = 'mongodb://127.0.0.1:27017/fglifts'
-    try {
-      cached.promise = mongoose.connect(LOCAL_URI, {
-        bufferCommands: false,
-        serverSelectionTimeoutMS: 2000, // Fail fast after 2 seconds
-        connectTimeoutMS: 2000
-      })
-      cached.conn = await cached.promise
-      console.log(`[MongoDB] Successfully connected to local database: ${LOCAL_URI}`)
-    } catch (localErr) {
-      console.error(`[MongoDB] Database connection failed completely: ${localErr.message}`)
+    if (targetUri !== LOCAL_URI) {
+      console.warn(`[MongoDB] Atlas connection failed (${err.message}). Connecting to local database...`)
+      try {
+        cached.promise = mongoose.connect(LOCAL_URI, {
+          bufferCommands: false,
+          serverSelectionTimeoutMS: 1000,
+          connectTimeoutMS: 1000
+        })
+        cached.conn = await cached.promise
+        cached.activeUri = LOCAL_URI
+        console.log(`[MongoDB] Connected to local database: ${LOCAL_URI}`)
+      } catch (localErr) {
+        console.error(`[MongoDB] Database connection failed completely: ${localErr.message}`)
+        cached.promise = null
+        cached.conn = null
+        throw new Error(`Database connection failed completely: ${localErr.message}`)
+      }
+    } else {
       cached.promise = null
       cached.conn = null
-      throw new Error(`Database connection failed completely: ${localErr.message}`)
+      throw err
     }
   }
 

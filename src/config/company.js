@@ -3,7 +3,7 @@ export const companyConfig = {
   shortName: 'FG Lifts',
   tagline: 'Future & Growth in Vertical Mobility',
   foundingYear: 1993,
-  phone: '+91 98765 43210',
+  phone: '+91 70460 55586',
   emails: {
     info: 'info@fglifts.com',
     sales: 'sales@fglifts.com',

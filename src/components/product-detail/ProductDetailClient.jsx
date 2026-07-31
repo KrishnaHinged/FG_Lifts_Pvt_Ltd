@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import ProductGallery from './ProductGallery'
+import CabinAestheticsPanel from './CabinAestheticsPanel'
 import SpecsTable from './SpecsTable'
 import FeaturesList from './FeaturesList'
 import ApplicationChips from './ApplicationChips'
@@ -12,6 +14,52 @@ import ContactSection from '@/components/home/ContactSection'
 
 export default function ProductDetailClient({ product, related = [] }) {
   if (!product) return null
+
+  const colorVariants = product.colorVariants ? product.colorVariants.map(v => {
+    let panorama = v.panoramaImages?.sphere || '/images/360-gold.png';
+    if (!v.panoramaImages?.sphere) {
+      if (v.name?.toLowerCase().includes('rose')) {
+        panorama = '/images/360-rose-gold.png';
+      } else if (v.name?.toLowerCase().includes('silver') || v.name?.toLowerCase().includes('steel') || v.name?.toLowerCase().includes('grey')) {
+        panorama = '/images/360-silver.png';
+      }
+    }
+    return {
+      color: v.hex,
+      label: v.name,
+      panoramaImages: v.panoramaImages || {},
+      finishTextures: v.finishTextures || [],
+      panorama
+    };
+  }) : []
+
+  const finishVariants = product.finishVariants || []
+  const activeFinishes = finishVariants.filter(f => f.isActive)
+
+  const [viewMode, setViewMode] = useState('gallery')
+  const [activeVariant, setActiveVariant] = useState(() => {
+    const idx = colorVariants.findIndex(v => v.label === product.defaultColor)
+    return idx !== -1 ? idx : 0
+  })
+
+  const [activeFinish, setActiveFinish] = useState(() => {
+    const idx = activeFinishes.findIndex(f => f.name === product.defaultFinish)
+    return idx !== -1 ? idx : 0
+  })
+
+  const handleColorChange = (index) => {
+    setActiveVariant(index)
+    if (product.has360View && viewMode !== '360') {
+      setViewMode('360')
+    }
+  }
+
+  const handleFinishChange = (index) => {
+    setActiveFinish(index)
+    if (product.has360View && viewMode !== '360') {
+      setViewMode('360')
+    }
+  }
 
   return (
     <div className="bg-[#F5F0EB] pt-32 pb-0 relative overflow-hidden select-none">
@@ -86,28 +134,18 @@ export default function ProductDetailClient({ product, related = [] }) {
               panoramaUrl="/images/360-gold.png"
               defaultColor={product.defaultColor}
               defaultFinish={product.defaultFinish}
-              finishVariants={product.finishVariants || []}
-              colorVariants={product.colorVariants ? product.colorVariants.map(v => {
-                let panorama = v.panoramaImages?.sphere || '/images/360-gold.png';
-                if (!v.panoramaImages?.sphere) {
-                  if (v.name?.toLowerCase().includes('rose')) {
-                    panorama = '/images/360-rose-gold.png';
-                  } else if (v.name?.toLowerCase().includes('silver') || v.name?.toLowerCase().includes('steel') || v.name?.toLowerCase().includes('grey')) {
-                    panorama = '/images/360-silver.png';
-                  }
-                }
-                return {
-                  color: v.hex,
-                  label: v.name,
-                  panoramaImages: v.panoramaImages || {},
-                  finishTextures: v.finishTextures || [],
-                  panorama
-                };
-              }) : []}
+              finishVariants={finishVariants}
+              colorVariants={colorVariants}
+              viewMode={viewMode}
+              setViewMode={setViewMode}
+              activeVariant={activeVariant}
+              setActiveVariant={setActiveVariant}
+              activeFinish={activeFinish}
+              setActiveFinish={setActiveFinish}
             />
           </div>
 
-          {/* Right Column - Product Specs Details */}
+          {/* Right Column - Product Specs Details & Aesthetics Panel (aside of the photo) */}
           <div className="lg:col-span-5 flex flex-col items-start gap-8">
             
             {/* Title & Badge */}
@@ -149,6 +187,18 @@ export default function ProductDetailClient({ product, related = [] }) {
             >
               {product.description}
             </motion.p>
+
+            {/* Personalize Cabin Aesthetics Panel (Placed right aside of the photo) */}
+            {(colorVariants.length > 0 || activeFinishes.length > 0) && (
+              <CabinAestheticsPanel
+                colorVariants={colorVariants}
+                finishVariants={finishVariants}
+                activeVariant={activeVariant}
+                setActiveVariant={handleColorChange}
+                activeFinish={activeFinish}
+                setActiveFinish={handleFinishChange}
+              />
+            )}
 
             {/* Divider */}
             <div className="w-full h-px bg-[#E8E2DA]/70" />

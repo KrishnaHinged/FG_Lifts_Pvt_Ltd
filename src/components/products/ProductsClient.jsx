@@ -12,17 +12,26 @@ import AboutCTA from '../about/AboutCTA'
 import Testimonials from '../home/Testimonials'
 
 export default function ProductsClient({ initialProducts = [] }) {
-  const [activeTab, setActiveTab] = useState('Systems')
+  const [activeTab, setActiveTab] = useState('All')
   const [activeCategory, setActiveCategory] = useState('All')
   const [activeCapacity, setActiveCapacity] = useState('All')
   const [activeSpeed, setActiveSpeed] = useState('All')
 
   const catalogRef = useRef(null)
 
+  // Helper check to exclude Home Lift products from the main Products page
+  const isHomeLiftProduct = (p) => {
+    const cat = (p.category || '').toLowerCase()
+    return cat === 'home lift' || cat === 'home' || cat.includes('home lift') || cat.includes('homelift')
+  }
+
   // Synchronously compute filtered products during render
   const filteredProducts = (initialProducts || []).filter((p) => {
-    // 1. Filter by category group (tabGroup)
-    if (p.tabGroup !== activeTab) return false
+    // 0. Exclude Home Lifts completely from Products Page catalog
+    if (isHomeLiftProduct(p)) return false
+
+    // 1. Filter by category group (tabGroup) if not 'All'
+    if (activeTab !== 'All' && p.tabGroup !== activeTab) return false
 
     // 2. Filter by lift type (category) if not 'All'
     if (activeCategory !== 'All' && p.category?.toLowerCase() !== activeCategory.toLowerCase()) {
