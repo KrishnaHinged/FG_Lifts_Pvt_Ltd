@@ -83,14 +83,15 @@ export function usePimForm({ product = null, onSubmit, isLoading = false }) {
     }
   ])
 
-  // 360 Configurator State
-  const [defaultColor, setDefaultColor] = useState(product?.defaultColor || 'Champagne Gold')
-  const [defaultFinish, setDefaultFinish] = useState(product?.defaultFinish || 'Mirror Finish')
+  // 360 Configurator & Variant State
+  const [defaultColor, setDefaultColor] = useState(product?.defaultColor || 'Dark Grey')
+  const [defaultFinish, setDefaultFinish] = useState(product?.defaultFinish || 'Hairline Finish')
   const [colorVariants, setColorVariants] = useState(product?.colorVariants || [
-    { name: 'Champagne Gold', hex: '#C9A84C', isActive: true, panoramaImages: {}, finishTextures: [] }
+    { name: 'Dark Grey', hex: '#4B5563', isActive: true, panoramaImages: {}, finishTextures: [] },
+    { name: 'Gold', hex: '#D4AF37', isActive: true, panoramaImages: {}, finishTextures: [] },
+    { name: 'Rose Gold', hex: '#B76E79', isActive: true, panoramaImages: {}, finishTextures: [] }
   ])
   const [finishVariants, setFinishVariants] = useState(product?.finishVariants || [
-    { name: 'Mirror Finish', description: 'Highly reflective mirror-like polished stainless steel surface', isActive: true },
     { name: 'Hairline Finish', description: 'Elegant brushed texture finish with fine linear scratch patterns', isActive: true }
   ])
 

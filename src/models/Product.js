@@ -2,6 +2,8 @@ import mongoose from 'mongoose'
 
 const ColorFinishTextureSchema = new mongoose.Schema({
   finishName: { type: String, required: true },
+  imageUrl:   { type: String, default: '' },
+  enabled:    { type: Boolean, default: true },
   panoramaImages: {
     sphere:  String,
     front:   String,

@@ -53,6 +53,8 @@ export function mapToProductDTO(product) {
         }
         return {
           finishName: ft.finishName,
+          imageUrl: ft.imageUrl ? getAssetUrl(ft.imageUrl) : '',
+          enabled: ft.enabled !== false,
           panoramaImages: ftPano
         }
       })

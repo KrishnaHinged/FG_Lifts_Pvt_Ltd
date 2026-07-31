@@ -25,7 +25,7 @@ export default memo(function PimSidebar({
     { id: 'pim-specs', label: 'Specifications', icon: Sliders, key: 'specs' },
     { id: 'pim-features', label: 'Features & Apps', icon: Sparkles, key: 'features' },
     { id: 'pim-media', label: 'Media & Gallery', icon: ImageIcon, key: 'media' },
-    { id: 'pim-variants', label: 'Design Variants', icon: Palette, key: 'variants' },
+    { id: 'pim-variants', label: 'Variants Configuration', icon: Palette, key: 'variants' },
     ...(has360View ? [{ id: 'pim-configurator', label: '360° Configurator', icon: Box, key: 'configurator' }] : []),
     { id: 'pim-seo', label: 'SEO & Metadata', icon: Search, key: 'seo' },
     { id: 'pim-visibility', label: 'Visibility & Publish', icon: Eye, key: 'visibility' }
