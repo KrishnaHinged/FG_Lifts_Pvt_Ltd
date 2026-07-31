@@ -1,17 +1,9 @@
 'use client'
 
-import React from 'react'
-import Spinner from '@/components/ui/Spinner'
+import LuxuryElevatorLoader from './LuxuryElevatorLoader'
 
-export function PageLoader({ className = '' }) {
-  return (
-    <div className={`w-full min-h-[50vh] flex flex-col items-center justify-center space-y-4 ${className}`}>
-      <Spinner size="lg" color="primary" />
-      <span className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-[#7A7A7A]">
-        Fetching Information...
-      </span>
-    </div>
-  )
+export function PageLoader({ className = '', mode = 'compact' }) {
+  return <LuxuryElevatorLoader mode={mode} className={className} />
 }
 
 export default PageLoader

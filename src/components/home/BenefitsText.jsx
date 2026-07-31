@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, memo } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Building2, Sparkles, Users } from 'lucide-react'
 import Section from '@/components/layouts/Section'
@@ -32,7 +32,7 @@ const items = [
   { type: 'word', text: 'day.' }
 ]
 
-function ScrollItem({ item, index, progress }) {
+const ScrollItem = memo(function ScrollItem({ item, index, progress }) {
   const start = 0.1 + (index * 0.02)
   const end = start + 0.04
   const opacity = useTransform(progress, [start, end], [0.2, 1])
@@ -67,7 +67,7 @@ function ScrollItem({ item, index, progress }) {
       {item.text}
     </motion.span>
   )
-}
+})
 
 export default function BenefitsText() {
   const containerRef = useRef(null)

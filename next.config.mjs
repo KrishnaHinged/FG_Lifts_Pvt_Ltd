@@ -8,6 +8,8 @@ const nextConfig = {
   },
   // Allow serving images from the media API route
   images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 31536000,
     remotePatterns: [
       {
         protocol: 'https',

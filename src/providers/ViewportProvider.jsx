@@ -13,13 +13,18 @@ export function ViewportProvider({ children }) {
   useEffect(() => {
     if (typeof window === 'undefined') return
 
+    let resizeTimer = null
     const handleResize = () => {
-      setWidth(window.innerWidth)
-      setHeight(window.innerHeight)
+      if (resizeTimer) clearTimeout(resizeTimer)
+      resizeTimer = setTimeout(() => {
+        setWidth(window.innerWidth)
+        setHeight(window.innerHeight)
+      }, 100)
     }
 
     // Measure viewport dimensions immediately on mount (client-side)
-    handleResize()
+    setWidth(window.innerWidth)
+    setHeight(window.innerHeight)
 
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0)
 
@@ -34,32 +39,34 @@ export function ViewportProvider({ children }) {
     motionMediaQuery.addEventListener('change', handleMotionChange)
 
     return () => {
+      if (resizeTimer) clearTimeout(resizeTimer)
       window.removeEventListener('resize', handleResize)
       motionMediaQuery.removeEventListener('change', handleMotionChange)
     }
   }, [])
 
-  const breakpoints = {
-    sm: width >= 640,
-    md: width >= 768,
-    lg: width >= 1024,
-    xl: width >= 1280,
-    '2xl': width >= 1536
-  }
+  const value = React.useMemo(() => {
+    const breakpoints = {
+      sm: width >= 640,
+      md: width >= 768,
+      lg: width >= 1024,
+      xl: width >= 1280,
+      '2xl': width >= 1536
+    }
+    const orientation = width > height ? 'landscape' : 'portrait'
 
-  const orientation = width > height ? 'landscape' : 'portrait'
+    return {
+      width,
+      height,
+      breakpoints,
+      orientation,
+      isTouchDevice,
+      prefersReducedMotion
+    }
+  }, [width, height, isTouchDevice, prefersReducedMotion])
 
   return (
-    <ViewportContext.Provider
-      value={{
-        width,
-        height,
-        breakpoints,
-        orientation,
-        isTouchDevice,
-        prefersReducedMotion
-      }}
-    >
+    <ViewportContext.Provider value={value}>
       {children}
     </ViewportContext.Provider>
   )

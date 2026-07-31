@@ -1,9 +1,7 @@
 export const socialsConfig = {
-  facebook: 'https://facebook.com',
-  instagram: 'https://instagram.com',
-  linkedin: 'https://linkedin.com',
-  twitter: 'https://twitter.com',
-  youtube: 'https://youtube.com'
+  facebook: 'https://www.facebook.com/share/v/19Gssv8PnP/',
+  instagram: 'https://www.instagram.com/fgliftspvtltd?igsh=M2d5NnZpM3NlZHdj',
+  linkedin: 'https://www.linkedin.com/posts/fg-lifts-private-limited_firozgerelevator-elevatorsolutions-homeelevator-activity-7487362742073393152-W7fZ',
 }
 
 export default socialsConfig

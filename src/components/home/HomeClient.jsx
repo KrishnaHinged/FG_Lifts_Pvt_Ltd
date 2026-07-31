@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import dynamic from 'next/dynamic'
 import IntroAnimation from '@/components/intro/IntroAnimation'
 import Hero from '@/components/home/Hero'
 import BenefitsText from '@/components/home/BenefitsText'
@@ -9,10 +10,11 @@ import StatsGrid from '@/components/home/StatsGrid'
 import ServicesGrid from '@/components/home/ServicesGrid'
 import Industries from '@/components/home/Industries'
 import WhyFG from '@/components/home/WhyFG'
-import GalleryMarquee from '@/components/home/GalleryMarquee'
-import Testimonials from '@/components/home/Testimonials'
-import ConfiguratorHome from '@/components/home/ConfiguratorHome'
-import ContactSection from '@/components/home/ContactSection'
+
+const DynamicConfiguratorHome = dynamic(() => import('@/components/home/ConfiguratorHome'), { ssr: true, loading: () => null })
+const DynamicGalleryMarquee = dynamic(() => import('@/components/home/GalleryMarquee'), { ssr: true, loading: () => null })
+const DynamicTestimonials = dynamic(() => import('@/components/home/Testimonials'), { ssr: true, loading: () => null })
+const DynamicContactSection = dynamic(() => import('@/components/home/ContactSection'), { ssr: true, loading: () => null })
 
 export default function HomeClient() {
   const [showIntro, setShowIntro] = useState(true)
@@ -20,10 +22,14 @@ export default function HomeClient() {
 
   useEffect(() => {
     setMounted(true)
+    if (typeof window !== 'undefined' && sessionStorage.getItem('fg_intro_played') === 'true') {
+      setShowIntro(false)
+    }
   }, [])
 
   const handleIntroComplete = () => {
     if (typeof window !== 'undefined') {
+      sessionStorage.setItem('fg_intro_played', 'true')
       window.scrollTo(0, 0)
       if (window.lenis && typeof window.lenis.scrollTo === 'function') {
         window.lenis.scrollTo(0, { immediate: true })
@@ -38,10 +44,6 @@ export default function HomeClient() {
     }
 
     setShowIntro(false)
-
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('fg_intro_played', 'true')
-    }
   }
 
   if (!mounted) {
@@ -57,20 +59,18 @@ export default function HomeClient() {
         />
       )}
 
-      {!showIntro && (
-        <div className="w-full">
-          <Hero />{/*done redesign*/}
-          <BenefitsText />{/*done redesign*/}
-          <StatsGrid />
-          <ServicesGrid />{/*done redesign*/}
-          <Industries />{/*done redesign*/}
-          <WhyFG />
-          <ConfiguratorHome />
-          <GalleryMarquee />{/*done redesign*/}
-          <Testimonials />{/*done redesign*/}
-          <ContactSection />{/*done redesign*/}
-        </div>
-      )}
+      <div className="w-full">
+        <Hero />
+        <BenefitsText />
+        <StatsGrid />
+        <ServicesGrid />
+        <Industries />
+        <WhyFG />
+        <DynamicConfiguratorHome />
+        <DynamicGalleryMarquee />
+        <DynamicTestimonials />
+        <DynamicContactSection />
+      </div>
     </>
   )
 }

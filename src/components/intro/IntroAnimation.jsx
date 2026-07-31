@@ -155,6 +155,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
   // 3. Initialize GSAP ScrollTrigger Master Timeline
   useEffect(() => {
     let ctx
+    let animRafId = null
     let isMounted = true
 
     async function initGSAP() {
@@ -182,7 +183,24 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
             video.currentTime = 0
           } catch (e) { }
 
-          const videoPhaseEnd = 0.65 // Video scrubbing finishes at 65% scroll progress
+          let targetTime = 0
+
+          // Continuous Spring-Damped Video Lerp Loop for 60 FPS Bouncy Physics
+          function smoothVideoLoop() {
+            if (videoRef.current && videoDuration) {
+              const current = videoRef.current.currentTime
+              const diff = targetTime - current
+
+              if (Math.abs(diff) > 0.001) {
+                try {
+                  // Exponential spring lerp (0.18 factor) provides silky-smooth, elastic inertia
+                  videoRef.current.currentTime = current + diff * 0.18
+                } catch (e) { }
+              }
+            }
+            animRafId = requestAnimationFrame(smoothVideoLoop)
+          }
+          animRafId = requestAnimationFrame(smoothVideoLoop)
 
           // Master ScrollTrigger timeline normalized to 100 units
           const masterTimeline = gsap.timeline({
@@ -190,15 +208,16 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
               trigger: scrollAnchor,
               start: 'top top',
               end: 'bottom bottom',
-              scrub: 2.2, // Increased from 1.5 to 2.2 for buttery smooth scroll inertia
+              scrub: 1.0, // 1.0s scrub matches Lenis smooth scroll inertia perfectly for bouncy feel
               invalidateOnRefresh: true,
               onUpdate: (self) => {
                 const progress = self.progress
 
                 // Toggle skip button visibility during interactive scroll
-                setShowSkipButton(progress > 0.05 && progress < 0.96)
+                const shouldShowSkip = progress > 0.05 && progress < 0.96
+                setShowSkipButton(prev => prev !== shouldShowSkip ? shouldShowSkip : prev)
 
-                // Final transition lock: pause 1 sec when doors close at 99% progress
+                // Final transition lock: pause brief 400ms when doors close at 99% progress
                 if (progress >= 0.99 && !completionTriggeredRef.current) {
                   completionTriggeredRef.current = true
 
@@ -211,71 +230,62 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
                     if (window.lenis && typeof window.lenis.start === 'function') {
                       window.lenis.start()
                     }
-                  }, 500) // 0.5 second pause
+                  }, 400)
                 }
               }
             }
           })
 
-          // STEP 1 & 2: Video scrubbing driven smoothly via a GSAP virtual playhead
+          // STEP 1 & 2: Video scrubbing driven via smooth spring lerp playhead
           const playhead = { time: 0 }
           masterTimeline.to(playhead, {
             time: videoDuration - 0.05,
-            ease: 'none', // Linear progression mapped to scroll, smoothed by GSAP's scrub inertia
+            ease: 'none',
             duration: 65,
             onUpdate: () => {
-              if (video && videoDuration) {
-                const targetTime = playhead.time
-                if (!isNaN(targetTime) && Math.abs(video.currentTime - targetTime) > 0.01) {
-                  try {
-                    video.currentTime = targetTime
-                  } catch (e) { }
-                }
-              }
+              targetTime = playhead.time
             }
           }, 0)
 
-          // STEP 1: Instruction HUD fades out early (0% to 12%)
+          // STEP 1: Instruction HUD bounces and fades out early (0% to 15%)
           masterTimeline.to('.intro-instruction', {
             opacity: 0,
-            y: -20,
-            duration: 12,
-            ease: 'power2.out'
+            y: -40,
+            scale: 0.94,
+            duration: 15,
+            ease: 'back.in(1.7)'
           }, 0)
 
-          // STEP 1 & 2: Video plays 0% -> 65%, then pauses on final frame 65% -> 73%
-          // (No overlays scheduled between 12% and 73% - clean view of video)
-
-          // STEP 3: Logo Reveal (73% to 90% scroll progress - ONLY after video finishes and pauses)
+          // STEP 3: Logo Reveal with bouncy spring easing (70% to 88% scroll progress)
           masterTimeline
-            .set('.logo-reveal', { display: 'flex' }, 73)
+            .set('.logo-reveal', { display: 'flex' }, 70)
             .fromTo('.logo-reveal',
               { opacity: 0 },
-              { opacity: 1, duration: 7, ease: 'sine.out' },
-              73
+              { opacity: 1, duration: 8, ease: 'power2.out' },
+              70
             )
             .fromTo('.logo-title',
-              { opacity: 0, y: 80, scale: 0.8 },
-              { opacity: 1, y: 0, scale: 1, duration: 10, ease: 'back.out(3.5)' },
-              74
+              { opacity: 0, y: 70, scale: 0.82 },
+              { opacity: 1, y: 0, scale: 1, duration: 12, ease: 'back.out(2.4)' },
+              71
             )
             .fromTo('.logo-subtitle',
-              { opacity: 0, y: 25 },
-              { opacity: 1, y: 0, duration: 8, ease: 'back.out(2.5)' },
-              78
-            )
-            .fromTo('.logo-glow',
-              { opacity: 0, scale: 0.8 },
-              { opacity: 0.8, scale: 1, duration: 8, ease: 'sine.inOut' },
+              { opacity: 0, y: 30 },
+              { opacity: 1, y: 0, duration: 10, ease: 'back.out(1.8)' },
               75
             )
+            .fromTo('.logo-glow',
+              { opacity: 0, scale: 0.7 },
+              { opacity: 0.85, scale: 1.05, duration: 10, ease: 'back.out(1.5)' },
+              73
+            )
 
-          // STEP 4: Smooth Cinematic Fade-Out of Intro Overlay into Home Screen (90% to 99% scroll progress)
+          // STEP 4: Cinematic Fade-Out into Home Screen (88% to 99% scroll progress)
           masterTimeline.to('.cinematic-container', {
             opacity: 0,
-            duration: 9,
+            duration: 11,
             ease: 'power2.inOut'
-          }, 90)
+          }, 88)
         })
 
         if (!isMounted && ctx) {
@@ -290,6 +300,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
 
     return () => {
       isMounted = false
+      if (animRafId) cancelAnimationFrame(animRafId)
       if (ctx) {
         ctx.revert()
       }
@@ -384,7 +395,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
       {/* 4. Scroll trigger anchor in document flow */}
       <div
         ref={scrollAnchorRef}
-        className="relative w-full h-[500vh] bg-transparent pointer-events-none z-10"
+        className="relative w-full h-[300vh] bg-transparent pointer-events-none z-10"
       />
     </div>
   )

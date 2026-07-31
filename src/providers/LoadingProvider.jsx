@@ -1,46 +1,79 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
-import Spinner from '@/components/ui/Spinner'
+import { AnimatePresence } from 'framer-motion'
+import LuxuryElevatorLoader from '@/components/loading/LuxuryElevatorLoader'
 
 const LoadingContext = createContext(null)
 
 export function LoadingProvider({ children }) {
-  const [loading, setLoading] = useState(false)
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const prevPathRef = useRef(pathname)
+
+  const isAdmin = pathname?.startsWith('/admin')
+
+  // Show loader on initial page load for non-admin pages
+  const [loading, setLoading] = useState(() => {
+    if (typeof window === 'undefined' || isAdmin) return false
+    // On home page, if intro hasn't played yet, let IntroAnimation run first
+    if (pathname === '/' && sessionStorage.getItem('fg_intro_played') !== 'true') {
+      return false
+    }
+    return true
+  })
 
   const startLoading = () => setLoading(true)
   const stopLoading = () => setLoading(false)
 
-  // Auto-stop loading overlay on route complete
+  // Listen to pathname changes
   useEffect(() => {
-    stopLoading()
-  }, [pathname, searchParams])
+    if (isAdmin) {
+      stopLoading()
+      return
+    }
+
+    if (prevPathRef.current !== pathname) {
+      prevPathRef.current = pathname
+      setLoading(true)
+    }
+  }, [pathname, isAdmin])
+
+  // Click interceptor for standard links to trigger loader during navigation
+  useEffect(() => {
+    if (isAdmin) return
+
+    const handleAnchorClick = (e) => {
+      const target = e.currentTarget
+      const href = target.getAttribute('href')
+      if (
+        href &&
+        href.startsWith('/') &&
+        !href.startsWith('/#') &&
+        href !== window.location.pathname
+      ) {
+        setLoading(true)
+      }
+    }
+
+    const anchors = document.querySelectorAll('a[href^="/"]')
+    anchors.forEach(a => a.addEventListener('click', handleAnchorClick))
+
+    return () => {
+      anchors.forEach(a => a.removeEventListener('click', handleAnchorClick))
+    }
+  }, [pathname, isAdmin])
 
   return (
     <LoadingContext.Provider value={{ loading, startLoading, stopLoading }}>
       {children}
       <AnimatePresence>
         {loading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[999999] flex flex-col items-center justify-center bg-[#EDE8E2]/85 backdrop-blur-md"
-          >
-            <Spinner size="lg" color="primary" />
-            <motion.span
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-[#111111] mt-6"
-            >
-              System Transitioning...
-            </motion.span>
-          </motion.div>
+          <LuxuryElevatorLoader
+            mode={pathname === '/' ? 'full' : 'compact'}
+            onComplete={stopLoading}
+          />
         )}
       </AnimatePresence>
     </LoadingContext.Provider>

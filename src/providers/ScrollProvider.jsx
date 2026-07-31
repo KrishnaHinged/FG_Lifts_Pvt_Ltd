@@ -13,18 +13,31 @@ export function ScrollProvider({ children }) {
     if (typeof window === 'undefined') return
 
     let lastScrollVal = window.scrollY
+    let ticking = false
 
     const handleScroll = () => {
-      const currentScrollVal = window.scrollY
-      setScrollY(currentScrollVal)
-      setIsAtTop(currentScrollVal < 10)
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollVal = window.scrollY
+          
+          // Only update isAtTop state when status actually changes
+          const nextIsAtTop = currentScrollVal < 10
+          setIsAtTop(prev => prev !== nextIsAtTop ? nextIsAtTop : prev)
 
-      if (currentScrollVal > lastScrollVal) {
-        setScrollDirection('down')
-      } else if (currentScrollVal < lastScrollVal) {
-        setScrollDirection('up')
+          // Only update scrollDirection when direction changes
+          if (currentScrollVal > lastScrollVal + 5) {
+            setScrollDirection(prev => prev !== 'down' ? 'down' : prev)
+            lastScrollVal = currentScrollVal
+          } else if (currentScrollVal < lastScrollVal - 5) {
+            setScrollDirection(prev => prev !== 'up' ? 'up' : prev)
+            lastScrollVal = currentScrollVal
+          }
+
+          setScrollY(currentScrollVal)
+          ticking = false
+        })
+        ticking = true
       }
-      lastScrollVal = currentScrollVal
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })

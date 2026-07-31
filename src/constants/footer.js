@@ -4,22 +4,22 @@ import companyConfig from '@/config/company'
 export const FOOTER = Object.freeze({
   SECTIONS: Object.freeze({
     COMPANY: {
-      TITLE: '// Company',
+      TITLE: 'Company',
       TEXT: `Engineering precision systems for luxury estates, commercial landmark towers, and high-density infrastructure across India. Established in ${companyConfig.foundingYear}.`
     },
     NAVIGATION: {
-      TITLE: '// Navigation',
+      TITLE: 'Navigation',
       LINKS: Object.freeze(navigationConfig.navbar)
     },
     CONTACT: {
-      TITLE: '// Contact',
+      TITLE: 'Contact',
       CITY: 'Surat',
       REGION: 'Gujarat, India',
       EMAIL: companyConfig.emails.info,
       PHONE: companyConfig.phone
     },
     SOCIAL: {
-      TITLE: '// Social'
+      TITLE: 'Social'
     }
   }),
   COPYRIGHT: `© ${new Date().getFullYear()} ${companyConfig.name.toUpperCase()}. ALL RIGHTS RESERVED.`,

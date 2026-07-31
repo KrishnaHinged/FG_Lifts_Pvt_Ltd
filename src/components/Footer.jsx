@@ -8,8 +8,15 @@ import { FOOTER } from '@/constants/footer'
 import { SOCIALS } from '@/constants/socials'
 import { NAVIGATION } from '@/constants/navigation'
 import { capitalize } from '@/utils/string'
+import { FaLinkedin, FaFacebook, FaInstagram } from 'react-icons/fa6'
 
 const navLinks = NAVIGATION.NAV_LINKS
+
+const socialIcons = {
+  linkedin: FaLinkedin,
+  facebook: FaFacebook,
+  instagram: FaInstagram
+}
 
 
 export default function Footer() {
@@ -138,7 +145,7 @@ export default function Footer() {
             </ul>
           </motion.div>
 
-          {/* Column 4: Social Text-Only Links */}
+          {/* Column 4: Social Links with React Icons */}
           <motion.div
             variants={columnVariants}
             className="col-span-6 md:col-span-4 lg:col-span-2 flex flex-col items-start"
@@ -147,18 +154,26 @@ export default function Footer() {
               {FOOTER.SECTIONS.SOCIAL.TITLE}
             </h4>
             <ul className="list-none p-0 m-0 space-y-4">
-              {Object.entries(SOCIALS).map(([platform, url]) => (
-                <li key={platform}>
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-sans text-[16px] text-[#F5F0EB]/60 hover:text-[#F5F0EB] transition-all duration-[350ms] ease-out inline-block hover:translate-x-1.5 no-underline"
-                  >
-                    {capitalize(platform)}
-                  </a>
-                </li>
-              ))}
+              {Object.entries(SOCIALS).map(([platform, url]) => {
+                const IconComponent = socialIcons[platform]
+                return (
+                  <li key={platform}>
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-sans text-[16px] text-[#F5F0EB]/60 hover:text-[#F5F0EB] transition-all duration-[350ms] ease-out inline-flex items-center gap-2.5 hover:translate-x-1.5 no-underline group"
+                    >
+                      {IconComponent && (
+                        <span className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#F5F0EB]/70 group-hover:bg-[#0E4FB3] group-hover:text-white group-hover:border-[#0E4FB3] transition-all duration-300 shadow-sm">
+                          <IconComponent className="w-4 h-4" />
+                        </span>
+                      )}
+                      <span>{capitalize(platform)}</span>
+                    </a>
+                  </li>
+                )
+              })}
             </ul>
           </motion.div>
         </motion.div>

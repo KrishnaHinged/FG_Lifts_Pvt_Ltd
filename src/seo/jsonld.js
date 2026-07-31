@@ -15,8 +15,9 @@ export function buildOrganizationSchema() {
     url: BASE_URL,
     logo: `${BASE_URL}/images/logo.png`,
     sameAs: [
-      'https://www.linkedin.com/company/fg-lift',
-      'https://www.facebook.com/fglift'
+      'https://www.linkedin.com/posts/fg-lifts-private-limited_firozgerelevator-elevatorsolutions-homeelevator-activity-7487362742073393152-W7fZ',
+      'https://www.facebook.com/share/v/19Gssv8PnP/',
+      'https://www.instagram.com/fgliftspvtltd'
     ],
     contactPoint: {
       '@type': 'ContactPoint',

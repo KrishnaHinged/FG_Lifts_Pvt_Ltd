@@ -26,27 +26,31 @@ export default function Navbar() {
   const isDark = isDarkBgAtTop && !scrolled
 
   useEffect(() => {
+    let ticking = false
+
     const handleScroll = () => {
-      const currentScrollY = window.scrollY
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY
+          const isScrolled = currentScrollY > 50
 
-      // Toggle scrolled state for glassmorphic cream background
-      setScrolled(currentScrollY > 50)
+          setScrolled(prev => prev !== isScrolled ? isScrolled : prev)
 
-      // Toggle show/hide navbar behavior on scroll direction
-      if (currentScrollY > 120) {
-        if (currentScrollY > lastScrollY.current) {
-          // Scrolling down - hide
-          setIsVisible(false)
-        } else {
-          // Scrolling up - show
-          setIsVisible(true)
-        }
-      } else {
-        // Always show near the top
-        setIsVisible(true)
+          if (currentScrollY > 120) {
+            if (currentScrollY > lastScrollY.current + 5) {
+              setIsVisible(prev => prev !== false ? false : prev)
+            } else if (currentScrollY < lastScrollY.current - 5) {
+              setIsVisible(prev => prev !== true ? true : prev)
+            }
+          } else {
+            setIsVisible(prev => prev !== true ? true : prev)
+          }
+
+          lastScrollY.current = currentScrollY
+          ticking = false
+        })
+        ticking = true
       }
-
-      lastScrollY.current = currentScrollY
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })

@@ -102,10 +102,18 @@ export default function Lift360Viewer({
     renderer.outputColorSpace = THREE.SRGBColorSpace
     rendererRef.current = renderer
 
+    // IntersectionObserver to pause rendering when off-screen
+    let isVisible = true
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting
+    }, { threshold: 0.1 })
+    observer.observe(container)
+
     // Animate loop
     function animate() {
       animIdRef.current = requestAnimationFrame(animate)
-      
+      if (!isVisible) return
+
       // Auto-rotate with decay when not dragging
       if (!isDraggingRef.current) {
         speedRef.current.x *= 0.95
@@ -141,14 +149,29 @@ export default function Lift360Viewer({
       camera.updateProjectionMatrix()
       renderer.setSize(w, h)
     }
-    window.addEventListener('resize', handleResize)
+    window.addEventListener('resize', handleResize, { passive: true })
+
+    const disposeMesh = (mesh) => {
+      if (!mesh) return
+      scene.remove(mesh)
+      if (mesh.geometry) mesh.geometry.dispose()
+      if (Array.isArray(mesh.material)) {
+        mesh.material.forEach(m => {
+          if (m.map) m.map.dispose()
+          m.dispose()
+        })
+      } else if (mesh.material) {
+        if (mesh.material.map) mesh.material.map.dispose()
+        mesh.material.dispose()
+      }
+    }
 
     return () => {
+      observer.disconnect()
       window.removeEventListener('resize', handleResize)
       if (animIdRef.current) cancelAnimationFrame(animIdRef.current)
       if (meshRef.current) {
-        scene.remove(meshRef.current)
-        if (meshRef.current.geometry) meshRef.current.geometry.dispose()
+        disposeMesh(meshRef.current)
       }
       renderer.dispose()
     }
