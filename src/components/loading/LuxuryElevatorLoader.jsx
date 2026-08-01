@@ -22,22 +22,24 @@ const statusMap = {
 export default function ElevatorLoader({
   onComplete,
   mode = 'full', // 'full' (~3s) | 'compact' (~1.5s)
+  theme = 'light', // 'light' | 'dark'
   className = '',
 }) {
   const [phase, setPhase] = useState(PHASES.INIT)
   const compact = mode === 'compact'
+  const isDark = theme === 'dark'
   const t = compact ? 0.5 : 1
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(PHASES.RAILS), 400 * t),
-      setTimeout(() => setPhase(PHASES.DOORS_CLOSE), 900 * t),
-      setTimeout(() => setPhase(PHASES.SEAL), 1700 * t),
-      setTimeout(() => setPhase(PHASES.DOORS_OPEN), 2200 * t),
-      setTimeout(() => onComplete?.(), 3000 * t),
+      setTimeout(() => setPhase(PHASES.RAILS), 350 * t),
+      setTimeout(() => setPhase(PHASES.DOORS_CLOSE), 800 * t),
+      setTimeout(() => setPhase(PHASES.SEAL), 1400 * t),
+      setTimeout(() => setPhase(PHASES.DOORS_OPEN), 1800 * t),
+      setTimeout(() => onComplete?.(), 2400 * t),
     ]
     return () => timers.forEach(clearTimeout)
-  }, [compact, onComplete])
+  }, [compact, t, onComplete])
 
   const { label, pct } = statusMap[phase]
 
@@ -47,42 +49,44 @@ export default function ElevatorLoader({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className={`fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#FAF9F7] select-none overflow-hidden ${className}`}
+      className={`fixed inset-0 z-[99999] flex flex-col items-center justify-center select-none overflow-hidden ${
+        isDark ? 'bg-[#040C1A]' : 'bg-[#FAF9F7]'
+      } ${className}`}
     >
-      {/* Green blob — top left */}
+      {/* Background ambient glowing blobs */}
       <motion.div
         className="absolute pointer-events-none"
         style={{
           top: '8%', left: '10%',
-          width: 320, height: 320,
+          width: 340, height: 340,
           borderRadius: '50%',
-          background: 'rgba(134,210,110,0.22)',
+          background: isDark ? 'rgba(14,79,179,0.25)' : 'rgba(134,210,110,0.22)',
           filter: 'blur(70px)',
         }}
         animate={{ x: [0, 30, -20, 0], y: [0, -20, 15, 0], scale: [1, 1.08, 0.95, 1] }}
         transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
       />
-      {/* Orange blob — right */}
+
       <motion.div
         className="absolute pointer-events-none"
         style={{
           top: '45%', right: '8%',
-          width: 280, height: 280,
+          width: 300, height: 300,
           borderRadius: '50%',
-          background: 'rgba(255,150,60,0.20)',
+          background: isDark ? 'rgba(0,116,217,0.20)' : 'rgba(255,150,60,0.20)',
           filter: 'blur(60px)',
         }}
         animate={{ x: [0, -25, 20, 0], y: [0, 20, -18, 0], scale: [1, 0.92, 1.06, 1] }}
         transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
       />
-      {/* Pink blob — bottom */}
+
       <motion.div
         className="absolute pointer-events-none"
         style={{
           bottom: '6%', left: '30%',
-          width: 300, height: 300,
+          width: 320, height: 320,
           borderRadius: '50%',
-          background: 'rgba(240,100,160,0.18)',
+          background: isDark ? 'rgba(197,160,89,0.15)' : 'rgba(240,100,160,0.18)',
           filter: 'blur(65px)',
         }}
         animate={{ x: [0, 18, -15, 0], y: [0, 25, -20, 0], scale: [1, 1.05, 0.96, 1] }}
@@ -91,8 +95,8 @@ export default function ElevatorLoader({
 
       <div className="relative z-10 flex flex-col items-center gap-6">
         {/* Brand label */}
-        <p className="text-[10px] font-semibold tracking-[0.22em] uppercase text-[#888]">
-          FG Lifts · Surat
+        <p className={`text-[10px] font-semibold tracking-[0.25em] uppercase ${isDark ? 'text-[#94A3B8]' : 'text-[#888]'}`}>
+          FG LIFTS · SURAT
         </p>
 
         {/* Elevator card */}
@@ -109,10 +113,13 @@ export default function ElevatorLoader({
             style={{
               width: 2,
               borderRadius: 2,
-              background: 'linear-gradient(to bottom, transparent, #bbb 30%, #bbb 70%, transparent)',
+              background: isDark
+                ? 'linear-gradient(to bottom, transparent, #0E4FB3 30%, #0E4FB3 70%, transparent)'
+                : 'linear-gradient(to bottom, transparent, #bbb 30%, #bbb 70%, transparent)',
               transformOrigin: 'top',
             }}
           />
+
           {/* Right guide rail */}
           <motion.div
             initial={{ scaleY: 0 }}
@@ -122,7 +129,9 @@ export default function ElevatorLoader({
             style={{
               width: 2,
               borderRadius: 2,
-              background: 'linear-gradient(to bottom, transparent, #bbb 30%, #bbb 70%, transparent)',
+              background: isDark
+                ? 'linear-gradient(to bottom, transparent, #0E4FB3 30%, #0E4FB3 70%, transparent)'
+                : 'linear-gradient(to bottom, transparent, #bbb 30%, #bbb 70%, transparent)',
               transformOrigin: 'top',
             }}
           />
@@ -132,8 +141,8 @@ export default function ElevatorLoader({
             className="absolute inset-x-8 inset-y-0 overflow-hidden"
             style={{
               borderRadius: 16,
-              border: '1.5px solid #1a1a1a',
-              background: '#f0ede8',
+              border: isDark ? '1.5px solid #1E3A8A' : '1.5px solid #1a1a1a',
+              background: isDark ? '#0A1628' : '#f0ede8',
             }}
           >
             {/* SVG cabin outline draw-on */}
@@ -144,7 +153,7 @@ export default function ElevatorLoader({
               <motion.rect
                 x="2" y="2" width="200" height="296" rx="14"
                 fill="none"
-                stroke="#1a1a1a"
+                stroke={isDark ? '#0E4FB3' : '#1a1a1a'}
                 strokeWidth="1.5"
                 strokeDasharray="1000"
                 initial={{ strokeDashoffset: 1000 }}
@@ -158,8 +167,10 @@ export default function ElevatorLoader({
               className="absolute top-0 left-0 h-full overflow-hidden"
               style={{
                 width: '50%',
-                background: 'linear-gradient(135deg, #e8e4de 0%, #ddd8d0 100%)',
-                borderRight: '1px solid #c8c2ba',
+                background: isDark
+                  ? 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)'
+                  : 'linear-gradient(135deg, #e8e4de 0%, #ddd8d0 100%)',
+                borderRight: isDark ? '1px solid #334155' : '1px solid #c8c2ba',
                 zIndex: 3,
               }}
               initial={{ x: '-100%' }}
@@ -170,7 +181,7 @@ export default function ElevatorLoader({
               }}
               transition={{ duration: 0.7 * t, ease: [0.34, 1.56, 0.64, 1] }}
             >
-              <DoorPanel side="left" />
+              <DoorPanel side="left" isDark={isDark} />
             </motion.div>
 
             {/* Right door panel */}
@@ -178,8 +189,10 @@ export default function ElevatorLoader({
               className="absolute top-0 right-0 h-full overflow-hidden"
               style={{
                 width: '50%',
-                background: 'linear-gradient(225deg, #e8e4de 0%, #ddd8d0 100%)',
-                borderLeft: '1px solid #c8c2ba',
+                background: isDark
+                  ? 'linear-gradient(225deg, #1E293B 0%, #0F172A 100%)'
+                  : 'linear-gradient(225deg, #e8e4de 0%, #ddd8d0 100%)',
+                borderLeft: isDark ? '1px solid #334155' : '1px solid #c8c2ba',
                 zIndex: 3,
               }}
               initial={{ x: '100%' }}
@@ -190,7 +203,7 @@ export default function ElevatorLoader({
               }}
               transition={{ duration: 0.7 * t, ease: [0.34, 1.56, 0.64, 1] }}
             >
-              <DoorPanel side="right" />
+              <DoorPanel side="right" isDark={isDark} />
             </motion.div>
 
             {/* Centre seam glow when sealed */}
@@ -199,7 +212,7 @@ export default function ElevatorLoader({
                 <motion.div
                   key="seam"
                   className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 z-20"
-                  style={{ width: 2, background: '#1a1a1a', borderRadius: 2 }}
+                  style={{ width: 2, background: isDark ? '#0E4FB3' : '#1a1a1a', borderRadius: 2 }}
                   initial={{ opacity: 0, scaleY: 0 }}
                   animate={{ opacity: [0, 1, 0], scaleY: 1 }}
                   exit={{ opacity: 0 }}
@@ -214,7 +227,7 @@ export default function ElevatorLoader({
                 animate={{ y: phase >= PHASES.DOORS_OPEN ? [0, -4, 0] : 0 }}
                 transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 className="w-10 h-10 rounded-full flex items-center justify-center"
-                style={{ background: '#1a1a1a' }}
+                style={{ background: isDark ? '#0E4FB3' : '#1a1a1a' }}
               >
                 {/* Up arrows icon */}
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -227,7 +240,7 @@ export default function ElevatorLoader({
                 animate={{ opacity: phase >= PHASES.DOORS_OPEN ? 1 : 0 }}
                 transition={{ delay: 0.25 * t }}
                 className="text-[11px] font-semibold tracking-widest uppercase"
-                style={{ color: '#1a1a1a' }}
+                style={{ color: isDark ? '#FFFFFF' : '#1a1a1a' }}
               >
                 FG Lifts
               </motion.span>
@@ -236,7 +249,7 @@ export default function ElevatorLoader({
                 animate={{ opacity: phase >= PHASES.DOORS_OPEN ? 1 : 0 }}
                 transition={{ delay: 0.4 * t }}
                 className="text-[9px] tracking-widest uppercase"
-                style={{ color: '#888' }}
+                style={{ color: isDark ? '#94A3B8' : '#888' }}
               >
                 Ready
               </motion.span>
@@ -246,7 +259,7 @@ export default function ElevatorLoader({
           {/* Floor plate */}
           <div
             className="absolute bottom-0 left-6 right-6"
-            style={{ height: 4, background: '#e0d8d0', borderRadius: 2 }}
+            style={{ height: 4, background: isDark ? '#1E3A8A' : '#e0d8d0', borderRadius: 2 }}
           />
         </div>
 
@@ -254,24 +267,24 @@ export default function ElevatorLoader({
         <div className="flex flex-col items-center gap-2" style={{ width: 220 }}>
           <div
             className="w-full overflow-hidden"
-            style={{ height: 3, background: '#e0d8d0', borderRadius: 99 }}
+            style={{ height: 3, background: isDark ? '#1E293B' : '#e0d8d0', borderRadius: 99 }}
           >
             <motion.div
               animate={{ width: `${pct}%` }}
               transition={{ duration: 0.5, ease: 'easeInOut' }}
-              style={{ height: '100%', background: '#1a1a1a', borderRadius: 99 }}
+              style={{ height: '100%', background: isDark ? '#0E4FB3' : '#1a1a1a', borderRadius: 99 }}
             />
           </div>
           <div className="flex justify-between w-full">
             <span
               className="text-[10px] font-medium tracking-[0.12em] uppercase"
-              style={{ color: '#888' }}
+              style={{ color: isDark ? '#94A3B8' : '#888' }}
             >
               {label}
             </span>
             <span
               className="text-[10px] font-semibold"
-              style={{ color: '#1a1a1a' }}
+              style={{ color: isDark ? '#FFFFFF' : '#1a1a1a' }}
             >
               {pct}%
             </span>
@@ -283,7 +296,10 @@ export default function ElevatorLoader({
 }
 
 /** Decorative door panel interior */
-function DoorPanel({ side }) {
+function DoorPanel({ side, isDark }) {
+  const lineBg = isDark ? '#334155' : '#c0b8b0'
+  const panelBg = isDark ? 'rgba(30, 41, 59, 0.4)' : 'rgba(255,255,255,0.3)'
+
   return (
     <div className="relative w-full h-full">
       {/* Horizontal accent lines */}
@@ -294,7 +310,7 @@ function DoorPanel({ side }) {
           left: side === 'left' ? 10 : 6,
           right: side === 'left' ? 6 : 10,
           height: 1,
-          background: '#c0b8b0',
+          background: lineBg,
           opacity: 0.8,
         }}
       />
@@ -306,9 +322,9 @@ function DoorPanel({ side }) {
           left: side === 'left' ? 10 : 6,
           right: side === 'left' ? 6 : 10,
           height: 70,
-          border: '1px solid #c0b8b0',
+          border: `1px solid ${lineBg}`,
           borderRadius: 4,
-          background: 'rgba(255,255,255,0.3)',
+          background: panelBg,
         }}
       />
       {/* Lower recessed panel */}
@@ -319,9 +335,9 @@ function DoorPanel({ side }) {
           left: side === 'left' ? 10 : 6,
           right: side === 'left' ? 6 : 10,
           height: 70,
-          border: '1px solid #c0b8b0',
+          border: `1px solid ${lineBg}`,
           borderRadius: 4,
-          background: 'rgba(255,255,255,0.25)',
+          background: panelBg,
         }}
       />
       {/* Bottom accent line */}
@@ -332,7 +348,7 @@ function DoorPanel({ side }) {
           left: side === 'left' ? 10 : 6,
           right: side === 'left' ? 6 : 10,
           height: 1,
-          background: '#c0b8b0',
+          background: lineBg,
           opacity: 0.8,
         }}
       />
@@ -344,7 +360,9 @@ function DoorPanel({ side }) {
         className="absolute inset-y-0 pointer-events-none"
         style={{
           width: '40%',
-          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent)',
+          background: isDark
+            ? 'linear-gradient(90deg, transparent, rgba(14, 79, 179, 0.35), transparent)'
+            : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent)',
           transform: 'skewX(-12deg)',
         }}
       />

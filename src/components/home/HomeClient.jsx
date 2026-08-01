@@ -16,6 +16,8 @@ const DynamicGalleryMarquee = dynamic(() => import('@/components/home/GalleryMar
 const DynamicTestimonials = dynamic(() => import('@/components/home/Testimonials'), { ssr: true, loading: () => null })
 const DynamicContactSection = dynamic(() => import('@/components/home/ContactSection'), { ssr: true, loading: () => null })
 
+import LuxuryElevatorLoader from '@/components/loading/LuxuryElevatorLoader'
+
 export default function HomeClient() {
   const [showIntro, setShowIntro] = useState(true)
   const [mounted, setMounted] = useState(false)
@@ -47,7 +49,7 @@ export default function HomeClient() {
   }
 
   if (!mounted) {
-    return <div className="min-h-screen bg-[#111111]" />
+    return <LuxuryElevatorLoader theme="dark" mode="compact" />
   }
 
   return (

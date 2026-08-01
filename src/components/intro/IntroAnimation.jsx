@@ -1,10 +1,11 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { SkipForward } from 'lucide-react'
 import LogoReveal from './LogoReveal'
 import TransitionScene from './TransitionScene'
+import LuxuryElevatorLoader from '@/components/loading/LuxuryElevatorLoader'
 
 function TypewriterInstruction() {
   const english = "Scroll to Enter"
@@ -319,38 +320,15 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
     <div ref={pinWrapperRef} className="w-full relative bg-white select-none z-50">
 
       {/* 1. Preloader Overlay */}
-      {!isPreloaded && (
-        <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-[#111111] px-4">
-          <div className="relative flex flex-col items-center max-w-md w-full text-center">
-            {/* Animated rings in brand blue */}
-            <div className="relative w-24 h-24 mb-8 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full border-t border-r border-[#0E4FB3] animate-spin" style={{ animationDuration: '3s' }} />
-              <div className="absolute inset-2 rounded-full border-b border-l border-[#0074D9] animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }} />
-              <span className="text-[#0E4FB3] font-mono text-xs tracking-wider font-bold">FG</span>
-            </div>
-
-            <h1 className="text-2xl md:text-3xl font-bold text-white tracking-[0.3em] uppercase mb-1 font-display">
-              FG LIFTS
-            </h1>
-            <p className="text-[10px] font-mono text-[#6B6B6B] tracking-[0.2em] uppercase mb-10">
-              Interactive Digital Headquarters
-            </p>
-
-            <div className="w-full space-y-2">
-              <div className="h-[2px] w-full bg-white/10 overflow-hidden relative rounded-full">
-                <div className="h-full bg-[#0E4FB3] w-2/3 animate-pulse" />
-              </div>
-              <div className="text-center text-[10px] font-mono text-[#6B6B6B]">
-                <span>BUFFERING CINEMATICS</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="absolute bottom-8 text-[10px] font-mono text-[#6B6B6B] tracking-wider">
-            SCROLL TO ENTER EXPERIENCE
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {!isPreloaded && (
+          <LuxuryElevatorLoader
+            key="intro-loader"
+            theme="dark"
+            mode="compact"
+          />
+        )}
+      </AnimatePresence>
 
       {/* 2. Floating controllers */}
       {isPreloaded && showSkipButton && (
