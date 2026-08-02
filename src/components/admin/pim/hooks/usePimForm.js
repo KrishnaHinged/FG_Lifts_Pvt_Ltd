@@ -55,7 +55,7 @@ export function usePimForm({ product = null, onSubmit, isLoading = false }) {
     return [{
       id: 'set-1',
       title: 'Main Product Gallery',
-      images: [{ url: '/images/projects-collage.png', alt: 'FG Lift Product View', caption: 'Front elevation view', isHero: true }]
+      images: [{ url: '/images/projects-collage.png', alt: 'FG Lifts Product View', caption: 'Front elevation view', isHero: true }]
     }]
   })
 

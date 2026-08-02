@@ -498,7 +498,7 @@ const mockBlogPosts = [
     content: `<h2>Understanding Your Building Requirements</h2><p>Choosing the right elevator for a residential building is one of the most impactful decisions a builder or architect can make...</p>`,
     category: 'Technical Guide',
     tags: ['residential', 'guide', 'selection', 'safety'],
-    author: { name: 'FG Lift Editorial Team', title: 'Engineering Division' },
+    author: { name: 'FG Lifts Editorial Team', title: 'Engineering Division' },
     isPublished: true,
     isFeatured: true,
     publishedAt: new Date('2025-06-15'),
@@ -512,7 +512,7 @@ const defaultTemplates = [
     subject: 'Inquiry Received - Reference #{{referenceId}}',
     body: `
       <div style="font-family: sans-serif; padding: 24px; color: #111111; max-width: 600px; margin: 0 auto; border: 1px solid #E5E7EB; border-radius: 12px;">
-        <h2 style="color: #0E4FB3;">FG Lift Pvt. Ltd.</h2>
+        <h2 style="color: #0E4FB3;">FG Lifts Pvt. Ltd.</h2>
         <p>Dear {{name}},</p>
         <p>Thank you for reaching out to us. We have successfully received your product inquiry for <strong>{{product}}</strong>.</p>
         <p>One of our elevator solutions executives will review your requirements and get in touch with you shortly.</p>

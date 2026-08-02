@@ -1,6 +1,6 @@
 /**
  * Centralized Dynamic Metadata Generator
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 import { buildOpenGraph } from './openGraph'
@@ -9,7 +9,7 @@ import { getCanonicalUrl } from './canonical'
 import { buildRobotsConfig } from './robots'
 import { keywords as keywordsDict } from './keywords'
 
-const DEFAULT_TITLE = 'FG Lift Pvt. Ltd. | Premium Elevator Manufacturing & Architectural Lifts'
+const DEFAULT_TITLE = 'FG Lifts Pvt. Ltd. | Premium Elevator Manufacturing & Architectural Lifts'
 const DEFAULT_DESCRIPTION = 'Engineered vertical mobility systems, luxury passenger elevators, industrial goods lifts, and 360-degree interactive cabin design solutions.'
 
 export function generatePageMetadata({

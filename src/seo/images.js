@@ -1,9 +1,9 @@
 /**
  * Image SEO Helper Utility
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
-const DEFAULT_ALT = 'FG Lift Pvt. Ltd. Elevator Engineering'
+const DEFAULT_ALT = 'FG Lifts Pvt. Ltd. Elevator Engineering'
 const DEFAULT_FALLBACK_IMAGE = '/images/projects-collage.png'
 
 export function buildImageSeoProps({

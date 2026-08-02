@@ -1,6 +1,6 @@
 /**
  * Enterprise Auth Security Helpers
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 import { verifyToken, COOKIE_NAME } from '@/lib/auth'

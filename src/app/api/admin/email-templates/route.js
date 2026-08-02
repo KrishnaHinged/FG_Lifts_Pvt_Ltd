@@ -35,7 +35,7 @@ export async function POST(req) {
         name: 'Inquiry Received Confirmation',
         code: 'inquiry_received',
         subject: 'Inquiry Received - Reference #{{referenceId}}',
-        body: `<div style="font-family: sans-serif; padding: 24px; color: #111111; max-width: 600px; margin: 0 auto; border: 1px solid #E5E7EB; border-radius: 12px;"><h2 style="color: #0E4FB3;">FG Lift Pvt. Ltd.</h2><p>Dear {{name}},</p><p>Thank you for reaching out to us. We have received your product inquiry for <strong>{{product}}</strong>.</p><p style="margin-top: 30px; font-size: 12px; color: #7A7A7A;">Reference ID: {{referenceId}}</p></div>`,
+        body: `<div style="font-family: sans-serif; padding: 24px; color: #111111; max-width: 600px; margin: 0 auto; border: 1px solid #E5E7EB; border-radius: 12px;"><h2 style="color: #0E4FB3;">FG Lifts Pvt. Ltd.</h2><p>Dear {{name}},</p><p>Thank you for reaching out to us. We have received your product inquiry for <strong>{{product}}</strong>.</p><p style="margin-top: 30px; font-size: 12px; color: #7A7A7A;">Reference ID: {{referenceId}}</p></div>`,
         variables: ['{{name}}', '{{product}}', '{{referenceId}}']
       },
       {

@@ -1,6 +1,6 @@
 /**
  * Core Web Vitals Collector Adapter
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export function reportWebVitals(metric) {

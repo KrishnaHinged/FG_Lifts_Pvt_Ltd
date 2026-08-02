@@ -10,7 +10,7 @@ const BlogPostSchema = new mongoose.Schema({
   category:      { type: String },
   tags:          [String],
   author: {
-    name:   { type: String, default: 'FG Lift Editorial Team' },
+    name:   { type: String, default: 'FG Lifts Editorial Team' },
     avatar: { type: String },
     title:  { type: String, default: 'Content Team' },
   },

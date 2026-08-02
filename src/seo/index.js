@@ -1,6 +1,6 @@
 /**
  * SEO Module Barrel File
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export * from './keywords'

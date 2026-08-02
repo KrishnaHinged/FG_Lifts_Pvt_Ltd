@@ -4,7 +4,7 @@ import AdminLayoutShell from '@/components/admin/AdminLayoutShell'
 
 export const metadata = {
   title: 'FG Lift Admin Console',
-  description: 'FG Lift Pvt. Ltd. internal CRM and content management systems.',
+  description: 'FG Lifts Pvt. Ltd. internal CRM and content management systems.',
 }
 
 export default async function AdminLayout({ children }) {

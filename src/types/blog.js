@@ -39,7 +39,7 @@ export const BlogPostContract = {
   category: '',
   tags: [],
   author: {
-    name: 'FG Lift Editorial Team',
+    name: 'FG Lifts Editorial Team',
     avatar: '',
     title: 'Content Team'
   },

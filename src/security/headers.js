@@ -1,6 +1,6 @@
 /**
  * Enterprise HTTP Security Headers Generator
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export function getSecurityHeaders() {

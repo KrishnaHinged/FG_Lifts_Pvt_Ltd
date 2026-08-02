@@ -1,6 +1,6 @@
 /**
  * Enterprise Centralized API Execution Pipeline Validator
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 import { validateSession } from './auth'

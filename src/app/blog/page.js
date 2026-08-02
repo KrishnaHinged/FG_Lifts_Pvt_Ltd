@@ -2,7 +2,7 @@ import { getAllPublishedPosts, getFeaturedPost, getAllCategories } from '@/repos
 import BlogClient from '@/components/blog/BlogClient'
 
 export const metadata = {
-  title: 'Elevator Insights & Industry News | FG Lift Blog',
+  title: 'Elevator Insights & Industry News | FG Lifts Blog',
   description: 'Technical guides, project spotlights, product launches, and elevator industry insights from the FG Lift editorial team.',
   openGraph: {
     title: 'The FG Lift Journal',

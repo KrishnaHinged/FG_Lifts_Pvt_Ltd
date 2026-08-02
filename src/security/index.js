@@ -1,6 +1,6 @@
 /**
  * Security Architecture Barrel File
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export * from './auth'

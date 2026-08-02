@@ -1,6 +1,6 @@
 /**
  * Anti-CSRF Token Helper
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export function generateCsrfToken() {

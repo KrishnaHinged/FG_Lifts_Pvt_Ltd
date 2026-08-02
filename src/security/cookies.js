@@ -1,6 +1,6 @@
 /**
  * Enterprise Secure Cookie Configurations
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export const SECURE_COOKIE_OPTIONS = {

@@ -1,6 +1,6 @@
 /**
  * Schema.jsx Component Facade for Next.js Script Injection
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 import React from 'react'

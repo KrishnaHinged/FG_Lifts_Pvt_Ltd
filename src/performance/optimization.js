@@ -1,6 +1,6 @@
 /**
  * Three.js Memory Cleanup & Renderer Disposal Optimization Helper
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export function disposeThreeScene(scene, renderer) {

@@ -1,6 +1,6 @@
 export const seoConfig = {
   default: {
-    title: 'Elevator Solutions & Products | FG Lift Pvt. Ltd.',
+    title: 'Elevator Solutions & Products | FG Lifts Pvt. Ltd.',
     description: "Explore FG Lift's complete range — passenger lifts, capsule elevators, goods lifts, home lifts, hospital lifts, and luxury cabin systems engineered for modern India.",
     openGraph: {
       title: 'Elevator Solutions & Products | FG Lift',
@@ -9,23 +9,23 @@ export const seoConfig = {
     }
   },
   home: {
-    title: 'FG Lift Pvt. Ltd. | Premium Elevators & Custom Cabins',
+    title: 'FG Lifts Pvt. Ltd. | Premium Elevators & Custom Cabins',
     description: 'Bespoke residential, commercial and heavy-duty industrial vertical mobility engineering.'
   },
   about: {
-    title: 'About Our 30+ Years Legacy | FG Lift Pvt. Ltd.',
+    title: 'About Our 30+ Years Legacy | FG Lifts Pvt. Ltd.',
     description: 'Pioneering vertical transit since 1993. Explore our milestones, partners, and manufacturing.'
   },
   products: {
-    title: 'Elevator Products Catalog | FG Lift Pvt. Ltd.',
+    title: 'Elevator Products Catalog | FG Lifts Pvt. Ltd.',
     description: 'High-speed passenger elevators, capsule lifts, robust cargo lifts, and premium enclosures.'
   },
   gallery: {
-    title: 'Case Studies & Masonry Portfolio | FG Lift Pvt. Ltd.',
+    title: 'Case Studies & Masonry Portfolio | FG Lifts Pvt. Ltd.',
     description: 'Discover architectural integration and builder case studies across India.'
   },
   blog: {
-    title: 'Vertical Transit News & Blog | FG Lift Pvt. Ltd.',
+    title: 'Vertical Transit News & Blog | FG Lifts Pvt. Ltd.',
     description: 'Technical editorial, updates, elevator components standards, and engineering blog.'
   }
 }

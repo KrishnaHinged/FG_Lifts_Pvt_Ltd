@@ -1,6 +1,6 @@
 /**
  * Dynamic Robots Policy Configurator
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export function buildRobotsConfig(env = process.env.NODE_ENV) {

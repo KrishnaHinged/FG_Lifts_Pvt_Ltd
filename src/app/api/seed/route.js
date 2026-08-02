@@ -415,7 +415,7 @@ const mockBlogPosts = [
 <p>Investing in a higher-quality system upfront typically reduces long-term maintenance costs and extends the equipment lifecycle from 15 years to 25+ years.</p>`,
     category: 'Technical Guide',
     tags: ['residential', 'guide', 'selection', 'safety'],
-    author: { name: 'FG Lift Editorial Team', title: 'Engineering Division' },
+    author: { name: 'FG Lifts Editorial Team', title: 'Engineering Division' },
     isPublished: true,
     isFeatured: true,
     publishedAt: new Date('2025-06-15'),
@@ -450,7 +450,7 @@ const mockBlogPosts = [
 <p>If your elevator system is more than 15 years old and experiencing frequent breakdowns, consider a modernization project rather than continued repair. Modern drive systems, controllers, and door operators can be retrofit into existing shafts, dramatically improving performance, energy efficiency, and passenger experience.</p>`,
     category: 'Maintenance Tips',
     tags: ['maintenance', 'safety', 'inspection', 'best-practices'],
-    author: { name: 'FG Lift Editorial Team', title: 'Service Division' },
+    author: { name: 'FG Lifts Editorial Team', title: 'Service Division' },
     isPublished: true,
     isFeatured: false,
     publishedAt: new Date('2025-05-28'),
@@ -481,7 +481,7 @@ const mockBlogPosts = [
 <p>Chemical etching on stainless steel creates intricate patterns — from geometric Art Deco motifs to flowing organic textures. When combined with PVD coating in champagne gold or rose gold, the result is stunning durability with visual warmth.</p>`,
     category: 'Product Launch',
     tags: ['luxury', 'design', 'cabins', 'trends'],
-    author: { name: 'FG Lift Editorial Team', title: 'Design Division' },
+    author: { name: 'FG Lifts Editorial Team', title: 'Design Division' },
     isPublished: true,
     isFeatured: false,
     publishedAt: new Date('2025-04-10'),
@@ -507,7 +507,7 @@ const mockBlogPosts = [
 <p>The installation was completed in 14 weeks — 2 weeks ahead of schedule. Guest feedback surveys consistently rate the elevator experience as a highlight of the property, with several architecture publications featuring the atrium design.</p>`,
     category: 'Project Spotlight',
     tags: ['capsule', 'project', 'hospitality', 'installation'],
-    author: { name: 'FG Lift Editorial Team', title: 'Projects Division' },
+    author: { name: 'FG Lifts Editorial Team', title: 'Projects Division' },
     isPublished: true,
     isFeatured: false,
     publishedAt: new Date('2025-03-20'),
@@ -539,7 +539,7 @@ const mockBlogPosts = [
 <p>The premium for regenerative drive technology over conventional drives is typically 15-20% of the drive system cost. Given the energy savings, most installations achieve full ROI within 3-4 years — after which the savings flow directly to the building's operating budget.</p>`,
     category: 'Industry News',
     tags: ['energy', 'regenerative', 'technology', 'savings'],
-    author: { name: 'FG Lift Editorial Team', title: 'Engineering Division' },
+    author: { name: 'FG Lifts Editorial Team', title: 'Engineering Division' },
     isPublished: true,
     isFeatured: false,
     publishedAt: new Date('2025-02-14'),
@@ -552,7 +552,7 @@ const mockBlogPosts = [
     coverImage: '/images/about-factory.png',
     coverImageAlt: 'FG Lift ISO certification ceremony',
     content: `<h2>Certification Milestone</h2>
-<p>FG Lift Pvt. Ltd. is proud to announce the successful renewal of our ISO 9001:2015 Quality Management System certification following a comprehensive three-day audit of our Surat manufacturing facility.</p>
+<p>FG Lifts Pvt. Ltd. is proud to announce the successful renewal of our ISO 9001:2015 Quality Management System certification following a comprehensive three-day audit of our Surat manufacturing facility.</p>
 
 <h2>What the Audit Covered</h2>
 <p>The Bureau Veritas audit team examined every aspect of our quality management system — from incoming raw material inspection procedures and CNC machining tolerances, through welding quality assurance and surface finishing processes, to final assembly testing and documentation protocols.</p>
@@ -571,7 +571,7 @@ const mockBlogPosts = [
 <blockquote>Quality is not an act, it is a habit. At FG Lift, that habit has been cultivated over 15 years of precision manufacturing.</blockquote>`,
     category: 'Company Update',
     tags: ['certification', 'ISO', 'quality', 'manufacturing'],
-    author: { name: 'FG Lift Editorial Team', title: 'Corporate Communications' },
+    author: { name: 'FG Lifts Editorial Team', title: 'Corporate Communications' },
     isPublished: true,
     isFeatured: false,
     publishedAt: new Date('2025-01-22'),
@@ -585,7 +585,7 @@ const defaultTemplates = [
     subject: 'Inquiry Received - Reference #{{referenceId}}',
     body: `
       <div style="font-family: sans-serif; padding: 24px; color: #111111; max-width: 600px; margin: 0 auto; border: 1px solid #E5E7EB; border-radius: 12px;">
-        <h2 style="color: #0E4FB3;">FG Lift Pvt. Ltd.</h2>
+        <h2 style="color: #0E4FB3;">FG Lifts Pvt. Ltd.</h2>
         <p>Dear {{name}},</p>
         <p>Thank you for reaching out to us. We have successfully received your product inquiry for <strong>{{product}}</strong>.</p>
         <p>One of our elevator solutions executives will review your requirements and get in touch with you shortly.</p>

@@ -2,7 +2,7 @@ import GalleryClient from '@/components/gallery/GalleryClient'
 import { getAllProjects } from '@/repositories/gallery.repository'
 
 export const metadata = {
-  title: 'Projects Gallery | FG Lift Pvt. Ltd.',
+  title: 'Projects Gallery | FG Lifts Pvt. Ltd.',
   description: 'Explore FG Lift\'s portfolio of completed elevator installations across residential towers, commercial skyscrapers, luxury residences, and industrial facilities.',
   openGraph: {
     title: 'Projects Gallery | FG Lift',

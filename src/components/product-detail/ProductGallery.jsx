@@ -39,7 +39,7 @@ export default function ProductGallery({
   const viewMode = propViewMode !== undefined ? propViewMode : localViewMode
   const setViewMode = propSetViewMode || localSetViewMode
 
-  const galleryImages = images.length > 0 ? images : [{ url: '/images/projects-collage.png', alt: 'FG Lift Product' }]
+  const galleryImages = images.length > 0 ? images : [{ url: '/images/projects-collage.png', alt: 'FG Lifts Product' }]
   const activeFinishes = finishVariants.filter(f => f.isActive)
 
   const [localActiveVariant, localSetActiveVariant] = useState(() => {

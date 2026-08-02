@@ -1,6 +1,6 @@
 /**
  * Vendor-Agnostic Telemetry & Monitoring Adapter Facade
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export const monitoring = {

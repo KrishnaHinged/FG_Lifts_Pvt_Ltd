@@ -1,6 +1,6 @@
 /**
  * Centralized SEO Keywords Dictionary
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export const keywords = {

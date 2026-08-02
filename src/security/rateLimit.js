@@ -1,6 +1,6 @@
 /**
  * In-Memory Sliding-Window Rate Limiter
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 const rateLimitMap = new Map()

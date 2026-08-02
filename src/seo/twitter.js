@@ -1,10 +1,10 @@
 /**
  * Twitter Card Metadata Generator
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export function buildTwitterCard({
-  title = 'FG Lift Pvt. Ltd. | Premium Elevator Manufacturing',
+  title = 'FG Lifts Pvt. Ltd. | Premium Elevator Manufacturing',
   description = 'Industry-leading elevator engineering, passenger lifts, goods elevators, and 360-degree interactive cabin design systems.',
   card = 'summary_large_image',
   creator = '@fglift',

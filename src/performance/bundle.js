@@ -1,6 +1,6 @@
 /**
  * Bundle Footprint & Tree-Shaking Helper
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export const bundleOptimization = {

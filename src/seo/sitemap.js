@@ -1,9 +1,9 @@
 /**
  * Dynamic Sitemap Generator Helper
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://fglift.com'
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://fglifts.com'
 
 export function generateSitemapEntries({ products = [], posts = [], galleryProjects = [] } = {}) {
   const staticRoutes = [

@@ -1,17 +1,17 @@
 /**
  * Enterprise JSON-LD Structured Data Builder Functions
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://fglift.com'
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://fglifts.com'
 
 export function buildOrganizationSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     '@id': `${BASE_URL}/#organization`,
-    name: 'FG Lift Pvt. Ltd.',
-    legalName: 'FG Lift Private Limited',
+    name: 'FG Lifts Pvt. Ltd.',
+    legalName: 'FG Lifts Private Limited',
     url: BASE_URL,
     logo: `${BASE_URL}/images/logo.png`,
     sameAs: [
@@ -34,10 +34,10 @@ export function buildLocalBusinessSchema() {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     '@id': `${BASE_URL}/#localbusiness`,
-    name: 'FG Lift Pvt. Ltd.',
+    name: 'FG Lifts Pvt. Ltd.',
     image: `${BASE_URL}/images/projects-collage.png`,
     telephone: '+91-7046055586',
-    email: 'info@fglift.com',
+    email: 'info@fglifts.com',
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'FG Industrial Estate',
@@ -61,7 +61,7 @@ export function buildWebSiteSchema() {
     '@type': 'WebSite',
     '@id': `${BASE_URL}/#website`,
     url: BASE_URL,
-    name: 'FG Lift Pvt. Ltd.',
+    name: 'FG Lifts Pvt. Ltd.',
     publisher: {
       '@id': `${BASE_URL}/#organization`
     },
@@ -101,7 +101,7 @@ export function buildArticleSchema({ title, description, slug, image, author, da
     dateModified: dateModified || datePublished || new Date().toISOString(),
     author: {
       '@type': 'Person',
-      name: author || 'FG Lift Editorial Team'
+      name: author || 'FG Lifts Editorial Team'
     },
     publisher: {
       '@id': `${BASE_URL}/#organization`

@@ -1,6 +1,6 @@
 /**
  * Enterprise Multi-Tier Caching Strategy Helper
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 const memoryCache = new Map()

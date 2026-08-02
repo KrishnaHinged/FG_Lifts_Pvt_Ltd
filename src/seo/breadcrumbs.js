@@ -1,6 +1,6 @@
 /**
  * Automatic Breadcrumb Structure Builder
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export function generateBreadcrumbsFromPath(pathname = '') {

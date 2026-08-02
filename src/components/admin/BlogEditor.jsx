@@ -29,7 +29,7 @@ export default memo(function BlogEditor({ post = null, currentAdmin, onSubmit, i
   const [category, setCategory] = useState(post?.category || 'Insights')
   
   // Author subfields
-  const [authorName, setAuthorName] = useState(post?.author?.name || 'FG Lift Editorial Team')
+  const [authorName, setAuthorName] = useState(post?.author?.name || 'FG Lifts Editorial Team')
   const [authorAvatar, setAuthorAvatar] = useState(post?.author?.avatar || '/images/partners/logo-placeholder.png')
   const [authorTitle, setAuthorTitle] = useState(post?.author?.title || 'Editorial Team')
 

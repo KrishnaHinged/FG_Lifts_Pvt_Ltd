@@ -1,15 +1,15 @@
 /**
  * OpenGraph Metadata Generator
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 const DEFAULT_OG_IMAGE = '/images/projects-collage.png'
-const SITE_NAME = 'FG Lift Pvt. Ltd.'
+const SITE_NAME = 'FG Lifts Pvt. Ltd.'
 
 export function buildOpenGraph({
-  title = 'FG Lift Pvt. Ltd. | Premium Elevator Manufacturing',
+  title = 'FG Lifts Pvt. Ltd. | Premium Elevator Manufacturing',
   description = 'Industry-leading elevator engineering, passenger lifts, goods elevators, and 360-degree interactive cabin design systems.',
-  url = 'https://fglift.com',
+  url = 'https://fglifts.com',
   type = 'website',
   images = [],
   locale = 'en_US',

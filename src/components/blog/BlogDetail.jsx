@@ -87,7 +87,7 @@ export default function BlogDetail({ post, relatedPosts = [] }) {
                 </span>
               </div>
               <div>
-                <p className="text-fg-cream text-sm font-medium">{post.author?.name || 'FG Lift Editorial Team'}</p>
+                <p className="text-fg-cream text-sm font-medium">{post.author?.name || 'FG Lifts Editorial Team'}</p>
                 <p className="font-mono text-[10px] text-fg-cream/40 tracking-wider">{post.author?.title || 'Content Team'}</p>
               </div>
             </div>

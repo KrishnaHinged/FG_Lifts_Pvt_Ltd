@@ -1,6 +1,6 @@
 /**
  * Image Loader & Optimization Utility
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 // Shimmer placeholder SVG string for blur Data URLs

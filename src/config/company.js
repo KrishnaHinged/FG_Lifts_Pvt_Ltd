@@ -1,5 +1,5 @@
 export const companyConfig = {
-  name: 'FG Lift Pvt. Ltd.',
+  name: 'FG Lifts Pvt. Ltd.',
   shortName: 'FG Lifts',
   tagline: 'Future & Growth in Vertical Mobility',
   foundingYear: 1993,

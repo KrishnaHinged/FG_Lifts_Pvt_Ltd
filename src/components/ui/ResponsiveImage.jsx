@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 export function ResponsiveImage({
   src,
-  alt = 'FG Lift Pvt. Ltd. Image asset',
+  alt = 'FG Lifts Pvt. Ltd. Image asset',
   aspectRatio = 'aspect-[16/10]', // aspect-video, aspect-square, etc.
   className = '',
   priority = false,

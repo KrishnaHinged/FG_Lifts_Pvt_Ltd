@@ -1,6 +1,6 @@
 /**
  * Input Sanitizer (XSS, Injection, Malformed URLs)
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export function sanitizeString(input = '') {
@@ -34,7 +34,7 @@ export function sanitizeObject(obj = {}) {
 
 export function isValidUrl(url = '') {
   try {
-    const parsed = new URL(url, 'https://fglift.com')
+    const parsed = new URL(url, 'https://fglifts.com')
     return parsed.protocol === 'http:' || parsed.protocol === 'https:'
   } catch {
     return false

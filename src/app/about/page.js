@@ -7,10 +7,10 @@ import CertificationsStrip from '@/components/about/CertificationsStrip'
 import AboutCTA from '@/components/about/AboutCTA'
 
 export const metadata = {
-  title: 'About FG Lift Pvt. Ltd. | Our Story & Manufacturing',
+  title: 'About FG Lifts Pvt. Ltd. | Our Story & Manufacturing',
   description: 'Learn about FG Lift — our history, manufacturing capabilities, leadership team, and commitment to precision vertical mobility solutions across India.',
   openGraph: {
-    title: 'About FG Lift Pvt. Ltd.',
+    title: 'About FG Lifts Pvt. Ltd.',
     description: 'Premium elevator manufacturing excellence since establishment.',
     images: ['/images/og-about.jpg'],
   },

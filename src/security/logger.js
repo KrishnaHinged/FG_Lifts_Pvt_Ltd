@@ -1,6 +1,6 @@
 /**
  * Centralized Enterprise Logging System
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export const LOG_LEVELS = {

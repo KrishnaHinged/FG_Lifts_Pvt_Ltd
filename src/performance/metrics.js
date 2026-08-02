@@ -1,6 +1,6 @@
 /**
  * Performance Timing & Measure Utility
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 export function markAndMeasure(markName, startMark, endMark) {

@@ -1,6 +1,6 @@
 /**
  * Dynamic Import & Code Splitting Helpers
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 import React, { lazy, Suspense } from 'react'

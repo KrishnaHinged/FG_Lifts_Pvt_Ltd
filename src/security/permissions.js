@@ -1,6 +1,6 @@
 /**
  * Role-Based Access Enforcement Security Facade
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 import { hasPermission as checkPermission } from '@/permissions/permissions'

@@ -2,7 +2,7 @@ import ProductsClient from '@/components/products/ProductsClient'
 import { getAllProducts } from '@/repositories/product.repository'
 
 export const metadata = {
-  title: 'Elevator Solutions & Products | FG Lift Pvt. Ltd.',
+  title: 'Elevator Solutions & Products | FG Lifts Pvt. Ltd.',
   description: 'Explore FG Lift\'s complete range — passenger lifts, capsule elevators, goods lifts, home lifts, hospital lifts, and luxury cabin systems engineered for modern India.',
   openGraph: {
     title: 'Elevator Solutions & Products | FG Lift',

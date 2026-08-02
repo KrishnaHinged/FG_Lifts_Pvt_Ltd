@@ -1,6 +1,6 @@
 /**
  * Route & Resource Prefetching Utility
- * FG Lift Pvt. Ltd.
+ * FG Lifts Pvt. Ltd.
  */
 
 const prefetchedUrls = new Set()
