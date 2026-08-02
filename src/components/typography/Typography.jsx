@@ -84,7 +84,7 @@ export function Typography({
     whileInView !== undefined
 
   if (hasMotionProps) {
-    const MotionComponent = motion(Component)
+    const MotionComponent = motion[Component] || motion.p
     const motionAnimate = animate === true ? undefined : animate
 
     return (

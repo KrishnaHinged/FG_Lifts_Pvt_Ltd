@@ -11,7 +11,9 @@ export function AnimationProvider({ children }) {
   const [speedMultiplier, setSpeedMultiplier] = useState(1.0) // 0.5 for slow motion, 2.0 for fast, etc.
 
   React.useEffect(() => {
-    setAnimationsEnabled(!prefersReducedMotion)
+    setTimeout(() => {
+      setAnimationsEnabled(!prefersReducedMotion)
+    }, 0)
   }, [prefersReducedMotion])
 
   const toggleAnimations = () => {

@@ -33,13 +33,17 @@ export function LoadingProvider({ children }) {
   // Listen to pathname changes
   useEffect(() => {
     if (isAdmin) {
-      stopLoading()
+      setTimeout(() => {
+        stopLoading()
+      }, 0)
       return
     }
 
     if (prevPathRef.current !== pathname) {
       prevPathRef.current = pathname
-      setLoading(true)
+      setTimeout(() => {
+        setLoading(true)
+      }, 0)
 
       if (typeof window !== 'undefined') {
         window.scrollTo(0, 0)

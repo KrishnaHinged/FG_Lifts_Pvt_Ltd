@@ -28,7 +28,7 @@ export function NotFound() {
             Oops! Page Not Found
           </h1>
           <p className="m-0 font-sans text-sm sm:text-base text-neutral-500 leading-relaxed">
-            Oops! It seems like you've ventured into uncharted territory. The page you're looking for might have been moved, deleted, or never existed. Don't worry; let's get you back on track.
+            Oops! It seems like you&apos;ve ventured into uncharted territory. The page you&apos;re looking for might have been moved, deleted, or never existed. Don&apos;t worry; let&apos;s get you back on track.
           </p>
         </div>
 

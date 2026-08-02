@@ -252,7 +252,7 @@ export default function InquiryDetailModal({
             <div className="bg-[#F4F6F9] rounded-xl p-4 mt-2">
               <span className="font-mono text-xs text-[#6B7280] uppercase tracking-wider mb-1.5 block">Message</span>
               <p className="text-[#3D3D3D] text-sm leading-relaxed m-0 italic">
-                "{inquiry.message}"
+                &ldquo;{inquiry.message}&rdquo;
               </p>
             </div>
           )}

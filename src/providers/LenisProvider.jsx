@@ -25,7 +25,9 @@ export function LenisProvider({ children }) {
       wheelMultiplier: 0.8,
     })
 
-    setLenis(lenisInstance)
+    setTimeout(() => {
+      setLenis(lenisInstance)
+    }, 0)
 
     if (typeof window !== 'undefined') {
       window.lenis = lenisInstance

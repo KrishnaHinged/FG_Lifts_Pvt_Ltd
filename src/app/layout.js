@@ -75,10 +75,11 @@ export const metadata = {
   },
   icons: {
     icon: [
+      { url: '/favicon.ico', type: 'image/x-icon' },
       { url: '/favicon.jpg', type: 'image/jpeg' },
       { url: '/images/fg-logo.jpg', type: 'image/jpeg' }
     ],
-    shortcut: ['/favicon.jpg'],
+    shortcut: ['/favicon.ico'],
     apple: ['/images/fg-logo.jpg']
   },
   robots: {
@@ -99,6 +100,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en" className={`${cormorant.variable} ${inter.variable} ${jetBrains.variable}`}>
       <head>
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="icon" type="image/jpeg" href="/favicon.jpg" />
         <link rel="apple-touch-icon" href="/images/fg-logo.jpg" />
         <SchemaScript schema={orgSchema} />

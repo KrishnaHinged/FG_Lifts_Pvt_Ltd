@@ -69,7 +69,9 @@ export default function LogsClient({ initialLogs = [], total = 0, admins = [] })
 
   // Fetch log list when filters or pages shift
   useEffect(() => {
-    fetchLogs(currentPage, itemsPerPage, actionFilter, adminFilter)
+    setTimeout(() => {
+      fetchLogs(currentPage, itemsPerPage, actionFilter, adminFilter)
+    }, 0)
   }, [currentPage, itemsPerPage, actionFilter, adminFilter])
 
   const filteredLogs = logs.filter(log => {

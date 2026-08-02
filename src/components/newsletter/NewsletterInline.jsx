@@ -104,7 +104,7 @@ export default function NewsletterInline({ compact = false }) {
 
         <p className="text-fg-cream/60 text-sm sm:text-base leading-relaxed max-w-lg mx-auto mb-8">
           Technical guides, project case studies, and product updates from
-          FG Lift's engineering team. No spam, unsubscribe anytime.
+          FG Lift&apos;s engineering team. No spam, unsubscribe anytime.
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">

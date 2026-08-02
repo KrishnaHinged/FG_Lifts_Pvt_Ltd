@@ -40,6 +40,22 @@ export default function Lift360Viewer({
   const [isMobile, setIsMobile] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
+  // Shared helper function to cleanly dispose geometries, materials, and maps to prevent memory leaks on swap
+  const disposeMesh = useCallback((mesh, scene) => {
+    if (!mesh) return
+    if (scene) scene.remove(mesh)
+    if (mesh.geometry) mesh.geometry.dispose()
+    if (Array.isArray(mesh.material)) {
+      mesh.material.forEach(m => {
+        if (m.map) m.map.dispose()
+        m.dispose()
+      })
+    } else if (mesh.material) {
+      if (mesh.material.map) mesh.material.map.dispose()
+      mesh.material.dispose()
+    }
+  }, [])
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024)
@@ -151,31 +167,16 @@ export default function Lift360Viewer({
     }
     window.addEventListener('resize', handleResize, { passive: true })
 
-    const disposeMesh = (mesh) => {
-      if (!mesh) return
-      scene.remove(mesh)
-      if (mesh.geometry) mesh.geometry.dispose()
-      if (Array.isArray(mesh.material)) {
-        mesh.material.forEach(m => {
-          if (m.map) m.map.dispose()
-          m.dispose()
-        })
-      } else if (mesh.material) {
-        if (mesh.material.map) mesh.material.map.dispose()
-        mesh.material.dispose()
-      }
-    }
-
     return () => {
       observer.disconnect()
       window.removeEventListener('resize', handleResize)
       if (animIdRef.current) cancelAnimationFrame(animIdRef.current)
       if (meshRef.current) {
-        disposeMesh(meshRef.current)
+        disposeMesh(meshRef.current, scene)
       }
       renderer.dispose()
     }
-  }, [])
+  }, [disposeMesh])
 
   const activeVariantObj = colorVariants[activeVariant] || {}
   const activeFinishes = finishVariants.filter(f => f.isActive)
@@ -254,7 +255,7 @@ export default function Lift360Viewer({
             })
             loadedCount++
             if (loadedCount === 6) {
-              if (meshRef.current) sceneRef.current.remove(meshRef.current)
+              if (meshRef.current) disposeMesh(meshRef.current, sceneRef.current)
               // Realistic Elevator Cabin Box: Width 500, Height 833.33 (3:5 Wall Ratio), Depth 500 (1:1 Ceiling/Floor Ratio)
               const boxGeo = new THREE.BoxGeometry(500, 833.33, 500)
               const boxMesh = new THREE.Mesh(boxGeo, materials)
@@ -268,7 +269,7 @@ export default function Lift360Viewer({
             materials[i] = new THREE.MeshBasicMaterial({ color: 0x222222, side: THREE.BackSide })
             loadedCount++
             if (loadedCount === 6) {
-              if (meshRef.current) sceneRef.current.remove(meshRef.current)
+              if (meshRef.current) disposeMesh(meshRef.current, sceneRef.current)
               const boxGeo = new THREE.BoxGeometry(500, 833.33, 500)
               const boxMesh = new THREE.Mesh(boxGeo, materials)
               sceneRef.current.add(boxMesh)
@@ -285,7 +286,7 @@ export default function Lift360Viewer({
         sphereUrl,
         (texture) => {
           texture.colorSpace = THREE.SRGBColorSpace
-          if (meshRef.current) sceneRef.current.remove(meshRef.current)
+          if (meshRef.current) disposeMesh(meshRef.current, sceneRef.current)
 
           const sphereGeo = new THREE.SphereGeometry(500, 60, 40)
           sphereGeo.scale(-1, 1, 1)
@@ -301,7 +302,7 @@ export default function Lift360Viewer({
         }
       )
     }
-  }, [textureKey])
+  }, [textureKey, disposeMesh])
 
   // Pointer handlers for drag rotation
   const handlePointerDown = useCallback((e) => {

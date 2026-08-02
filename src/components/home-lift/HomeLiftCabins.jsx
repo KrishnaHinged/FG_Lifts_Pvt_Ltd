@@ -95,7 +95,7 @@ export default function HomeLiftCabins({
                       {activeCabinDetails.name}
                     </h3>
                     <p className="font-sans text-xs text-gray-500 mb-6 italic leading-relaxed">
-                      "{activeCabinDetails.tagline}"
+                      &ldquo;{activeCabinDetails.tagline}&rdquo;
                     </p>
 
                     <div className="space-y-4 mb-8">

@@ -20,8 +20,10 @@ export function NavigationProvider({ children }) {
 
   // Auto-close menu overlays on navigation
   useEffect(() => {
-    setMobileMenuOpen(false)
-    setSidebarOpen(false)
+    setTimeout(() => {
+      setMobileMenuOpen(false)
+      setSidebarOpen(false)
+    }, 0)
   }, [pathname])
 
   return (

@@ -23,10 +23,12 @@ export default function HomeClient() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
-    if (typeof window !== 'undefined' && sessionStorage.getItem('fg_intro_played') === 'true') {
-      setShowIntro(false)
-    }
+    setTimeout(() => {
+      setMounted(true)
+      if (typeof window !== 'undefined' && sessionStorage.getItem('fg_intro_played') === 'true') {
+        setShowIntro(false)
+      }
+    }, 0)
   }, [])
 
   const handleIntroComplete = () => {

@@ -20,7 +20,9 @@ export default function BlogSidebar({ post }) {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setShareUrl(window.location.href)
+      setTimeout(() => {
+        setShareUrl(window.location.href)
+      }, 0)
     }
   }, [])
 

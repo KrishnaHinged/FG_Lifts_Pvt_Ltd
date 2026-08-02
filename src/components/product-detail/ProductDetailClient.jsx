@@ -13,6 +13,20 @@ import RelatedProducts from './RelatedProducts'
 import ContactSection from '@/components/home/ContactSection'
 
 export default function ProductDetailClient({ product, related = [] }) {
+  const [viewMode, setViewMode] = useState('gallery')
+  const [activeVariant, setActiveVariant] = useState(() => {
+    if (!product || !product.colorVariants) return 0
+    const idx = product.colorVariants.findIndex(v => v.name === product.defaultColor || v.label === product.defaultColor)
+    return idx !== -1 ? idx : 0
+  })
+
+  const [activeFinish, setActiveFinish] = useState(() => {
+    if (!product || !product.finishVariants) return 0
+    const activeFinishes = product.finishVariants.filter(f => f.isActive)
+    const idx = activeFinishes.findIndex(f => f.name === product.defaultFinish)
+    return idx !== -1 ? idx : 0
+  })
+
   if (!product) return null
 
   const colorVariants = product.colorVariants ? product.colorVariants.map(v => {
@@ -35,17 +49,6 @@ export default function ProductDetailClient({ product, related = [] }) {
 
   const finishVariants = product.finishVariants || []
   const activeFinishes = finishVariants.filter(f => f.isActive)
-
-  const [viewMode, setViewMode] = useState('gallery')
-  const [activeVariant, setActiveVariant] = useState(() => {
-    const idx = colorVariants.findIndex(v => v.label === product.defaultColor)
-    return idx !== -1 ? idx : 0
-  })
-
-  const [activeFinish, setActiveFinish] = useState(() => {
-    const idx = activeFinishes.findIndex(f => f.name === product.defaultFinish)
-    return idx !== -1 ? idx : 0
-  })
 
   const handleColorChange = (index) => {
     setActiveVariant(index)

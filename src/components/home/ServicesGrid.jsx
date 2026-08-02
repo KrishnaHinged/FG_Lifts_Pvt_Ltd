@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import Link from 'next/link'
 import Section from '@/components/layouts/Section'
 import Container from '@/components/layouts/Container'
 import Heading from '@/components/typography/Heading'
@@ -107,7 +108,7 @@ export default function ServicesGrid() {
                         </p>
 
                         {/* Custom visual Split-Arrow Button */}
-                        <a
+                        <Link
                           href="/products"
                           className="inline-flex items-center group/btn select-none"
                         >
@@ -124,7 +125,7 @@ export default function ServicesGrid() {
                               <path d="M1 1H19M19 1V19M19 1L1 19" stroke="currentColor" strokeWidth="3" strokeLinecap="square" />
                             </svg>
                           </div>
-                        </a>
+                        </Link>
                       </motion.div>
                     )}
                   </div>

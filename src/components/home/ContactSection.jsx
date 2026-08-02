@@ -74,14 +74,16 @@ export default function ContactSection({
       
       const effectiveProduct = urlProduct || productName
       if (effectiveProduct) {
-        setActiveProduct(effectiveProduct)
-        if (!userEditedMessage) {
-          setFormData((prev) => ({
-            ...prev,
-            elevatorType: urlType || prev.elevatorType || elevatorType || '',
-            message: getDefaultMessage(effectiveProduct)
-          }))
-        }
+        setTimeout(() => {
+          setActiveProduct(effectiveProduct)
+          if (!userEditedMessage) {
+            setFormData((prev) => ({
+              ...prev,
+              elevatorType: urlType || prev.elevatorType || elevatorType || '',
+              message: getDefaultMessage(effectiveProduct)
+            }))
+          }
+        }, 0)
       }
     }
   }, [productName, elevatorType, userEditedMessage])
@@ -89,14 +91,16 @@ export default function ContactSection({
   // Sync if props update dynamically
   useEffect(() => {
     if (productName) {
-      setActiveProduct(productName)
-      if (!userEditedMessage) {
-        setFormData((prev) => ({
-          ...prev,
-          elevatorType: elevatorType || prev.elevatorType,
-          message: getDefaultMessage(productName)
-        }))
-      }
+      setTimeout(() => {
+        setActiveProduct(productName)
+        if (!userEditedMessage) {
+          setFormData((prev) => ({
+            ...prev,
+            elevatorType: elevatorType || prev.elevatorType,
+            message: getDefaultMessage(productName)
+          }))
+        }
+      }, 0)
     }
   }, [productName, elevatorType, userEditedMessage])
 

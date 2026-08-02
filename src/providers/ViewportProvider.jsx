@@ -23,13 +23,18 @@ export function ViewportProvider({ children }) {
     }
 
     // Measure viewport dimensions immediately on mount (client-side)
-    setWidth(window.innerWidth)
-    setHeight(window.innerHeight)
-
-    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0)
-
+    const initialWidth = window.innerWidth
+    const initialHeight = window.innerHeight
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
     const motionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(motionMediaQuery.matches)
+    const initialPrefersMotion = motionMediaQuery.matches
+
+    setTimeout(() => {
+      setWidth(initialWidth)
+      setHeight(initialHeight)
+      setIsTouchDevice(isTouch)
+      setPrefersReducedMotion(initialPrefersMotion)
+    }, 0)
 
     const handleMotionChange = (e) => {
       setPrefersReducedMotion(e.matches)

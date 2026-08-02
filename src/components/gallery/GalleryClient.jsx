@@ -10,19 +10,14 @@ const categories = ['All', 'Residential', 'Commercial', 'Industrial', 'Luxury', 
 
 export default function GalleryClient({ initialProjects = [] }) {
   const [activeCategory, setActiveCategory] = useState('All')
-  const [filteredProjects, setFilteredProjects] = useState(initialProjects || [])
   const [selectedProject, setSelectedProject] = useState(null)
 
   // Filter projects client-side
-  useEffect(() => {
-    let list = initialProjects || []
-    if (activeCategory !== 'All') {
-      list = list.filter(
+  const filteredProjects = activeCategory === 'All'
+    ? (initialProjects || [])
+    : (initialProjects || []).filter(
         (proj) => proj.clientType?.toLowerCase() === activeCategory.toLowerCase()
       )
-    }
-    setFilteredProjects(list)
-  }, [activeCategory, initialProjects])
 
   return (
     <div className="min-h-screen bg-[#F5F0EB] pb-24 relative select-none">

@@ -17,18 +17,22 @@ export default function BlogClient({ initialPosts = [], featuredPost = null }) {
 
   useEffect(() => {
     if (activeCategory === 'All') {
-      setPosts(initialPosts)
+      setTimeout(() => {
+        setPosts(initialPosts)
+      }, 0)
       return
     }
 
-    setLoading(true)
-    fetch(`/api/blog?category=${encodeURIComponent(activeCategory)}`)
-      .then(res => res.json())
-      .then(data => {
-        setPosts(data.posts || [])
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
+    setTimeout(() => {
+      setLoading(true)
+      fetch(`/api/blog?category=${encodeURIComponent(activeCategory)}`)
+        .then(res => res.json())
+        .then(data => {
+          setPosts(data.posts || [])
+          setLoading(false)
+        })
+        .catch(() => setLoading(false))
+    }, 0)
   }, [activeCategory, initialPosts])
 
   const serializedPosts = posts.map(p => ({

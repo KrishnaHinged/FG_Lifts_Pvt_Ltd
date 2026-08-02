@@ -46,7 +46,9 @@ export default function NewsletterClient({ initialSubscribers = [], total = 0, s
 
   // Reload lists when filter criteria shift
   useEffect(() => {
-    fetchData(currentPage, search, statusFilter)
+    setTimeout(() => {
+      fetchData(currentPage, search, statusFilter)
+    }, 0)
   }, [currentPage, statusFilter])
 
   // Handle live search with debounce or button action

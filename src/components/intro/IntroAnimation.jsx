@@ -190,15 +190,21 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
           let targetTime = 0
 
           // Continuous Spring-Damped Video Lerp Loop for 60 FPS Bouncy Physics
+          // Throttled to prevent hardware seek thrashing and video stuttering.
           function smoothVideoLoop() {
             if (videoRef.current && videoDuration) {
               const current = videoRef.current.currentTime
               const diff = targetTime - current
 
-              if (Math.abs(diff) > 0.001) {
+              if (Math.abs(diff) > 0.04) {
                 try {
-                  // Exponential spring lerp (0.18 factor) provides silky-smooth, elastic inertia
-                  videoRef.current.currentTime = current + diff * 0.18
+                  // Faster lerp factor (0.28) reaches the frame quickly and reduces seek latency
+                  videoRef.current.currentTime = current + diff * 0.28
+                } catch (e) { }
+              } else if (Math.abs(diff) > 0.005) {
+                // Snap directly to target when close, preventing micro-seek loops
+                try {
+                  videoRef.current.currentTime = targetTime
                 } catch (e) { }
               }
             }

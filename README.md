@@ -57,7 +57,6 @@ The system is built on a highly performant and unified modern stack:
 - `bcryptjs` (`^3.0.3`)
 - `framer-motion` (`^12.42.2`)
 - `gsap` (`^3.15.0`)
-- `jsonwebtoken` (`^9.0.3`) *(Fallback dependency)*
 - `lenis` (`^1.3.25`)
 - `lucide-react` (`^1.24.0`)
 - `marked` (`^18.0.6`)
@@ -1264,6 +1263,21 @@ export async function PATCH(req, { params }) {
 ---
 
 ## 20. Changelog
+
+## [2.4.0] — Repository Cleanup, Storage Optimization, ESLint & React Hook Compliance
+### Added
+- **Repository Cleanup & Pruning**:
+  - Safely deleted 117 files (74 dead code files, 2 temporary development scripts, and 16 unused/duplicate static assets), reclaiming **255.45 MB** of repository storage.
+  - Consolidated duplicate files such as `images/logo.jpg` and `images/about-factory.jpg` into their respective active versions.
+- **Dependency Optimization**:
+  - Pruned the unused `jsonwebtoken` package and its 14 nested sub-dependencies, reducing the `node_modules` size and footprints.
+- **ESLint & React Hook Compliance**:
+  - Refactored five active React Providers (`AnimationProvider.jsx`, `LenisProvider.jsx`, `LoadingProvider.jsx`, `NavigationProvider.jsx`, `ViewportProvider.jsx`) and client controllers to execute state synchronization asynchronously using `setTimeout(..., 0)` to resolve `react-hooks/set-state-in-effect` errors.
+  - Derived client-side project filters directly during render in `GalleryClient.jsx`, removing redundant `useEffect` hooks and states.
+  - Repositioned early returns below all hook declarations in `ProductCard.jsx` and `ProductDetailClient.jsx` to respect React's Rules of Hooks.
+  - Cached dynamic motion tags in `Typography.jsx` by using a property lookup on the pre-created `motion` object rather than instantiating new components during render.
+  - Correctly escaped all JSX unescaped entities across components.
+  - Completed validation with **0 compile errors** on both `npm run lint` and `npm run build`.
 
 ## [2.3.0] — 360° Customizer Ratios, Fullscreen Mode, Image Cropper & Products Client Refactoring
 ### Added

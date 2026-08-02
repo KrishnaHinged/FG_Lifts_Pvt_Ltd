@@ -192,7 +192,7 @@ export default function SeoMetadataSection({ form }) {
               className="w-full px-3.5 py-2.5 rounded-xl border border-[#E8E2DA] bg-white font-sans text-xs outline-none cursor-pointer"
             >
               <option value="follow">follow (Follow links)</option>
-              <option value="nofollow">nofollow (Don't follow links)</option>
+              <option value="nofollow">nofollow (Don&apos;t follow links)</option>
             </select>
           </div>
         </div>

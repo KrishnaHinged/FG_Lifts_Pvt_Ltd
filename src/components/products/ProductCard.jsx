@@ -8,18 +8,9 @@ import { Rotate3d, ArrowUpRight, Gauge, Layers } from 'lucide-react'
 import Badge from '@/components/ui/Badge'
 
 export default function ProductCard({ product }) {
-  if (!product) return null
-
   const cardRef = useRef(null)
   const [isHovered, setIsHovered] = useState(false)
   const prevMousePos = useRef({ x: 0, y: 0 })
-
-  // Extract specs
-  const capacitySpec = product.specifications?.find(s => s.key === 'Capacity')?.value || 'Custom Spec'
-  const speedSpec = product.specifications?.find(s => s.key === 'Speed')?.value || 'Varies'
-
-  // Color variants
-  const colors = product.colorVariants?.slice(0, 4) || []
 
   // Motion values
   const mouseX = useMotionValue(0)
@@ -31,6 +22,15 @@ export default function ProductCard({ product }) {
   const x = useSpring(mouseX, springConfig)
   const y = useSpring(mouseY, springConfig)
   const rotate = useSpring(arrowRotate, rotateSpring)
+
+  if (!product) return null
+
+  // Extract specs
+  const capacitySpec = product.specifications?.find(s => s.key === 'Capacity')?.value || 'Custom Spec'
+  const speedSpec = product.specifications?.find(s => s.key === 'Speed')?.value || 'Varies'
+
+  // Color variants
+  const colors = product.colorVariants?.slice(0, 4) || []
 
   const handleMouseMove = (e) => {
     if (!cardRef.current) return
