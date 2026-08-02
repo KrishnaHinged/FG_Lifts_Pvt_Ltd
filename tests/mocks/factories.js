@@ -26,6 +26,6 @@ export const mockInquiry = {
 export const mockAdminUser = {
   id: 'admin_123',
   name: 'Super Administrator',
-  email: 'admin@fglift.com',
+  email: 'admin@fglifts.com',
   role: 'SUPER_ADMIN'
 }
