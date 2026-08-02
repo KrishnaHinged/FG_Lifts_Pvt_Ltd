@@ -82,11 +82,13 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
   const videoRef = useRef(null)
   const completionTriggeredRef = useRef(false)
 
-  const [isPreloaded, setIsPreloaded] = useState(false)
+  const [videoReady, setVideoReady] = useState(false)
+  const [loaderAnimDone, setLoaderAnimDone] = useState(false)
   const [videoDuration, setVideoDuration] = useState(12)
   const [showSkipButton, setShowSkipButton] = useState(false)
   const [videoSrc, setVideoSrc] = useState('/videos/intro/intro.mp4')
 
+  const isPreloaded = videoReady && loaderAnimDone
   const companyName = settings.companyName || 'FG Lifts'
 
   // 1. Monitor prefers-reduced-motion
@@ -114,41 +116,42 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
     const video = videoRef.current
     if (!video) return
 
-    setIsPreloaded(false)
+    setVideoReady(false)
 
-    const updateDuration = () => {
+    const handleReady = () => {
       if (video.duration && !isNaN(video.duration) && video.duration > 0) {
         setVideoDuration(video.duration)
       }
-      setIsPreloaded(true)
+      setVideoReady(true)
     }
 
-    // Check if metadata is already available
-    updateDuration()
+    if (video.readyState >= 2) {
+      handleReady()
+    }
 
-    // Trigger video load
     try {
       video.load()
     } catch (e) {
       console.warn('Video load error:', e)
     }
 
-    video.addEventListener('loadedmetadata', updateDuration)
-    video.addEventListener('loadeddata', updateDuration)
-    video.addEventListener('canplay', updateDuration)
-    video.addEventListener('durationchange', updateDuration)
+    video.addEventListener('loadedmetadata', handleReady)
+    video.addEventListener('loadeddata', handleReady)
+    video.addEventListener('canplay', handleReady)
+    video.addEventListener('canplaythrough', handleReady)
+    video.addEventListener('durationchange', handleReady)
 
-    // Guaranteed readiness timer: after 1000ms max, show intro animation on screen
+    // Fallback safety timer: after 3500ms max, mark video as ready
     const timer = setTimeout(() => {
-      updateDuration()
-      setIsPreloaded(true)
-    }, 1000)
+      handleReady()
+    }, 3500)
 
     return () => {
-      video.removeEventListener('loadedmetadata', updateDuration)
-      video.removeEventListener('loadeddata', updateDuration)
-      video.removeEventListener('canplay', updateDuration)
-      video.removeEventListener('durationchange', updateDuration)
+      video.removeEventListener('loadedmetadata', handleReady)
+      video.removeEventListener('loadeddata', handleReady)
+      video.removeEventListener('canplay', handleReady)
+      video.removeEventListener('canplaythrough', handleReady)
+      video.removeEventListener('durationchange', handleReady)
       clearTimeout(timer)
     }
   }, [videoSrc])
@@ -326,6 +329,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
             key="intro-loader"
             theme="dark"
             mode="compact"
+            onComplete={() => setLoaderAnimDone(true)}
           />
         )}
       </AnimatePresence>
