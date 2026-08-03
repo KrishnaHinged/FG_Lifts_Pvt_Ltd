@@ -77,13 +77,13 @@ export default function Footer() {
             variants={columnVariants}
             className="col-span-12 lg:col-span-5 flex flex-col items-start"
           >
-            <div className="bg-white px-3 py-1.5 rounded-lg flex items-center justify-center border border-neutral-800 mb-6">
+            <div className="bg-white px-4 py-2 rounded-lg flex items-center justify-center border border-neutral-800 mb-6">
               <Image 
                 src="/images/logo.png" 
                 alt="FG Lifts Logo" 
-                width={120} 
-                height={28} 
-                className="object-contain h-[24px] w-auto"
+                width={150} 
+                height={40} 
+                className="object-contain h-[34px] w-auto"
               />
             </div>
             <p className="font-sans text-[15px] leading-relaxed text-[#F5F0EB]/50 m-0 max-w-[340px]">

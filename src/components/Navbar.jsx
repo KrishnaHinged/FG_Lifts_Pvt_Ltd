@@ -156,13 +156,13 @@ export default function Navbar() {
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
           <Link href={ROUTES.home} onClick={(e) => handleNavClick(ROUTES.home, e)} className="flex items-center no-underline">
-            <div className="bg-white px-5 py-2 rounded-full shadow-sm flex items-center justify-center border border-neutral-100/80">
+            <div className="bg-white px-5 py-2 rounded-full shadow-sm flex items-center justify-center border border-neutral-100/80 hover:shadow-md transition-shadow">
               <Image
                 src="/images/logo.png"
                 alt="FG Lifts Logo"
-                width={180}
-                height={50}
-                className="object-contain h-[38px] w-auto"
+                width={140}
+                height={40}
+                className="object-contain h-[28px] sm:h-[32px] w-auto"
                 priority
               />
             </div>
@@ -249,9 +249,9 @@ export default function Navbar() {
                   <Image
                     src="/images/logo.png"
                     alt="FG Lifts Logo"
-                    width={150}
-                    height={42}
-                    className="object-contain h-[32px] w-auto"
+                    width={120}
+                    height={35}
+                    className="object-contain h-[26px] w-auto"
                   />
                 </div>
               </Link>
