@@ -14,13 +14,13 @@ const services = [
     id: 'passenger',
     title: 'Passenger Lifts',
     desc: 'Premium high-speed vertical systems engineered for modern high-rises, commercial hubs, and luxury apartments.',
-    image: '/images/elevator-steel.jpg'
+    image: '/images/passenger-lift.jpg'
   },
   {
     id: 'capsule',
     title: 'Capsule Lifts',
     desc: 'Bespoke panoramic glass capsules designed to offer scenic vertical transits and architectural value to landmarks.',
-    image: '/images/elevator-gold.jpg'
+    image: '/images/capsule-lift.jpg'
   },
   {
     id: 'home',

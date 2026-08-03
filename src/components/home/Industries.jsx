@@ -11,25 +11,25 @@ const sectors = [
   {
     name: 'Residential',
     desc: 'Bespoke residential mobility for luxury towers and private villa estates.',
-    image: '/images/intro/9.jpeg',
+    image: '/images/intro/residential.jpg',
     category: 'Residential'
   },
   {
     name: 'Commercial',
     desc: 'High-speed, intelligent transit networks for commercial infrastructure.',
-    image: '/images/intro/6.jpeg',
+    image: '/images/intro/commercial.jpg',
     category: 'Corporate'
   },
   {
     name: 'Infrastructure',
     desc: 'High-capacity public systems built for terminals and subways.',
-    image: '/images/intro/4.jpeg',
+    image: '/images/intro/infrastructure.jpg',
     category: 'Public Spaces'
   },
   {
     name: 'Industrial',
     desc: 'Heavy-duty freight and cargo solutions engineered for extreme loads.',
-    image: '/images/intro/8.jpeg',
+    image: '/images/intro/industrial.jpg',
     category: 'Logistics'
   }
 ]
