@@ -1,10 +1,9 @@
 import * as subRepo from '@/repositories/subscriber.repository'
-import { validateNewsletter } from '@/validators/newsletter.validator'
 
 export async function optIn(data) {
-  const { isValid, errors } = validateNewsletter(data)
+  const isValid = Boolean(data?.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
   if (!isValid) {
-    throw { status: 400, errors }
+    throw { status: 400, errors: { email: 'Valid email address required.' } }
   }
 
   const existing = await subRepo.findSubscriberByEmail(data.email)
@@ -27,19 +26,6 @@ export async function optIn(data) {
     isActive: true,
     confirmedAt: new Date()
   })
-
-  // Queue newsletter welcome email
-  try {
-    const { queueEmail } = await import('./email.service')
-    await queueEmail({
-      templateName: 'newsletter_welcome',
-      to: data.email,
-      variables: { name: data.name || 'Subscriber' },
-      relatedId: created._id.toString()
-    })
-  } catch (err) {
-    console.error('Failed to queue welcome email:', err)
-  }
 
   return { status: 'created', subscriber: created }
 }
@@ -99,15 +85,6 @@ export async function getSubscribersList({ page = 1, limit = 50, search = '', st
     page,
     pages: Math.ceil(total / limit)
   }
-}
-
-export async function getNewsletterStats() {
-  const [total, active, unsubscribed] = await Promise.all([
-    subRepo.countSubscribers({}),
-    subRepo.countSubscribers({ isActive: true }),
-    subRepo.countSubscribers({ isActive: false })
-  ])
-  return { total, active, unsubscribed }
 }
 
 

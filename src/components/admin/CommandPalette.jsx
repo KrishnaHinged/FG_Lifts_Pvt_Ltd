@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, memo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, LayoutDashboard, Inbox, Boxes, Image, BookOpen, Mail, Users, History, X } from 'lucide-react'
+import { Search, LayoutDashboard, Inbox, Boxes, Image, Users, History, X } from 'lucide-react'
 
 const commands = [
   { label: 'Go to Dashboard', href: '/admin/dashboard', icon: LayoutDashboard, category: 'Navigation' },
@@ -10,8 +10,6 @@ const commands = [
   { label: 'Manage Products', href: '/admin/products', icon: Boxes, category: 'Content' },
   { label: 'Add New Product', href: '/admin/products/new', icon: Boxes, category: 'Actions' },
   { label: 'Manage Gallery', href: '/admin/gallery', icon: Image, category: 'Content' },
-  { label: 'Write Blog Article', href: '/admin/blog/new', icon: BookOpen, category: 'Actions' },
-  { label: 'Newsletter Roster', href: '/admin/newsletter', icon: Mail, category: 'Marketing' },
   { label: 'Manage Team Members', href: '/admin/users', icon: Users, category: 'System' },
   { label: 'Audit Logs', href: '/admin/logs', icon: History, category: 'System' },
 ]

@@ -6,8 +6,7 @@ export const navigationConfig = {
     { label: 'About Us', href: routesConfig.about },
     { label: 'Home Lift', href: routesConfig.homeLift },
     { label: 'Elevators & Products', href: routesConfig.products },
-    { label: 'Case Studies', href: routesConfig.gallery },
-    { label: 'Editorial Blog', href: routesConfig.blog }
+    { label: 'Case Studies', href: routesConfig.gallery }
   ],
   footer: {
     divisions: [
@@ -21,7 +20,6 @@ export const navigationConfig = {
       { label: 'About Brand Timeline', href: routesConfig.about },
       { label: 'Products Directory', href: routesConfig.products },
       { label: 'Masonry Portfolio', href: routesConfig.gallery },
-      { label: 'Resource Blog Articles', href: routesConfig.blog },
       { label: 'Corporate Office Maps', href: `${routesConfig.home}#contact` }
     ],
     legal: [
@@ -36,9 +34,7 @@ export const navigationConfig = {
     { label: 'CMS Products', href: routesConfig.admin.products, icon: 'Package' },
     { label: 'CMS Home Lifts', href: routesConfig.admin.homeLifts, icon: 'Home' },
     { label: 'CMS Gallery', href: routesConfig.admin.gallery, icon: 'Image' },
-    { label: 'CMS Blog', href: routesConfig.admin.blog, icon: 'FileText' },
     { label: 'CMS Testimonials', href: routesConfig.admin.testimonials, icon: 'MessageSquareQuote' },
-    { label: 'Newsletter', href: routesConfig.admin.newsletter, icon: 'Mail' },
     { label: 'Team Accounts', href: routesConfig.admin.users, icon: 'ShieldAlert' },
     { label: 'Email Templates', href: routesConfig.admin.emailTemplates, icon: 'Code2' },
     { label: 'Audit Logs', href: routesConfig.admin.logs, icon: 'FileCode' }

@@ -87,15 +87,28 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
   const [videoDuration, setVideoDuration] = useState(12)
   const [showSkipButton, setShowSkipButton] = useState(false)
   const [videoSrc, setVideoSrc] = useState('/videos/intro/intro.mp4')
+  const [isLowPerformance, setIsLowPerformance] = useState(false)
 
   const isPreloaded = videoReady && loaderAnimDone
   const companyName = settings.companyName || 'FG Lifts'
 
-  // 1. Monitor prefers-reduced-motion
+  // 1. Monitor prefers-reduced-motion and hardware performance
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (prefersReducedMotion) {
       onComplete()
+      return
+    }
+
+    if (typeof window !== 'undefined') {
+      const isMobileOrTablet = window.innerWidth < 1024
+      const ram = navigator.deviceMemory
+      const cores = navigator.hardwareConcurrency
+      const isLowRAM = ram && ram <= 4
+      const isLowCPU = cores && cores <= 4
+      if (isMobileOrTablet || isLowRAM || isLowCPU) {
+        setIsLowPerformance(true)
+      }
     }
   }, [onComplete])
 
@@ -181,6 +194,58 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
           const scrollAnchor = scrollAnchorRef.current
           const video = videoRef.current
           if (!pinWrapper || !scrollAnchor || !video) return
+
+          if (isLowPerformance) {
+            // Smoothly play video sequentially (extremely lightweight on CPU/GPU)
+            try {
+              video.currentTime = 0
+              video.play().catch(e => console.warn('Autoplay failed:', e))
+            } catch (e) {}
+
+            const masterTimeline = gsap.timeline({
+              onComplete: () => {
+                if (completionTriggeredRef.current) return
+                completionTriggeredRef.current = true
+                onComplete()
+              }
+            })
+
+            // STEP 1: Instruction HUD fades out early (at 1.5s)
+            masterTimeline.to('.intro-instruction', {
+              opacity: 0,
+              y: -40,
+              scale: 0.94,
+              duration: 1.5,
+              ease: 'power2.inOut'
+            }, 1.5)
+
+            // STEP 3: Logo Reveal fades in at 5.5s
+            masterTimeline.set('.logo-reveal', { display: 'flex' }, 5.5)
+            masterTimeline.fromTo('.logo-reveal',
+              { opacity: 0 },
+              { opacity: 1, duration: 1.0, ease: 'power2.out' },
+              5.5
+            )
+            masterTimeline.fromTo('.logo-title',
+              { opacity: 0, y: 50, scale: 0.9 },
+              { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: 'back.out(1.5)' },
+              5.6
+            )
+            masterTimeline.fromTo('.logo-subtitle',
+              { opacity: 0, y: 20 },
+              { opacity: 1, y: 0, duration: 1.0, ease: 'power2.out' },
+              5.8
+            )
+
+            // STEP 4: Cinematic Fade-Out into Home Screen at 7.0s
+            masterTimeline.to('.cinematic-container', {
+              opacity: 0,
+              duration: 1.0,
+              ease: 'power2.inOut'
+            }, 7.0)
+
+            return
+          }
 
           // Ensure video currentTime starts at 0 for scrubbing
           try {
@@ -315,7 +380,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
         ctx.revert()
       }
     }
-  }, [isPreloaded, videoDuration, onComplete])
+  }, [isPreloaded, videoDuration, onComplete, isLowPerformance])
 
   const handleSkip = () => {
     completionTriggeredRef.current = true
@@ -341,7 +406,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
       </AnimatePresence>
 
       {/* 2. Floating controllers */}
-      {isPreloaded && showSkipButton && (
+      {(showSkipButton || (isPreloaded && isLowPerformance)) && (
         <div className="fixed top-6 right-6 z-[55] flex items-center">
           {/* Skip Intro button */}
           <button
@@ -383,7 +448,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
       {/* 4. Scroll trigger anchor in document flow */}
       <div
         ref={scrollAnchorRef}
-        className="relative w-full h-[300vh] bg-transparent pointer-events-none z-10"
+        className={`relative w-full bg-transparent pointer-events-none z-10 ${isLowPerformance ? 'h-[101vh]' : 'h-[300vh]'}`}
       />
     </div>
   )

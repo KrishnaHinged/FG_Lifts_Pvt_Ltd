@@ -21,7 +21,6 @@ import { scrollReveal } from './scroll'
 import { heroEntrance } from './hero'
 import { galleryItem } from './gallery'
 import { productCard } from './products'
-import { blogPostEntrance } from './blog'
 import { loaderPulse } from './loader'
 
 export {
@@ -66,7 +65,6 @@ export {
   heroEntrance,
   galleryItem,
   productCard,
-  blogPostEntrance,
   loaderPulse
 }
 
@@ -112,6 +110,5 @@ export default {
   heroEntrance,
   galleryItem,
   productCard,
-  blogPostEntrance,
   loaderPulse
 }

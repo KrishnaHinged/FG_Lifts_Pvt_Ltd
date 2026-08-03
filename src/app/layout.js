@@ -2,7 +2,6 @@ import { Cormorant_Garamond, Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import NewsletterStrip from '@/components/newsletter/NewsletterStrip'
 import AppProvider from '@/providers/AppProvider'
 import { headers } from 'next/headers'
 import { SchemaScript } from '@/seo/schema'
@@ -118,7 +117,6 @@ export default async function RootLayout({ children }) {
             <>
               <Navbar />
               <main id="main">{children}</main>
-              <NewsletterStrip />
               <Footer />
             </>
           )}

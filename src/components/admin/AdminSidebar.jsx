@@ -12,8 +12,6 @@ import {
   Boxes,
   Home,
   Image as ImageIcon,
-  BookOpen,
-  Mail,
   FileCode,
   Users,
   History,
@@ -46,14 +44,12 @@ const navGroups = [
       { label: 'Products', href: '/admin/products', icon: Boxes, permission: [PERMISSIONS.VIEW_PRODUCTS] },
       { label: 'Home Lifts', href: '/admin/home-lifts', icon: Home, permission: [PERMISSIONS.VIEW_PRODUCTS] },
       { label: 'Gallery', href: '/admin/gallery', icon: ImageIcon, permission: [PERMISSIONS.VIEW_GALLERY] },
-      { label: 'Blog', href: '/admin/blog', icon: BookOpen, permission: [PERMISSIONS.VIEW_BLOG] },
       { label: 'Testimonials', href: '/admin/testimonials', icon: MessageSquareQuote, permission: [PERMISSIONS.VIEW_TESTIMONIALS] },
     ],
   },
   {
     title: 'Marketing',
     items: [
-      { label: 'Newsletter', href: '/admin/newsletter', icon: Mail, permission: [PERMISSIONS.VIEW_SUBSCRIBERS] },
       { label: 'Email Templates', href: '/admin/email-templates', icon: FileCode, permission: [PERMISSIONS.VIEW_EMAIL_TEMPLATES] },
     ],
   },

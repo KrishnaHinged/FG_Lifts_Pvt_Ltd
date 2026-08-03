@@ -121,7 +121,7 @@ export default function TemplatesClient({ initialTemplates = [], currentAdmin })
             <div>
               <h3 className="font-sans font-bold text-gray-900 text-base m-0">No System Email Templates Found</h3>
               <p className="font-sans text-xs text-gray-500 m-0 mt-1">
-                Populate your environment with default notification templates for inquiries, CRM leads, and newsletters.
+                Populate your environment with default notification templates for inquiries and CRM leads.
               </p>
             </div>
             <button

@@ -5,8 +5,6 @@ export const routesConfig = {
   products: '/products',
   productDetail: (slug) => `/products/${slug}`,
   gallery: '/gallery',
-  blog: '/blog',
-  blogDetail: (slug) => `/blog/${slug}`,
   admin: {
     root: '/admin',
     login: '/admin/login',
@@ -21,10 +19,6 @@ export const routesConfig = {
     gallery: '/admin/gallery',
     newProject: '/admin/gallery/new',
     editProject: (id) => `/admin/gallery/${id}/edit`,
-    blog: '/admin/blog',
-    newPost: '/admin/blog/new',
-    editPost: (id) => `/admin/blog/${id}/edit`,
-    newsletter: '/admin/newsletter',
     users: '/admin/users',
     emailTemplates: '/admin/email-templates',
     logs: '/admin/logs',
@@ -34,8 +28,6 @@ export const routesConfig = {
   },
   api: {
     contact: '/api/contact',
-    newsletter: '/api/newsletter',
-    blog: '/api/blog',
     products: '/api/products',
     testimonials: '/api/testimonials',
     admin: {
@@ -55,13 +47,6 @@ export const routesConfig = {
       gallery: {
         base: '/api/admin/gallery',
         detail: (id) => `/api/admin/gallery/${id}`
-      },
-      blog: {
-        base: '/api/admin/blog',
-        detail: (id) => `/api/admin/blog/${id}`
-      },
-      newsletter: {
-        base: '/api/admin/newsletter'
       },
       users: {
         base: '/api/admin/users',

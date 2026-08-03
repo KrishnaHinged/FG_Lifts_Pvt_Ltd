@@ -53,8 +53,8 @@ export default function Navbar() {
   }
 
   // Determine if the current route has a dark background at the top of the page.
-  // Home ('/') and Blog ('/blog') pages start with dark hero designs.
-  const isDarkBgAtTop = pathname === '/' || pathname.startsWith('/blog')
+  // Home ('/') page starts with a dark hero design.
+  const isDarkBgAtTop = pathname === '/'
   const isDark = isDarkBgAtTop && !scrolled
 
   useEffect(() => {

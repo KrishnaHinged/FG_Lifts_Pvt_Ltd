@@ -5,13 +5,12 @@
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://fglifts.com'
 
-export function generateSitemapEntries({ products = [], posts = [], galleryProjects = [] } = {}) {
+export function generateSitemapEntries({ products = [], galleryProjects = [] } = {}) {
   const staticRoutes = [
     '',
     '/about',
     '/products',
     '/gallery',
-    '/blog',
   ].map(route => ({
     url: `${BASE_URL}${route}`,
     lastModified: new Date().toISOString(),
@@ -26,14 +25,7 @@ export function generateSitemapEntries({ products = [], posts = [], galleryProje
     priority: 0.9
   }))
 
-  const blogRoutes = posts.map(post => ({
-    url: `${BASE_URL}/blog/${post.slug}`,
-    lastModified: post.updatedAt || post.publishedAt || new Date().toISOString(),
-    changeFrequency: 'weekly',
-    priority: 0.7
-  }))
-
-  return [...staticRoutes, ...productRoutes, ...blogRoutes]
+  return [...staticRoutes, ...productRoutes]
 }
 
 export default generateSitemapEntries

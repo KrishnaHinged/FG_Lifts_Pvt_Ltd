@@ -105,43 +105,11 @@ const GalleryProjectSchema = new mongoose.Schema({
   sortOrder:           { type: Number, default: 0 }
 }, { timestamps: true });
 
-const BlogPostSchema = new mongoose.Schema({
-  slug:          { type: String, required: true, unique: true },
-  title:         { type: String, required: true },
-  excerpt:       String,
-  coverImage:    String,
-  coverImageAlt: String,
-  content:       String,
-  category:      String,
-  tags:          [String],
-  author: {
-    name:   String,
-    avatar: String,
-    title:  String,
-  },
-  readTime:      Number,
-  isPublished:   { type: Boolean, default: false },
-  isFeatured:    { type: Boolean, default: false },
-  publishedAt:   Date,
-  views:         { type: Number, default: 0 },
-  relatedSlugs:  [String]
-}, { timestamps: true });
-
-const TestimonialSchema = new mongoose.Schema({
-  name:      { type: String, required: true },
-  title:     { type: String, required: true },
-  quote:     { type: String, required: true },
-  bgColor:   { type: String, default: 'bg-[#1A1A1A] text-white' },
-  isActive:  { type: Boolean, default: true },
-  sortOrder: { type: Number, default: 0 }
-}, { timestamps: true });
-
 // Models lookup or compile
 const Admin = mongoose.models.Admin || mongoose.model('Admin', AdminSchema);
 const EmailTemplate = mongoose.models.EmailTemplate || mongoose.model('EmailTemplate', EmailTemplateSchema);
 const Product = mongoose.models.Product || mongoose.model('Product', ProductSchema);
 const GalleryProject = mongoose.models.GalleryProject || mongoose.model('GalleryProject', GalleryProjectSchema);
-const BlogPost = mongoose.models.BlogPost || mongoose.model('BlogPost', BlogPostSchema);
 const Testimonial = mongoose.models.Testimonial || mongoose.model('Testimonial', TestimonialSchema);
 
 const mockProducts = [
@@ -488,24 +456,6 @@ const mockProjects = [
   }
 ];
 
-const mockBlogPosts = [
-  {
-    slug: 'choosing-right-elevator-residential-building',
-    title: 'How to Choose the Right Elevator for Your Residential Building',
-    excerpt: 'A comprehensive guide covering capacity planning, drive types, cabin sizing, and budgeting considerations for residential elevator installations.',
-    coverImage: '/images/services-collage.png',
-    coverImageAlt: 'Residential elevator installation guide',
-    content: `<h2>Understanding Your Building Requirements</h2><p>Choosing the right elevator for a residential building is one of the most impactful decisions a builder or architect can make...</p>`,
-    category: 'Technical Guide',
-    tags: ['residential', 'guide', 'selection', 'safety'],
-    author: { name: 'FG Lifts Editorial Team', title: 'Engineering Division' },
-    isPublished: true,
-    isFeatured: true,
-    publishedAt: new Date('2025-06-15'),
-    relatedSlugs: ['elevator-maintenance-best-practices', 'luxury-cabin-design-trends-2025'],
-  }
-];
-
 const defaultTemplates = [
   {
     name: 'inquiry_received',
@@ -534,18 +484,6 @@ const defaultTemplates = [
       </div>
     `,
     variables: ['{{executiveName}}', '{{clientName}}', '{{assignedBy}}']
-  },
-  {
-    name: 'newsletter_welcome',
-    subject: 'Welcome to FG Lift Insights!',
-    body: `
-      <div style="font-family: sans-serif; padding: 24px; color: #111111; max-width: 600px; margin: 0 auto; border: 1px solid #E5E7EB; border-radius: 12px;">
-        <h2 style="color: #0E4FB3;">FG Lift Insights</h2>
-        <p>Hello {{name}},</p>
-        <p>Thank you for subscribing to our newsletter! You will now receive industry insights, engineering guides, and product updates from the FG Lift engineering team.</p>
-      </div>
-    `,
-    variables: ['{{name}}']
   }
 ];
 
@@ -639,7 +577,7 @@ async function seed() {
       }
     }
 
-    // 3. Seed Products, Projects, Blog Posts (preserving existing MongoDB data)
+    // 3. Seed Products and Projects (preserving existing MongoDB data)
     console.log('Seeding products...')
     for (const prodData of mockProducts) {
       const existingProduct = await Product.findOne({ slug: prodData.slug })
@@ -667,26 +605,6 @@ async function seed() {
         console.log(`Project "${projData.title}" updated (RESET mode).`)
       } else {
         console.log(`Project "${projData.title}" already exists in DB. Skipping to preserve user content.`)
-      }
-    }
-
-    console.log('Seeding blog posts...')
-    for (const postData of mockBlogPosts) {
-      const existingPost = await BlogPost.findOne({ slug: postData.slug })
-      if (!existingPost) {
-        const post = new BlogPost(postData)
-        if (post.content) {
-          const wordCount = post.content.replace(/<[^>]+>/g, '').split(/\s+/).length
-          post.readTime = Math.max(1, Math.ceil(wordCount / 200))
-        }
-        await post.save()
-        console.log(`Seeded blog post: ${postData.title}`)
-      } else if (isReset) {
-        Object.assign(existingPost, postData)
-        await existingPost.save()
-        console.log(`Blog post "${postData.title}" updated (RESET mode).`)
-      } else {
-        console.log(`Blog post "${postData.title}" already exists in DB. Skipping to preserve user content.`)
       }
     }
 

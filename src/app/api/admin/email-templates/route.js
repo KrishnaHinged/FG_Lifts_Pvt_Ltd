@@ -44,13 +44,6 @@ export async function POST(req) {
         subject: 'Lead Assigned: {{clientName}}',
         body: `<div style="font-family: sans-serif; padding: 24px; color: #111111; max-width: 600px; margin: 0 auto; border: 1px solid #E5E7EB; border-radius: 12px;"><h2 style="color: #0E4FB3;">CRM Notification</h2><p>Hello {{executiveName}},</p><p>You have been assigned a new lead from <strong>{{clientName}}</strong> by <strong>{{assignedBy}}</strong>.</p></div>`,
         variables: ['{{executiveName}}', '{{clientName}}', '{{assignedBy}}']
-      },
-      {
-        name: 'Newsletter Welcome Email',
-        code: 'newsletter_welcome',
-        subject: 'Welcome to FG Lift Insights!',
-        body: `<div style="font-family: sans-serif; padding: 24px; color: #111111; max-width: 600px; margin: 0 auto; border: 1px solid #E5E7EB; border-radius: 12px;"><h2 style="color: #0E4FB3;">FG Lift Insights</h2><p>Hello {{name}},</p><p>Thank you for subscribing to our newsletter!</p></div>`,
-        variables: ['{{name}}']
       }
     ]
 

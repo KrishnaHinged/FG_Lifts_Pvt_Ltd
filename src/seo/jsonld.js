@@ -86,28 +86,6 @@ export function buildBreadcrumbSchema(items = []) {
   }
 }
 
-export function buildArticleSchema({ title, description, slug, image, author, datePublished, dateModified }) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': `${BASE_URL}/blog/${slug}`
-    },
-    headline: title,
-    description: description,
-    image: image ? [image.startsWith('http') ? image : `${BASE_URL}${image}`] : [`${BASE_URL}/images/projects-collage.png`],
-    datePublished: datePublished || new Date().toISOString(),
-    dateModified: dateModified || datePublished || new Date().toISOString(),
-    author: {
-      '@type': 'Person',
-      name: author || 'FG Lifts Editorial Team'
-    },
-    publisher: {
-      '@id': `${BASE_URL}/#organization`
-    }
-  }
-}
 
 export function buildProductSchema({ name, description, slug, category, image }) {
   return {

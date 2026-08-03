@@ -3,8 +3,6 @@ import Link from 'next/link'
 import { connectDB } from '@/lib/mongodb'
 import Inquiry from '@/models/Inquiry'
 import Product from '@/models/Product'
-import Subscriber from '@/models/Subscriber'
-import BlogPost from '@/models/BlogPost'
 import EmailQueue from '@/models/EmailQueue'
 import StatCard from '@/components/admin/StatCard'
 import PageHeader from '@/components/composition/PageHeader'
@@ -15,11 +13,9 @@ import {
   Sparkles,
   Boxes,
   Users,
-  BookOpen,
   Mail,
   ArrowRight,
   Plus,
-  FileText,
   Activity
 } from 'lucide-react'
 
@@ -42,16 +38,12 @@ export default async function DashboardPage() {
     totalInquiries,
     newInquiries,
     activeProducts,
-    subscribers,
-    postsPublished,
     pendingEmails,
     recentInquiries
   ] = await Promise.all([
     Inquiry.countDocuments(),
     Inquiry.countDocuments({ status: 'New', createdAt: { $gte: thirtyDaysAgo } }),
     Product.countDocuments({ isActive: true }),
-    Subscriber.countDocuments({ isActive: true }),
-    BlogPost.countDocuments({ isPublished: true }),
     EmailQueue.countDocuments({ status: 'pending' }),
     Inquiry.find(adminRole === 'SALES_EXECUTIVE' ? { assignedTo: adminId } : {})
       .sort({ createdAt: -1 })
@@ -92,12 +84,10 @@ export default async function DashboardPage() {
       />
 
       {/* Stats Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard title="Total Leads" value={totalInquiries} iconName="inbox" color="blue" />
         <StatCard title="Fresh Leads (30d)" value={newInquiries} iconName="sparkles" color="amber" />
         <StatCard title="Active Systems" value={activeProducts} iconName="boxes" color="green" />
-        <StatCard title="Subscribers" value={subscribers} iconName="users" color="blue" />
-        <StatCard title="Published Articles" value={postsPublished} iconName="bookOpen" color="green" />
         <StatCard title="Pending Outbox" value={pendingEmails} iconName="mail" color="amber" />
       </div>
 
@@ -192,28 +182,6 @@ export default async function DashboardPage() {
                 Add New Product
               </span>
               <Plus className="w-3.5 h-3.5" />
-            </Link>
-
-            <Link
-              href="/admin/blog/new"
-              className="flex items-center justify-between p-3.5 border border-[#E8E2DA] hover:border-[#0E4FB3] rounded-xl text-xs font-semibold font-sans text-[#555555] hover:text-[#0E4FB3] hover:bg-neutral-50 transition-all no-underline bg-white"
-            >
-              <span className="flex items-center gap-2.5">
-                <FileText className="w-4 h-4 text-[#7A7A7A]" />
-                Write Blog Post
-              </span>
-              <Plus className="w-3.5 h-3.5" />
-            </Link>
-
-            <Link
-              href="/admin/newsletter"
-              className="flex items-center justify-between p-3.5 border border-[#E8E2DA] hover:border-[#0E4FB3] rounded-xl text-xs font-semibold font-sans text-[#555555] hover:text-[#0E4FB3] hover:bg-neutral-50 transition-all no-underline bg-white"
-            >
-              <span className="flex items-center gap-2.5">
-                <Users className="w-4 h-4 text-[#7A7A7A]" />
-                Newsletter Roster
-              </span>
-              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
