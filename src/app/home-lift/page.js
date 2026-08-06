@@ -4,11 +4,11 @@ import { getAllProducts } from '@/repositories/product.repository'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Glarie Homelift Series | German Engineering Elevators | FG Lifts Pvt. Ltd.',
-  description: 'Discover the Glarie Homelift Series — GEH160 steel rope and GEH320S steel belt home elevators. Premium German engineering, space-saving shaft layouts, and luxury cabin customizable finishes.',
+  title: 'FG Homelift Series | German Engineering Elevators | FG Lifts Pvt. Ltd.',
+  description: 'Discover the FG Homelift Series — FG160 steel rope and FG320S steel belt home elevators. Premium German engineering, space-saving shaft layouts, and luxury cabin customizable finishes.',
   openGraph: {
-    title: 'Glarie Homelift Series | Luxury Home Lifts',
-    description: 'German noble demeanor, building legendary artistic quality for private luxury residences.',
+    title: 'FG Homelift Series | Luxury Home Lifts',
+    description: 'Building Artistic Quality for Private Luxury Residences.',
     images: ['/images/elevator-gold.jpg'],
   },
 }

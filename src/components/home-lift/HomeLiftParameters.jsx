@@ -35,7 +35,7 @@ export default function HomeLiftParameters() {
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 font-bold text-gray-900">GEH160 (Concrete/Steel)</td>
+                  <td className="px-6 py-4 font-bold text-gray-900">FG160 (Concrete/Steel)</td>
                   <td className="px-6 py-4">400 kg</td>
                   <td className="px-6 py-4">0.4 m/s</td>
                   <td className="px-6 py-4">1000 × 1080 × 2200 mm</td>
@@ -45,7 +45,7 @@ export default function HomeLiftParameters() {
                   <td className="px-6 py-4">250 mm</td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 font-bold text-gray-900">GEH320S (Concrete/Steel)</td>
+                  <td className="px-6 py-4 font-bold text-gray-900">FG320S (Concrete/Steel)</td>
                   <td className="px-6 py-4">400 kg</td>
                   <td className="px-6 py-4">0.4 m/s</td>
                   <td className="px-6 py-4">1200 × 1280 × 2200 mm</td>
@@ -61,7 +61,7 @@ export default function HomeLiftParameters() {
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 font-bold text-gray-900">GEH160 (Aluminum)</td>
+                  <td className="px-6 py-4 font-bold text-gray-900">FG160 (Aluminum)</td>
                   <td className="px-6 py-4">400 kg</td>
                   <td className="px-6 py-4">0.4 m/s</td>
                   <td className="px-6 py-4">1000 × 1080 × 2200 mm</td>
@@ -71,7 +71,7 @@ export default function HomeLiftParameters() {
                   <td className="px-6 py-4">250 mm</td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 font-bold text-gray-900">GEH320S (Aluminum)</td>
+                  <td className="px-6 py-4 font-bold text-gray-900">FG320S (Aluminum)</td>
                   <td className="px-6 py-4">400 kg</td>
                   <td className="px-6 py-4">0.4 m/s</td>
                   <td className="px-6 py-4">1200 × 1280 × 2200 mm</td>

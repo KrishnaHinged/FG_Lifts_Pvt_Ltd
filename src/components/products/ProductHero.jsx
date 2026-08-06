@@ -18,7 +18,7 @@ export default function ProductHero() {
 
   return (
     <section ref={containerRef} className="relative pt-24 sm:pt-28 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden select-none">
-      
+
       {/* Background Ambient Orbs */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
         <motion.div
@@ -34,9 +34,9 @@ export default function ProductHero() {
       </div>
 
       <div className="max-w-[1380px] mx-auto relative z-10">
-        
+
         {/* Main Hero Card Container */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 35, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
@@ -63,10 +63,10 @@ export default function ProductHero() {
           {/* Hero Content Panel */}
           <Container className="relative z-20 w-full p-8 sm:p-12 md:p-16 lg:p-20 flex flex-col justify-end h-full">
             <div className="grid grid-cols-12 gap-6 items-end">
-              
+
               {/* Left Column: Heading & Text */}
               <div className="col-span-12 lg:col-span-8 flex flex-col items-start gap-5">
-                
+
                 {/* Meta Tag Pill */}
                 <motion.div
                   initial={{ opacity: 0, y: 15 }}
@@ -82,19 +82,19 @@ export default function ProductHero() {
 
                 {/* Main Headline */}
                 <div className="overflow-hidden">
-                  <motion.h1 
+                  <motion.h1
                     initial={{ y: '100%', opacity: 0 }}
                     animate={{ y: '0%', opacity: 1 }}
                     transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-                    className="m-0 font-display text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-extrabold uppercase tracking-tight leading-[0.92] text-white"
+                    className="m-0 font-light text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-extrabold uppercase tracking-tight leading-[0.92] text-white"
                   >
                     Enjoy Your <br />
-                    <span className="italic font-normal text-[#E8A840] font-serif tracking-normal lowercase first-letter:uppercase">Dream Ascent</span>
+                    <span className="italic font-normal text-[#E8A840] font-light tracking-normal lowercase first-letter:uppercase">Dream Ascent</span>
                   </motion.h1>
                 </div>
 
                 {/* Subtitle Paragraph */}
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.45 }}

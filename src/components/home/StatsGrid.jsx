@@ -10,7 +10,7 @@ const stats = [
   { value: '7000+', label: 'Lifts Installed' },
   { value: '95%', label: 'Repeat Customers' },
   { value: '3', label: 'MFG Facilities' },
-  { value: '500+', label: 'Clients Nationwide' }
+  // { value: '500+', label: 'Clients Nationwide' }
 ]
 
 function AnimatedCounter({ valueString }) {

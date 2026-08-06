@@ -165,7 +165,6 @@ export default function AboutHero() {
             width: imageWidth,
             height: imageHeight,
             borderRadius: imageBorderRadius,
-            willChange: 'left, top, width, height, border-radius',
             position: 'absolute',
           }}
           className="overflow-hidden border border-black/5 shadow-2xl z-20 bg-neutral-200"
@@ -176,7 +175,6 @@ export default function AboutHero() {
               width: '100%',
               height: '100%',
               position: 'relative',
-              willChange: 'transform'
             }}
           >
             <Image
@@ -184,8 +182,9 @@ export default function AboutHero() {
               alt="Luxury Elevator Cabin Interior"
               fill
               priority
+              unoptimized
               className="object-cover object-center"
-              sizes="90vw"
+              sizes="100vw"
             />
           </motion.div>
         </motion.div>
