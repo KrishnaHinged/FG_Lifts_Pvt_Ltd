@@ -123,6 +123,7 @@ export default memo(function AdminTopbar({ admin }) {
       <NotificationCenter
         isOpen={showNotifications}
         onClose={closeNotifications}
+        onUnreadCountChange={setPendingCount}
       />
     </>
   )
