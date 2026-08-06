@@ -6,9 +6,6 @@ export function validateTestimonial(data) {
   const nameErr = validateRequired(data.name, 'Name')
   if (nameErr) errors.name = nameErr
 
-  const titleErr = validateRequired(data.title, 'Job Title / Designation')
-  if (titleErr) errors.title = titleErr
-
   const quoteErr = validateRequired(data.quote, 'Testimonial Quote')
   if (quoteErr) errors.quote = quoteErr
 

@@ -16,6 +16,8 @@ const SiteSettingsSchema = new mongoose.Schema({
   instagramUrl:   { type: String, default: 'https://www.instagram.com/fgliftspvtltd', trim: true },
   linkedinUrl:    { type: String, default: 'https://www.linkedin.com/company/fg-lifts-private-limited/', trim: true },
   youtubeUrl:     { type: String, default: '', trim: true },
+  googleWidgetEmbedUrl: { type: String, default: '', trim: true },
+  googleRating:    { type: String, default: '4.9★', trim: true },
   footerText:     { type: String, default: 'Engineering vertical mobility systems, luxury passenger elevators, industrial goods lifts, and interactive cabin designs.', trim: true },
   metaDescription:{ type: String, default: 'FG Lifts Pvt. Ltd. — Premium Vertical Mobility Solutions.', trim: true },
   updatedBy:      { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },

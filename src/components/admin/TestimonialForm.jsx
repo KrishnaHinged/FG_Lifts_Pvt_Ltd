@@ -22,8 +22,6 @@ export default memo(function TestimonialForm({ testimonial = null, onSubmit }) {
     let error = ''
     if (field === 'name' && !value.trim()) {
       error = 'Author name is required'
-    } else if (field === 'title' && !value.trim()) {
-      error = 'Designation/Location is required'
     } else if (field === 'quote' && !value.trim()) {
       error = 'Testimonial quote text is required'
     }
@@ -34,8 +32,8 @@ export default memo(function TestimonialForm({ testimonial = null, onSubmit }) {
     e.preventDefault()
     setErrorMsg('')
 
-    if (!name.trim() || !title.trim() || !quote.trim()) {
-      setErrorMsg('All fields are required.')
+    if (!name.trim() || !quote.trim()) {
+      setErrorMsg('Author name and testimonial quote are required.')
       return
     }
 
@@ -107,10 +105,10 @@ export default memo(function TestimonialForm({ testimonial = null, onSubmit }) {
         )}
       </div>
 
-      {/* Designation / Company / Location */}
+      {/* Designation / Company / Location (Optional) */}
       <div className="space-y-1">
         <label htmlFor="title" className="block font-mono text-[9px] uppercase tracking-widest text-[#7A7A7A] font-bold">
-          Designation / Location
+          Designation / Location (Optional)
         </label>
         <input
           id="title"
@@ -118,7 +116,7 @@ export default memo(function TestimonialForm({ testimonial = null, onSubmit }) {
           className={`w-full px-4 py-3 rounded-xl border font-sans text-sm focus:outline-none transition-colors ${
             fieldErrors.title ? 'border-red-300 focus:border-red-500' : 'border-[#E8E2DA] focus:border-[#0E4FB3]'
           }`}
-          placeholder="e.g. Homeowner, Ahmedabad or VP Projects, Greenfield Group"
+          placeholder="e.g. Homeowner, Ahmedabad or VP Projects, Greenfield Group (Optional)"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           onBlur={(e) => handleBlur('title', e.target.value)}

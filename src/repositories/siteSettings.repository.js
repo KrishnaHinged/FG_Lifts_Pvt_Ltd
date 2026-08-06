@@ -17,6 +17,8 @@ const DEFAULT_SETTINGS = {
   instagramUrl: 'https://www.instagram.com/fgliftspvtltd',
   linkedinUrl: 'https://www.linkedin.com/company/fg-lifts-private-limited/',
   youtubeUrl: '',
+  googleWidgetEmbedUrl: '',
+  googleRating: '4.9★',
   footerText: 'Engineering vertical mobility systems, luxury passenger elevators, industrial goods lifts, and interactive cabin designs.',
   metaDescription: 'FG Lifts Pvt. Ltd. — Premium Vertical Mobility Solutions.',
 }

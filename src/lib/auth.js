@@ -146,7 +146,10 @@ export function getCookieOptions(maxAge = COOKIE_MAX_AGE) {
 }
 
 export function getAdmin(req) {
-  const token = req.cookies.get(COOKIE_NAME)?.value
+  if (!req || !req.cookies) return null
+  const token = typeof req.cookies.get === 'function'
+    ? req.cookies.get(COOKIE_NAME)?.value
+    : req.cookies[COOKIE_NAME]
   return token ? verifyToken(token) : null
 }
 
