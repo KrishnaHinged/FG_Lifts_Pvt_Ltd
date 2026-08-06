@@ -21,7 +21,7 @@ export const companyConfig = {
   },
   gst: '24AAAAA1111A1Z1',
   workingHours: '9:00 AM - 6:00 PM (Monday - Saturday)',
-  mapsUrl: 'https://maps.google.com'
+  mapsUrl: 'https://maps.app.goo.gl/ajjJY7us73cBceP46'
 }
 
 export default companyConfig

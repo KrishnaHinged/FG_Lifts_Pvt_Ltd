@@ -17,7 +17,8 @@ import {
   History,
   LogOut,
   ArrowLeft,
-  MessageSquareQuote
+  MessageSquareQuote,
+  Settings
 } from 'lucide-react'
 
 const navGroups = [
@@ -56,6 +57,7 @@ const navGroups = [
   {
     title: 'System',
     items: [
+      { label: 'Website Settings', href: '/admin/settings', icon: Settings, permission: [PERMISSIONS.VIEW_SETTINGS, PERMISSIONS.MANAGE_SETTINGS] },
       { label: 'Users', href: '/admin/users', icon: Users, permission: [PERMISSIONS.VIEW_USERS] },
       { label: 'Audit Logs', href: '/admin/logs', icon: History, permission: [PERMISSIONS.VIEW_LOGS] },
     ],

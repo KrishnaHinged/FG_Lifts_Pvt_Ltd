@@ -17,17 +17,17 @@ function TypewriterInstruction() {
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: 48 }}
-          transition={{ type: "spring", stiffness: 100, damping: 12, delay: 0.1 }}
+          transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
           className="h-[2px] bg-[#0E4FB3] opacity-80"
         />
 
-        <div className="flex flex-col gap-2.5 sm:gap-3 drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
+        <div className="flex flex-col gap-2.5 sm:gap-3 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
           {/* English Text */}
           <div className="relative inline-block w-max max-w-full">
             <motion.h3
-              initial={{ opacity: 0, y: 40, scale: 0.92 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ type: "spring", stiffness: 90, damping: 9, mass: 0.8, delay: 0.3 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
               className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold uppercase tracking-tight text-white m-0 leading-tight whitespace-nowrap overflow-visible"
             >
               {english}
@@ -37,9 +37,9 @@ function TypewriterInstruction() {
           {/* Hindi Text */}
           <div className="relative inline-block w-max max-w-full">
             <motion.h3
-              initial={{ opacity: 0, y: 25, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ type: "spring", stiffness: 90, damping: 10, mass: 0.8, delay: 0.8 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: "easeOut", delay: 0.4 }}
               className="font-sans text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold tracking-wide text-white/90 m-0 leading-tight whitespace-nowrap overflow-visible"
             >
               {hindi}
@@ -52,15 +52,15 @@ function TypewriterInstruction() {
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: [0, -4, 0] }}
           transition={{
-            opacity: { delay: 1.5, duration: 0.5 },
+            opacity: { delay: 1.0, duration: 0.5 },
             y: {
               repeat: Infinity,
               duration: 2.0,
               ease: "easeInOut",
-              delay: 2.0
+              delay: 1.5
             }
           }}
-          className="font-mono text-[9px] sm:text-[10px] tracking-[0.25em] text-white/40 uppercase pl-1 m-0 font-semibold flex items-center gap-1.5"
+          className="font-mono text-[9px] sm:text-[10px] tracking-[0.25em] text-white/50 uppercase pl-1 m-0 font-semibold flex items-center gap-1.5"
         >
           <span>Interactive Scroll Guide</span>
           <motion.span 
@@ -109,22 +109,11 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
       if (isMobileOrTablet || isLowRAM || isLowCPU) {
         setIsLowPerformance(true)
       }
+      setVideoSrc(isMobileOrTablet ? '/videos/intro/intro2.mp4' : '/videos/intro/intro.mp4')
     }
   }, [onComplete])
 
-  // 2. Determine video source based on screen width (mobile/tablet vs desktop)
-  useEffect(() => {
-    const checkScreen = () => {
-      const isMobileOrTablet = window.innerWidth < 1024
-      setVideoSrc(isMobileOrTablet ? '/videos/intro/intro2.mp4' : '/videos/intro/intro.mp4')
-    }
-
-    checkScreen()
-    window.addEventListener('resize', checkScreen)
-    return () => window.removeEventListener('resize', checkScreen)
-  }, [])
-
-  // 3. Video readiness & metadata initialization hook
+  // 2. Video readiness & metadata initialization hook
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
@@ -142,29 +131,21 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
       handleReady()
     }
 
-    try {
-      video.load()
-    } catch (e) {
-      console.warn('Video load error:', e)
-    }
-
     video.addEventListener('loadedmetadata', handleReady)
     video.addEventListener('loadeddata', handleReady)
     video.addEventListener('canplay', handleReady)
     video.addEventListener('canplaythrough', handleReady)
-    video.addEventListener('durationchange', handleReady)
 
-    // Fallback safety timer: after 3500ms max, mark video as ready
+    // Fallback safety timer: after 2000ms max, mark video as ready to prevent hanging
     const timer = setTimeout(() => {
       handleReady()
-    }, 3500)
+    }, 2000)
 
     return () => {
       video.removeEventListener('loadedmetadata', handleReady)
       video.removeEventListener('loadeddata', handleReady)
       video.removeEventListener('canplay', handleReady)
       video.removeEventListener('canplaythrough', handleReady)
-      video.removeEventListener('durationchange', handleReady)
       clearTimeout(timer)
     }
   }, [videoSrc])
@@ -199,7 +180,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
             // Smoothly play video sequentially (extremely lightweight on CPU/GPU)
             try {
               video.currentTime = 0
-              video.play().catch(e => console.warn('Autoplay failed:', e))
+              video.play().catch(() => {})
             } catch (e) {}
 
             const masterTimeline = gsap.timeline({
@@ -210,39 +191,46 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
               }
             })
 
-            // STEP 1: Instruction HUD fades out early (at 1.5s)
+            // STEP 1: Instruction HUD fades out early (at 1.0s)
             masterTimeline.to('.intro-instruction', {
               opacity: 0,
-              y: -40,
-              scale: 0.94,
-              duration: 1.5,
-              ease: 'power2.inOut'
-            }, 1.5)
-
-            // STEP 3: Logo Reveal fades in at 5.5s
-            masterTimeline.set('.logo-reveal', { display: 'flex' }, 5.5)
-            masterTimeline.fromTo('.logo-reveal',
-              { opacity: 0 },
-              { opacity: 1, duration: 1.0, ease: 'power2.out' },
-              5.5
-            )
-            masterTimeline.fromTo('.logo-title',
-              { opacity: 0, y: 50, scale: 0.9 },
-              { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: 'back.out(1.5)' },
-              5.6
-            )
-            masterTimeline.fromTo('.logo-subtitle',
-              { opacity: 0, y: 20 },
-              { opacity: 1, y: 0, duration: 1.0, ease: 'power2.out' },
-              5.8
-            )
-
-            // STEP 4: Cinematic Fade-Out into Home Screen at 7.0s
-            masterTimeline.to('.cinematic-container', {
-              opacity: 0,
+              y: -30,
               duration: 1.0,
               ease: 'power2.inOut'
-            }, 7.0)
+            }, 1.0)
+
+            // STEP 3: Logo Reveal fades in at 4.0s
+            masterTimeline.set('.logo-reveal', { display: 'flex' }, 4.0)
+            masterTimeline.fromTo('.logo-reveal',
+              { opacity: 0 },
+              { opacity: 1, duration: 0.8, ease: 'power2.out' },
+              4.0
+            )
+            masterTimeline.fromTo('.logo-title',
+              { opacity: 0, y: 30 },
+              { opacity: 1, y: 0, duration: 1.0, ease: 'power2.out' },
+              4.1
+            )
+            masterTimeline.fromTo('.logo-subtitle',
+              { opacity: 0, y: 15 },
+              { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' },
+              4.3
+            )
+
+            // STEP 4: Cinematic Fade-Out into Home Screen at 5.5s
+            masterTimeline.to('.cinematic-container', {
+              opacity: 0,
+              duration: 0.8,
+              ease: 'power2.inOut'
+            }, 5.5)
+
+            // Safety fallback: complete after 6.5s max
+            setTimeout(() => {
+              if (!completionTriggeredRef.current) {
+                completionTriggeredRef.current = true
+                onComplete()
+              }
+            }, 6500)
 
             return
           }
@@ -253,24 +241,27 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
           } catch (e) { }
 
           let targetTime = 0
+          let lastSeekTime = 0
 
-          // Continuous Spring-Damped Video Lerp Loop for 60 FPS Bouncy Physics
-          // Throttled to prevent hardware seek thrashing and video stuttering.
-          function smoothVideoLoop() {
+          // Throttled video lerp loop (~25fps seeking max to prevent H.264 decode stalls)
+          function smoothVideoLoop(timestamp) {
             if (videoRef.current && videoDuration) {
               const current = videoRef.current.currentTime
               const diff = targetTime - current
 
-              if (Math.abs(diff) > 0.04) {
-                try {
-                  // Faster lerp factor (0.28) reaches the frame quickly and reduces seek latency
-                  videoRef.current.currentTime = current + diff * 0.28
-                } catch (e) { }
-              } else if (Math.abs(diff) > 0.005) {
-                // Snap directly to target when close, preventing micro-seek loops
-                try {
-                  videoRef.current.currentTime = targetTime
-                } catch (e) { }
+              // Throttle currentTime writes to every ~40ms to avoid thrashing video hardware decoder
+              if (timestamp - lastSeekTime >= 40) {
+                if (Math.abs(diff) > 0.05) {
+                  try {
+                    videoRef.current.currentTime = current + diff * 0.18
+                    lastSeekTime = timestamp
+                  } catch (e) { }
+                } else if (Math.abs(diff) > 0.02) {
+                  try {
+                    videoRef.current.currentTime = targetTime
+                    lastSeekTime = timestamp
+                  } catch (e) { }
+                }
               }
             }
             animRafId = requestAnimationFrame(smoothVideoLoop)
@@ -283,7 +274,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
               trigger: scrollAnchor,
               start: 'top top',
               end: 'bottom bottom',
-              scrub: 1.0, // 1.0s scrub matches Lenis smooth scroll inertia perfectly for bouncy feel
+              scrub: 0.8, // Smooth scrub
               invalidateOnRefresh: true,
               onUpdate: (self) => {
                 const progress = self.progress
@@ -292,7 +283,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
                 const shouldShowSkip = progress > 0.05 && progress < 0.96
                 setShowSkipButton(prev => prev !== shouldShowSkip ? shouldShowSkip : prev)
 
-                // Final transition lock: pause brief 400ms when doors close at 99% progress
+                // Final transition lock: pause brief 300ms when doors close at 99% progress
                 if (progress >= 0.99 && !completionTriggeredRef.current) {
                   completionTriggeredRef.current = true
 
@@ -305,13 +296,13 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
                     if (window.lenis && typeof window.lenis.start === 'function') {
                       window.lenis.start()
                     }
-                  }, 400)
+                  }, 300)
                 }
               }
             }
           })
 
-          // STEP 1 & 2: Video scrubbing driven via smooth spring lerp playhead
+          // STEP 1 & 2: Video scrubbing driven via smooth playhead
           const playhead = { time: 0 }
           masterTimeline.to(playhead, {
             time: videoDuration - 0.05,
@@ -322,16 +313,15 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
             }
           }, 0)
 
-          // STEP 1: Instruction HUD bounces and fades out early (0% to 15%)
+          // STEP 1: Instruction HUD fades out early (0% to 15%)
           masterTimeline.to('.intro-instruction', {
             opacity: 0,
-            y: -40,
-            scale: 0.94,
+            y: -30,
             duration: 15,
-            ease: 'back.in(1.7)'
+            ease: 'power2.in'
           }, 0)
 
-          // STEP 3: Logo Reveal with bouncy spring easing (70% to 88% scroll progress)
+          // STEP 3: Logo Reveal (70% to 88% scroll progress)
           masterTimeline
             .set('.logo-reveal', { display: 'flex' }, 70)
             .fromTo('.logo-reveal',
@@ -340,18 +330,18 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
               70
             )
             .fromTo('.logo-title',
-              { opacity: 0, y: 70, scale: 0.82 },
-              { opacity: 1, y: 0, scale: 1, duration: 12, ease: 'back.out(2.4)' },
+              { opacity: 0, y: 50, scale: 0.9 },
+              { opacity: 1, y: 0, scale: 1, duration: 12, ease: 'power2.out' },
               71
             )
             .fromTo('.logo-subtitle',
-              { opacity: 0, y: 30 },
-              { opacity: 1, y: 0, duration: 10, ease: 'back.out(1.8)' },
+              { opacity: 0, y: 20 },
+              { opacity: 1, y: 0, duration: 10, ease: 'power2.out' },
               75
             )
             .fromTo('.logo-glow',
-              { opacity: 0, scale: 0.7 },
-              { opacity: 0.85, scale: 1.05, duration: 10, ease: 'back.out(1.5)' },
+              { opacity: 0, scale: 0.8 },
+              { opacity: 0.85, scale: 1.0, duration: 10, ease: 'power2.out' },
               73
             )
 
@@ -391,7 +381,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
   }
 
   return (
-    <div ref={pinWrapperRef} className="w-full relative bg-white select-none z-50">
+    <div ref={pinWrapperRef} className="w-full relative bg-black select-none z-50">
 
       {/* 1. Preloader Overlay */}
       <AnimatePresence>
@@ -411,7 +401,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
           {/* Skip Intro button */}
           <button
             onClick={handleSkip}
-            className="flex items-center space-x-2 px-4 py-2 border border-[#E8E2DA] bg-[#F5F0EB]/90 backdrop-blur-md rounded-full font-mono text-[10px] tracking-widest text-[#6B6B6B] hover:text-[#0E4FB3] hover:bg-white uppercase transition-all duration-300 cursor-pointer shadow-sm"
+            className="flex items-center space-x-2 px-4 py-2 border border-white/20 bg-black/80 backdrop-blur-md rounded-full font-mono text-[10px] tracking-widest text-white/80 hover:text-white hover:bg-black uppercase transition-all duration-300 cursor-pointer shadow-sm"
           >
             <span>Skip Intro</span>
             <SkipForward className="w-3 h-3" />
@@ -420,10 +410,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
       )}
 
       {/* 3. Fixed Overlay Container (Animate Video Playback Here) */}
-      <div className="cinematic-container fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-40 bg-[#040C1A] transition-all duration-500">
-
-        {/* Luxury Dark Ambient Background Layer */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#06152F] via-[#0A2244] to-[#020914] z-0" />
+      <div className="cinematic-container fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-40 bg-black transition-all duration-500">
 
         {/* Single H.264 intra-frame compiled MP4 video */}
         <video
@@ -433,11 +420,11 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
           muted
           preload="auto"
           controls={false}
-          className="absolute inset-0 w-full h-full object-cover opacity-90 z-10 pointer-events-none select-none [&::-webkit-media-controls]:!hidden [&::-webkit-media-controls-start-playback-button]:!hidden"
+          className="absolute inset-0 w-full h-full object-cover opacity-100 z-10 pointer-events-none select-none [&::-webkit-media-controls]:!hidden [&::-webkit-media-controls-start-playback-button]:!hidden"
         />
 
-        {/* Blue Vignette Shadow Overlay (No heavy black) */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(14,79,179,0.15)_100%)] z-15 pointer-events-none" />
+        {/* Subtle Dark Vignette Overlay (No blue flash) */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_50%,rgba(0,0,0,0.4)_100%)] z-15 pointer-events-none" />
 
         {/* Modular Overlays */}
         <TypewriterInstruction />

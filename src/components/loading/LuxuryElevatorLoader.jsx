@@ -12,11 +12,11 @@ const PHASES = {
 }
 
 const statusMap = {
-  [PHASES.INIT]: { label: 'Initialising...', pct: 10 },
-  [PHASES.RAILS]: { label: 'Assembling cabin...', pct: 40 },
-  [PHASES.DOORS_CLOSE]: { label: 'Engaging lock...', pct: 70 },
-  [PHASES.SEAL]: { label: 'Checking systems...', pct: 90 },
-  [PHASES.DOORS_OPEN]: { label: 'System ready', pct: 100 },
+  [PHASES.INIT]: { label: 'Guide Door Frame Alignment', pct: 15 },
+  [PHASES.RAILS]: { label: 'Machine Fixing', pct: 40 },
+  [PHASES.DOORS_CLOSE]: { label: 'Cabin Alignment', pct: 65 },
+  [PHASES.SEAL]: { label: 'Elevator Startup', pct: 85 },
+  [PHASES.DOORS_OPEN]: { label: 'Elevator Ready to Serve', pct: 100 },
 }
 
 export default function ElevatorLoader({
@@ -53,44 +53,14 @@ export default function ElevatorLoader({
         isDark ? 'bg-[#040C1A]' : 'bg-[#FAF9F7]'
       } ${className}`}
     >
-      {/* Background ambient glowing blobs */}
-      <motion.div
-        className="absolute pointer-events-none"
+      {/* Simple static ambient glow background (lightweight, zero GPU strain) */}
+      <div
+        className="absolute inset-0 pointer-events-none"
         style={{
-          top: '8%', left: '10%',
-          width: 340, height: 340,
-          borderRadius: '50%',
-          background: isDark ? 'rgba(14,79,179,0.25)' : 'rgba(134,210,110,0.22)',
-          filter: 'blur(70px)',
+          background: isDark
+            ? 'radial-gradient(circle at 50% 30%, rgba(14,79,179,0.15) 0%, transparent 70%)'
+            : 'radial-gradient(circle at 50% 30%, rgba(200,200,200,0.15) 0%, transparent 70%)',
         }}
-        animate={{ x: [0, 30, -20, 0], y: [0, -20, 15, 0], scale: [1, 1.08, 0.95, 1] }}
-        transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-      />
-
-      <motion.div
-        className="absolute pointer-events-none"
-        style={{
-          top: '45%', right: '8%',
-          width: 300, height: 300,
-          borderRadius: '50%',
-          background: isDark ? 'rgba(0,116,217,0.20)' : 'rgba(255,150,60,0.20)',
-          filter: 'blur(60px)',
-        }}
-        animate={{ x: [0, -25, 20, 0], y: [0, 20, -18, 0], scale: [1, 0.92, 1.06, 1] }}
-        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-      />
-
-      <motion.div
-        className="absolute pointer-events-none"
-        style={{
-          bottom: '6%', left: '30%',
-          width: 320, height: 320,
-          borderRadius: '50%',
-          background: isDark ? 'rgba(197,160,89,0.15)' : 'rgba(240,100,160,0.18)',
-          filter: 'blur(65px)',
-        }}
-        animate={{ x: [0, 18, -15, 0], y: [0, 25, -20, 0], scale: [1, 1.05, 0.96, 1] }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
       />
 
       <div className="relative z-10 flex flex-col items-center gap-6">
