@@ -25,30 +25,31 @@ export async function connectDB() {
     }
   }
 
-  // Reuse previously successful URI (e.g. local DB) or default to MONGODB_URI
   const LOCAL_URI = 'mongodb://127.0.0.1:27017/fglifts'
-  const targetUri = cached.activeUri || MONGODB_URI
+  const targetUri = cached.activeUri || global._activeMongoUri || MONGODB_URI
 
   try {
     cached.promise = mongoose.connect(targetUri, {
       bufferCommands: false,
       dbName: 'fglifts',
-      serverSelectionTimeoutMS: 1200,
-      connectTimeoutMS: 1200
+      serverSelectionTimeoutMS: targetUri === MONGODB_URI ? 800 : 500,
+      connectTimeoutMS: targetUri === MONGODB_URI ? 800 : 500
     })
     cached.conn = await cached.promise
     cached.activeUri = targetUri
+    global._activeMongoUri = targetUri
   } catch (err) {
     if (targetUri !== LOCAL_URI) {
       console.warn(`[MongoDB] Atlas connection failed (${err.message}). Connecting to local database...`)
       try {
         cached.promise = mongoose.connect(LOCAL_URI, {
           bufferCommands: false,
-          serverSelectionTimeoutMS: 1000,
-          connectTimeoutMS: 1000
+          serverSelectionTimeoutMS: 500,
+          connectTimeoutMS: 500
         })
         cached.conn = await cached.promise
         cached.activeUri = LOCAL_URI
+        global._activeMongoUri = LOCAL_URI
         console.log(`[MongoDB] Connected to local database: ${LOCAL_URI}`)
       } catch (localErr) {
         console.error(`[MongoDB] Database connection failed completely: ${localErr.message}`)

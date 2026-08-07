@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { motion, useScroll, useTransform, useSpring, useMotionValueEvent } from 'framer-motion'
 import Section from '@/components/layouts/Section'
