@@ -6,6 +6,9 @@ import MilestoneTimeline from '@/components/about/MilestoneTimeline'
 import CertificationsStrip from '@/components/about/CertificationsStrip'
 import AboutCTA from '@/components/about/AboutCTA'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export const metadata = {
   title: 'About FG Lifts Pvt. Ltd. | Our Story & Manufacturing',
   description: 'Learn about FG Lift — our history, manufacturing capabilities, leadership team, and commitment to precision vertical mobility solutions across India.',

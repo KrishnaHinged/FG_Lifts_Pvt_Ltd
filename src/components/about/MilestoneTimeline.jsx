@@ -285,7 +285,28 @@ function MilestoneImage({ src, alt, isActive }) {
 
 export default function MilestoneTimeline() {
   const containerRef = useRef(null)
+  const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(true)
   const [activeIndex, setActiveIndex] = useState(0)
+
+  useEffect(() => {
+    async function fetchTimeline() {
+      try {
+        const res = await fetch('/api/timeline')
+        const data = await res.json()
+        if (data.success && Array.isArray(data.milestones) && data.milestones.length > 0) {
+          setItems(data.milestones)
+        }
+      } catch (err) {
+        console.error('Failed to fetch timeline milestones:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchTimeline()
+  }, [])
+
+  const activeMilestones = items.length > 0 ? items : milestones
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -304,13 +325,13 @@ export default function MilestoneTimeline() {
 
   // Update active year and index dynamically as elevator scrolls
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    const idx = Math.round(latest * (milestones.length - 1))
-    if (idx !== activeIndex && idx >= 0 && idx < milestones.length) {
+    const idx = Math.round(latest * (activeMilestones.length - 1))
+    if (idx !== activeIndex && idx >= 0 && idx < activeMilestones.length) {
       setActiveIndex(idx)
     }
   })
 
-  const currentMilestone = milestones[activeIndex]
+  const currentMilestone = activeMilestones[activeIndex]
 
   return (
     <Section background="white" size="none" className="py-24 lg:py-32 relative select-none overflow-hidden bg-bg-cream">
@@ -357,7 +378,7 @@ export default function MilestoneTimeline() {
           </motion.div>
 
           {/* ────────────────── MILESTONE ROWS ────────────────── */}
-          {milestones.map((item, index) => {
+          {activeMilestones.map((item, index) => {
             const isEven = index % 2 === 0
             const isActive = index === activeIndex
 

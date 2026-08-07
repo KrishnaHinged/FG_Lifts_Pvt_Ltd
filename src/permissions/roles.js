@@ -43,6 +43,11 @@ export const PERMISSIONS = {
   // Website Settings
   VIEW_SETTINGS:         'VIEW_SETTINGS',
   MANAGE_SETTINGS:       'MANAGE_SETTINGS',
+  // Milestone Timeline
+  VIEW_TIMELINE:         'VIEW_TIMELINE',
+  CREATE_TIMELINE:       'CREATE_TIMELINE',
+  EDIT_TIMELINE:         'EDIT_TIMELINE',
+  DELETE_TIMELINE:       'DELETE_TIMELINE',
 }
 
 export const ROLE_PERMISSIONS = {

@@ -46,6 +46,7 @@ const navGroups = [
       { label: 'Home Lifts', href: '/admin/home-lifts', icon: Home, permission: [PERMISSIONS.VIEW_PRODUCTS] },
       { label: 'Gallery', href: '/admin/gallery', icon: ImageIcon, permission: [PERMISSIONS.VIEW_GALLERY] },
       { label: 'Testimonials', href: '/admin/testimonials', icon: MessageSquareQuote, permission: [PERMISSIONS.VIEW_TESTIMONIALS] },
+      { label: 'Milestones Timeline', href: '/admin/timeline', icon: History, permission: [PERMISSIONS.VIEW_TIMELINE, PERMISSIONS.VIEW_PRODUCTS] },
     ],
   },
   {
