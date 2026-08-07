@@ -144,8 +144,8 @@ export default function Navbar() {
           y: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
           opacity: { duration: 0.8, delay: 0.1 }
         }}
-        className={`fixed top-6 left-1/2 z-50 w-[calc(100%-48px)] lg:w-[calc(100%-96px)] max-w-[1440px] h-[88px] rounded-full flex items-center justify-between px-10 transition-all duration-500 select-none ${scrolled
-          ? 'bg-[#F5F0EB]/70 backdrop-blur-[20px] shadow-sm border border-[#E8E2DA]/30'
+        className={`fixed top-3 sm:top-6 left-1/2 z-50 w-[calc(100%-24px)] sm:w-[calc(100%-48px)] lg:w-[calc(100%-96px)] max-w-[1440px] h-[64px] sm:h-[76px] lg:h-[88px] rounded-full flex items-center justify-between px-4 sm:px-6 lg:px-10 transition-all duration-500 select-none ${scrolled
+          ? 'bg-[#F5F0EB]/80 backdrop-blur-[20px] shadow-sm border border-[#E8E2DA]/40'
           : 'bg-transparent border border-transparent shadow-none'
           }`}
       >

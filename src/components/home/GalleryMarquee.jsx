@@ -1,30 +1,33 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import Section from '@/components/layouts/Section'
 import Container from '@/components/layouts/Container'
 import Grid from '@/components/layouts/Grid'
 
-const row1Images = [
-  '/images/elevator-gold.jpg',
-  '/images/elevator-steel.jpg',
-  '/images/elevator-wood.jpg',
-  '/images/project-1.jpg',
-  '/images/project-2.jpg',
-]
-
-const row2Images = [
-  '/images/project-3.jpg',
-  '/images/elevator-wood.jpg',
-  '/images/elevator-gold.jpg',
-  '/images/project-1.jpg',
-  '/images/elevator-steel.jpg',
-]
-
 export default function GalleryMarquee() {
   const containerRef = useRef(null)
+  const [projects, setProjects] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchGallery() {
+      try {
+        const res = await fetch('/api/gallery')
+        const data = await res.json()
+        if (data.success && Array.isArray(data.projects)) {
+          setProjects(data.projects.filter(p => p.isActive !== false))
+        }
+      } catch (err) {
+        console.error('Failed to fetch gallery marquee:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchGallery()
+  }, [])
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -35,6 +38,23 @@ export default function GalleryMarquee() {
   const x1 = useTransform(scrollYProgress, [0, 1], [-100, 100])
   // Bottom row translates right
   const x2 = useTransform(scrollYProgress, [0, 1], [100, -100])
+
+  // Extract all cover & gallery image URLs from active DB projects
+  const displayImages = projects.flatMap(p => {
+    const list = []
+    if (p.coverImage) list.push({ src: p.coverImage, title: p.title })
+    if (Array.isArray(p.images)) {
+      p.images.forEach(img => {
+        const src = typeof img === 'string' ? img : img?.url
+        if (src) list.push({ src, title: p.title })
+      })
+    }
+    return list
+  }).filter(item => Boolean(item.src))
+
+  const half = Math.ceil(displayImages.length / 2)
+  const row1Images = displayImages.slice(0, half)
+  const row2Images = displayImages.slice(half)
 
   return (
     <Section
@@ -80,43 +100,54 @@ export default function GalleryMarquee() {
       </Container>
 
       {/* Sliding Marquee Rows */}
-      <div className="flex flex-col gap-8 w-[150vw] ml-[-25vw]">
-        {/* Row 1: Slides Left */}
-        <motion.div style={{ x: x1 }} className="flex gap-8">
-          {row1Images.map((src, i) => (
-            <div
-              key={`row1-${i}`}
-              className="relative w-[300px] sm:w-[460px] aspect-square rounded-[2rem] overflow-hidden border border-white/5 bg-neutral-900 flex-shrink-0"
-            >
-              <Image
-                src={src}
-                alt="FG Lifts Installation Image"
-                fill
-                className="object-cover object-center transition-all duration-700"
-                sizes="460px"
-              />
-            </div>
-          ))}
-        </motion.div>
+      {displayImages.length > 0 ? (
+        <div className="flex flex-col gap-8 w-[150vw] ml-[-25vw]">
+          {/* Row 1: Slides Left */}
+          <motion.div style={{ x: x1 }} className="flex gap-8">
+            {row1Images.map((item, i) => (
+              <div
+                key={`row1-${i}`}
+                className="relative w-[300px] sm:w-[460px] aspect-square rounded-[2rem] overflow-hidden border border-white/5 bg-neutral-900 flex-shrink-0"
+              >
+                <Image
+                  src={item.src}
+                  alt={item.title || 'FG Lifts Installation Image'}
+                  fill
+                  className="object-cover object-center transition-all duration-700"
+                  sizes="460px"
+                  unoptimized={item.src.startsWith('data:')}
+                />
+              </div>
+            ))}
+          </motion.div>
 
-        {/* Row 2: Slides Right */}
-        <motion.div style={{ x: x2 }} className="flex gap-8">
-          {row2Images.map((src, i) => (
-            <div
-              key={`row2-${i}`}
-              className="relative w-[300px] sm:w-[460px] aspect-square rounded-[2rem] overflow-hidden border border-white/5 bg-neutral-900 flex-shrink-0"
-            >
-              <Image
-                src={src}
-                alt="FG Lifts Installation Image"
-                fill
-                className="object-cover object-center transition-all duration-700"
-                sizes="460px"
-              />
-            </div>
-          ))}
-        </motion.div>
-      </div>
+          {/* Row 2: Slides Right */}
+          {row2Images.length > 0 && (
+            <motion.div style={{ x: x2 }} className="flex gap-8">
+              {row2Images.map((item, i) => (
+                <div
+                  key={`row2-${i}`}
+                  className="relative w-[300px] sm:w-[460px] aspect-square rounded-[2rem] overflow-hidden border border-white/5 bg-neutral-900 flex-shrink-0"
+                >
+                  <Image
+                    src={item.src}
+                    alt={item.title || 'FG Lifts Installation Image'}
+                    fill
+                    className="object-cover object-center transition-all duration-700"
+                    sizes="460px"
+                    unoptimized={item.src.startsWith('data:')}
+                  />
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </div>
+      ) : (
+        <div className="max-w-[1380px] mx-auto px-4 py-12 text-center font-mono text-xs text-white/40 tracking-wider uppercase">
+          {loading ? 'Loading gallery installations...' : 'No active showcase projects in gallery.'}
+        </div>
+      )}
     </Section>
   )
 }
+

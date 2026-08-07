@@ -87,11 +87,11 @@ export default function Hero() {
           </div>
 
           {/* Content Container */}
-          <Container className="relative z-10 w-full max-w-[1380px] mx-auto flex flex-col justify-end h-full pb-[80px]">
+          <Container className="relative z-10 w-full max-w-[1380px] mx-auto flex flex-col justify-end h-full pb-8 sm:pb-16 lg:pb-[80px]">
             <div className="grid grid-cols-12 gap-6 items-end">
-              <div className="col-span-12 lg:col-span-8 flex flex-col items-start gap-[40px]">
+              <div className="col-span-12 lg:col-span-8 flex flex-col items-start gap-6 sm:gap-[40px]">
                 <div className="flex flex-col gap-4">
-                  <HeroTitle color="cream" className="uppercase leading-[1.05] text-5xl sm:text-6xl lg:text-[5.5rem] font-extrabold m-0">
+                  <HeroTitle color="cream" className="uppercase leading-[1.05] text-3xl xs:text-4xl sm:text-6xl lg:text-[5.5rem] font-extrabold m-0">
                     <span className="block overflow-hidden relative">
                       <motion.span
                         initial={{ y: '100%', opacity: 0 }}

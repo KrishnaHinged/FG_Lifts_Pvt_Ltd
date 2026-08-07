@@ -1,6 +1,9 @@
 import GalleryClient from '@/components/gallery/GalleryClient'
 import { getAllProjects } from '@/repositories/gallery.repository'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export const metadata = {
   title: 'Projects Gallery | FG Lifts Pvt. Ltd.',
   description: 'Explore FG Lift\'s portfolio of completed elevator installations across residential towers, commercial skyscrapers, luxury residences, and industrial facilities.',

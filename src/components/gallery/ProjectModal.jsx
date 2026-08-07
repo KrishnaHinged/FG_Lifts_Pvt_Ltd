@@ -103,7 +103,7 @@ export default function ProjectModal({ project, onClose }) {
           </div>
 
           {/* RIGHT — Details */}
-          <div className="relative flex-1 p-10 lg:p-14 overflow-y-auto bg-[#F5F0EB] flex flex-col justify-start text-left max-h-[50vh] lg:max-h-none">
+          <div className="relative flex-1 p-6 sm:p-10 lg:p-14 overflow-y-auto bg-[#F5F0EB] flex flex-col justify-start text-left max-h-[55vh] lg:max-h-none">
             {/* Close Button top-right */}
             <button
               onClick={onClose}

@@ -153,12 +153,16 @@ export default memo(function MediaGalleryModal({ isOpen, onClose, onSelect, titl
     img.onload = () => {
       const canvas = document.createElement('canvas')
       
-      // HD exports: 3:5 aspect ratio (600x1000) or 1:1 aspect ratio (800x800)
-      let targetWidth = 600
-      let targetHeight = 1000
-      if (aspectRatio === 1) {
+      // Calculate dynamic aspect ratio & target export resolution
+      const targetAspect = typeof aspectRatio === 'number' ? aspectRatio : 16 / 9
+      let targetWidth = 1200
+      let targetHeight = Math.round(1200 / targetAspect)
+      if (targetAspect === 1) {
         targetWidth = 800
         targetHeight = 800
+      } else if (targetAspect < 1) {
+        targetWidth = 600
+        targetHeight = Math.round(600 / targetAspect)
       }
 
       canvas.width = targetWidth
@@ -171,8 +175,6 @@ export default memo(function MediaGalleryModal({ isOpen, onClose, onSelect, titl
 
       const imgWidth = img.naturalWidth
       const imgHeight = img.naturalHeight
-
-      const targetAspect = targetWidth / targetHeight
       const imgAspect = imgWidth / imgHeight
 
       let drawWidth, drawHeight
@@ -186,8 +188,8 @@ export default memo(function MediaGalleryModal({ isOpen, onClose, onSelect, titl
         drawHeight = drawWidth / imgAspect
       }
 
-      // UI crop box reference sizes: 3:5 walls is 180x300, 1:1 ceiling/floor is 240x240
-      const previewCropBoxWidth = aspectRatio === 1 ? 240 : 180
+      // UI crop box reference size calculation
+      const previewCropBoxWidth = targetAspect >= 1 ? 280 : 260 * targetAspect
       const scaleFactor = targetWidth / previewCropBoxWidth
 
       // Center offset + user translation pan factor
@@ -265,39 +267,48 @@ export default memo(function MediaGalleryModal({ isOpen, onClose, onSelect, titl
                     height: '360px'
                   }}
                 >
-                  {/* Crop view frame window - width 180 height 300 (3:5) or 240x240 (1:1) */}
-                  <div
-                    className="relative overflow-visible"
-                    style={{
-                      width: aspectRatio === 1 ? '240px' : '180px',
-                      height: aspectRatio === 1 ? '240px' : '300px'
-                    }}
-                  >
-                    {/* Rendered adjustable photo */}
-                    <div
-                      className="absolute inset-0 pointer-events-none select-none origin-center"
-                      style={{
-                        backgroundImage: `url(${cropSrc})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat',
-                        transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`
-                      }}
-                    />
-                  </div>
+                  {/* Dynamic Crop view frame window */}
+                  {(() => {
+                    const currentAspect = typeof aspectRatio === 'number' ? aspectRatio : 16 / 9
+                    const cropBoxW = currentAspect >= 1 ? 280 : Math.round(260 * currentAspect)
+                    const cropBoxH = currentAspect >= 1 ? Math.round(280 / currentAspect) : 260
+                    return (
+                      <>
+                        <div
+                          className="relative overflow-visible"
+                          style={{
+                            width: `${cropBoxW}px`,
+                            height: `${cropBoxH}px`
+                          }}
+                        >
+                          {/* Rendered adjustable photo */}
+                          <div
+                            className="absolute inset-0 pointer-events-none select-none origin-center"
+                            style={{
+                              backgroundImage: `url(${cropSrc})`,
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                              backgroundRepeat: 'no-repeat',
+                              transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`
+                            }}
+                          />
+                        </div>
 
-                  {/* Cutout Shaded Overlay mask */}
-                  <div
-                    className="absolute pointer-events-none"
-                    style={{
-                      width: aspectRatio === 1 ? '240px' : '180px',
-                      height: aspectRatio === 1 ? '240px' : '300px',
-                      boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.65)',
-                      border: '2px dashed rgba(255, 255, 255, 0.95)',
-                      borderRadius: '4px',
-                      zIndex: 10
-                    }}
-                  />
+                        {/* Cutout Shaded Overlay mask */}
+                        <div
+                          className="absolute pointer-events-none"
+                          style={{
+                            width: `${cropBoxW}px`,
+                            height: `${cropBoxH}px`,
+                            boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.65)',
+                            border: '2px dashed rgba(255, 255, 255, 0.95)',
+                            borderRadius: '6px',
+                            zIndex: 10
+                          }}
+                        />
+                      </>
+                    )
+                  })()}
 
                   {/* Reposition Tag indicator */}
                   <div className="absolute top-3 left-3 z-20 bg-black/60 backdrop-blur-xs text-white p-1.5 rounded-lg pointer-events-none flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider">

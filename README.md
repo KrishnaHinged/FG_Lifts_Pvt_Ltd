@@ -4,72 +4,60 @@
 [![React Version](https://img.shields.io/badge/React-19.2.4-blue?logo=react)](https://react.dev/)
 [![Tailwind CSS Version](https://img.shields.io/badge/Tailwind_CSS-v4.0.0-38B2AC?logo=tailwindcss)](https://tailwindcss.com/)
 [![Mongoose Version](https://img.shields.io/badge/Mongoose-9.7.4-red?logo=mongodb)](https://mongoosejs.com/)
+[![Three.js Version](https://img.shields.io/badge/Three.js-v0.185.1-black?logo=three.js)](https://threejs.org/)
 [![License](https://img.shields.io/badge/License-Proprietary%20%2F%20Commercial-brightgreen)](#)
 
 ---
 
 ## 1. Project Overview
 
-**FG Lift Pvt. Ltd.** (Future & Growth) is an established vertical mobility provider based in Surat, Gujarat, engineering premium passenger elevators, heavy-duty goods lifts, glass capsule lifts, and luxury customized cabin enclosures for residential, commercial, and industrial infrastructure. 
+**FG Lift Pvt. Ltd.** (Future & Growth) is an established enterprise vertical mobility engineering firm based in Surat, Gujarat. Operating since 1993, FG Lift engineers premium passenger elevators, heavy-duty industrial goods lifts, panoramic glass capsule lifts, villa home elevators, and luxury customized cabin enclosures.
 
-This web application is a bespoke, full-stack B2B enterprise platform. It integrates a premium, high-aesthetic public digital showroom with an interactive Three.js 360° cabin configurator, a rich editorial blog, and an advanced internal CRM and content administration panel (`/admin`). The administrative workspace implements role-based access control (RBAC), leads management pipelines, immutable audit logging, newsletter campaigns manager, and a background queue worker for email notifications.
+This web application is a full-stack B2B enterprise platform and digital showroom. It merges an aesthetic public visual showcase with an interactive WebGL Three.js 360° cabin customizer, dedicated Home Lift visualizers, an editorial publication platform, an internal Product Information Management (PIM) suite, dynamic Site Settings engine, centralized Media Library, and an advanced CRM Administration Console (`/admin`).
 
-The development was executed in four strategic phases:
-- **Phase 1 (Foundation):** Core public pages setup, responsive design tokens, home page sections with Lenis smooth scroll and GSAP timelines, MongoDB connection pool establishment, public inquiries endpoint, and Framer Motion motion utilities.
-- **Phase 2 (Content & Catalogs):** Integration of public catalogs with tabbed product lists, animated filter pillbars, detail view page layouts, dynamic specs tables, masonry project showcases, Mongoose schemas, and repository pattern layer.
-- **Phase 3 (Interactive Configurator & Blog):** Replacement of product placeholders with the fully interactive WebGL-based Three.js 360° Cabin Viewer, door opening animations, dynamic configurator controls, Markdown-based blog listing and detail view pages, newsletter strip, and subscription API endpoints.
-- **Phase 4 (CRM & Admin Suite):** Complete implementation of the secure Admin Console (`/admin`), authentication gate, JWT-in-Cookie storage, CRM Kanban Board and leads management tables, audit trail logs, user account control, newsletter subscriber database, dynamic email templates, and background email queue worker.
-
-This enterprise system resolves traditional business inefficiencies: consolidating unstructured email/WhatsApp inquiries into a centralized CRM, eliminating communication lag via immediate template-based client auto-responses, providing non-technical staff with inline rich text markdown tools to edit portfolios, and tracing operational changes via immutable logs.
+### Key Features & Architectural Pillars
+- **Public Digital Showroom:** Asymmetric modern layout, Lenis smooth scrolling, GSAP ScrollTrigger timelines, and Framer Motion micro-interactions.
+- **Interactive Three.js 360° Cabin Customizer:** WebGL equirectangular spherical and 3:5 cubic room geometry renderer allowing real-time texture and finish configuration with interactive image cropper/adjuster canvas.
+- **Dedicated Home Lift Configurator:** Custom interactive showcase showcasing cabin styles, art walls, accessories, parameters, and mechanical systems.
+- **Product Information Management (PIM):** Specialized multi-section administration workspace for elevator catalogs (`/admin/products`).
+- **Enterprise Lead Pipeline (CRM):** Interactive Kanban drag-and-drop lead board (`@hello-pangea/dnd`) with status tracking, lead assignments, executive filtering, and CSV export.
+- **Role-Based Access Control (RBAC):** Edge-gated authentication (`middleware.js`) supporting 5 distinct enterprise roles (`SUPER_ADMIN`, `SALES_MANAGER`, `SALES_EXECUTIVE`, `MARKETING_MANAGER`, `CONTENT_EDITOR`).
+- **Asynchronous Email Pipeline:** Database email queue system (`EmailQueue`) polled by a background worker (`email-worker.js`) every 15 seconds with Nodemailer SMTP delivery and local HTML dev fallback.
+- **Enterprise Core Engines:** Built-in Input Validators (`src/validators/`), Rate Limiting & HTML Sanitizer (`src/security/`), Dynamic SEO JSON-LD & Sitemap engine (`src/seo/`), In-Memory TTL Cache (`src/performance/`), and 12-Provider stack (`src/providers/`).
+- **Immutable Audit Logging:** System-wide operational activity tracking with admin attribution, timestamping, and IP tracing.
 
 ---
 
-## 2. Live Demo & Deployment
+## 2. Live Demo & Deployment Credentials
 
-- **Production URL:** `[fill if deployed]`
+- **Production URL:** `https://fglifts.com` *(or configured domain)*
 - **Admin Panel:** `[production-url]/admin`
-- **Default Admin Account:** `admin@fglifts.com`
-- **Default Password:** `FGLift@Admin2025!` *(Must be changed immediately upon first login)*
+- **Default Super Admin Account:** `admin@fglifts.com`
+- **Default Super Admin Password:** `FGLift@Admin2025!` *(Must be changed immediately upon deployment)*
 
 ---
 
-## 3. Tech Stack & Dependencies
+## 3. Tech Stack & Complete Dependency Matrix
 
-The system is built on a highly performant and unified modern stack:
+### Architecture Core
 
-| Category | Technology |
-|---|---|
-| **Framework** | Next.js 16.2.10 (App Router, Turbopack compiling) |
-| **Language** | JavaScript (JSX) — Pure ECMAScript modules |
-| **Styling** | Tailwind CSS v4.0.0 (CSS-first configurations) + custom variables |
-| **Animation** | Framer Motion v12.42.2 + custom motion helpers |
-| **Scroll** | Lenis v1.3.25 (Smooth scrolling engine) |
-| **GSAP** | GSAP v3.15.0 + ScrollTrigger integrations |
-| **3D / WebGL** | Three.js v0.185.1 |
-| **Database** | MongoDB + Mongoose v9.7.4 |
-| **Auth** | Native Web Crypto JWT signatures + bcryptjs v3.0.3 |
-| **Email** | Nodemailer v9.0.3 |
-| **Rich Text** | `@uiw/react-md-editor` v4.1.1 + `marked` v18.0.6 |
-| **Icons** | `lucide-react` v1.24.0 |
-
-### All Dependencies
-- `@uiw/react-md-editor` (`^4.1.1`)
-- `bcryptjs` (`^3.0.3`)
-- `framer-motion` (`^12.42.2`)
-- `gsap` (`^3.15.0`)
-- `lenis` (`^1.3.25`)
-- `lucide-react` (`^1.24.0`)
-- `marked` (`^18.0.6`)
-- `mongoose` (`^9.7.4`)
-- `next` (`16.2.10`)
-- `nodemailer` (`^9.0.3`)
-- `react` (`19.2.4`)
-- `react-dom` (`19.2.4`)
-- `three` (`^0.185.1`)
-- `@tailwindcss/postcss` (`^4`)
-- `eslint` (`^9`)
-- `eslint-config-next` (`16.2.10`)
-- `tailwindcss` (`^4`)
+| Category | Technology | Version | Description |
+|---|---|---|---|
+| **Framework** | Next.js (App Router) | `16.2.10` | React server-rendered framework with Turbopack compilation |
+| **UI Library** | React | `19.2.4` | Concurrent UI library |
+| **Language** | JavaScript (ES6+ / JSX) | Pure ECMAScript | Strict JavaScript without TypeScript build overhead |
+| **Styling** | Tailwind CSS | `v4.0.0` | CSS-first custom token configurations & utility classes |
+| **3D / WebGL** | Three.js | `^0.185.1` | WebGL 3D canvas rendering engine for 360° cabin customizer |
+| **Animation (Scroll)** | Lenis | `^1.3.25` | Smooth scrolling engine |
+| **Animation (Sequence)**| GSAP | `^3.15.0` | Timeline-based scroll triggers & pin animations |
+| **Animation (Motion)** | Framer Motion | `^12.42.2` | Component entry, hover transitions, and gesture physics |
+| **Database ODM** | Mongoose / MongoDB | `^9.7.4` | Connection pool & MongoDB object modeling |
+| **Auth & Encryption** | Web Crypto / bcryptjs | `^3.0.3` | JWT signatures in HTTP-Only cookies & 12-round password hashing |
+| **Drag & Drop** | `@hello-pangea/dnd` | `^18.0.1` | Accessible Kanban drag-and-drop board for CRM pipeline |
+| **Markdown Editor** | `@uiw/react-md-editor` | `^4.1.1` | Live split preview Markdown editor for blog posts |
+| **Markdown Parser** | `marked` | `^18.0.6` | High-performance client and server Markdown parser |
+| **Email Delivery** | Nodemailer | `^9.0.3` | SMTP transport agent |
+| **Iconography** | `lucide-react` / `react-icons`| `^1.24.0` / `^5.7.0` | UI icon sets |
 
 ---
 
@@ -79,1190 +67,962 @@ The system is built on a highly performant and unified modern stack:
 
 ```mermaid
 graph TD
-    User([Public Visitor]) -->|Requests| PW[Public Website]
-    AdminUser([Admin User]) -->|Login / JWT Cookie| MW[middleware.js Route Guard]
-    MW -->|Authorized| AdminApp[Admin Panel /admin]
-    MW -->|Blocked| LoginPage[/admin/login]
+    Client([Public Visitor / Mobile User]) -->|HTTP Requests| PublicApp[Public Pages / Home / Products / Gallery / Blog / Home-Lift]
+    AdminUser([Admin Account]) -->|Login Request / JWT Cookie| MW[src/middleware.js Edge Gate]
 
-    subgraph Public Pages
-        PW --> Home[/ Home Page]
-        PW --> Products[/products Catalog]
-        PW --> ProductDetail[/products/:slug 360° Viewer]
-        PW --> About[/about]
-        PW --> Gallery[/gallery]
-        PW --> Blog[/blog + /blog/:slug]
+    MW -->|Invalid Token / Unauthenticated| LoginView[/admin/login]
+    MW -->|Valid Token / Inject x-pathname| AdminApp[Admin Panel /admin/*]
+
+    subgraph Presentation & UI Layer
+        PublicApp --> ComponentLib[src/components/]
+        AdminApp --> AdminComponents[src/components/admin/ & src/components/admin/pim/]
+        ComponentLib --> ThreeEngine[src/components/product-detail/Lift360Viewer.jsx]
+        ComponentLib --> DesignSystem[src/design-system/ & src/providers/]
     end
 
-    subgraph Admin Panel
-        AdminApp --> Dashboard[/admin/dashboard]
-        AdminApp --> Inquiries[/admin/inquiries CRM Kanban]
-        AdminApp --> ProductsCMS[/admin/products]
-        AdminApp --> GalleryCMS[/admin/gallery]
-        AdminApp --> BlogCMS[/admin/blog]
-        AdminApp --> Newsletter[/admin/newsletter]
-        AdminApp --> Users[/admin/users RBAC]
-        AdminApp --> Templates[/admin/email-templates]
-        AdminApp --> Logs[/admin/logs]
+    subgraph Enterprise Core Engines
+        AdminApp & PublicApp --> Validators[src/validators/ Data Sanitizer]
+        AdminApp & PublicApp --> SecurityEngine[src/security/ Rate Limiter & Sanitizer]
+        PublicApp --> SEOEngine[src/seo/ JSON-LD & Sitemap]
+        PublicApp & AdminApp --> CacheEngine[src/performance/ TTL Memory Cache]
     end
 
-    subgraph Services & Workers
-        AdminApp -->|Queue Outbound| ES[email.service.js]
-        ES -->|Write Document| EQ[(EmailQueue Collection)]
-        Worker[Email Worker 15s Poll] -->|Read Pending| EQ
-        Worker -->|Send SMTP or| ScratchFile[/scratch/emails/ Dev Mode]
-        Worker -->|Deliver| MailServer[SMTP Server]
+    subgraph Data Access Layer
+        AdminApp & PublicApp --> Repos[src/repositories/ Repository Layer]
+        Repos --> Mappers[src/mappers/ DTO Data Mappers]
+        Repos --> Adapters[src/adapters/ Storage & Email Adapters]
+        Repos --> ODM[(Mongoose ODM)]
+        ODM --> MongoDB[(MongoDB Database)]
     end
 
-    subgraph Data Layer
-        PW & AdminApp -->|Repository Pattern| Repos[Repository Layer]
-        Repos -->|Mongoose ODM| DB[(MongoDB fglifts)]
-    end
-
-    subgraph Storage
-        AdminApp -->|Image URLs| CDN[Image CDN / Static URLs]
-        ProductDetail -->|Panorama Textures| CDN
+    subgraph Asynchronous Email Services
+        AdminApp & PublicApp --> ServiceLayer[src/services/email/email.service.js]
+        ServiceLayer --> MailQueue[(EmailQueue Collection)]
+        Worker[src/lib/email-worker.js 15s Poll Loop] -->|Poll Pending| MailQueue
+        Worker -->|SMTP Active| SMTP[Nodemailer Transport]
+        Worker -->|Dev Mode Fallback| LocalFiles[/scratch/emails/*.html]
     end
 ```
 
-### 4B. Request Flow
+### 4B. Detailed Request Flow & Edge Middleware Gating
 
-1. **Public Page Requests:**
-   A public visitor makes a request to a route (e.g., `/products/[slug]`). Next.js fetches data inside an asynchronous Server Component by calling the appropriate repository function (e.g., `getProductBySlug`). The repository opens a database connection, performs the Mongoose query against MongoDB, retrieves a lean plain JavaScript object, and passes it back. Next.js renders the React structure on the server and streams the markup with client-side interactive islands.
+1. **Public Request Flow:**
+   - User navigates to a public page (e.g. `/products/capsule-elevator`).
+   - Next.js executes the Server Component `page.js`.
+   - The Server Component delegates data retrieval to `product.repository.js`.
+   - The repository executes a Mongoose query with `.lean()`, returns a serializable JS object, and maps it using `product.mapper.js`.
+   - The SEO Engine (`src/seo/jsonld.js`) injects structured Schema.org JSON-LD scripts into the `<head>`.
+   - Next.js streams HTML to the browser wrapped inside the 12-Provider stack (`AppProvider`, `LenisProvider`, `CursorProvider`, etc.).
 
-2. **Admin Panel Requests:**
-   An administrator attempts to access any route starting with `/admin`. The Next.js edge-middleware (`middleware.js`) intercepts the request, reads the HTTP-Only cookie, and decodes the JWT using a secure Web Crypto signature verifier. If verification fails, it redirects the user to `/admin/login`. If valid, the verifier decodes the payload, injects user identities (ID, role, email) into downstream headers, and proceeds. The layout reads headers and checks permissions. Page components call repository functions, verify access rights locally, fetch CRM or CMS data from MongoDB, and render the dashboard interface.
+2. **Admin Request Flow & `x-pathname` Header Injection:**
+   - Admin accesses any route starting with `/admin` (e.g. `/admin/inquiries`).
+   - Edge Middleware (`src/middleware.js`) intercepts the request.
+   - It parses the `fg_admin_token` HTTP-Only cookie and verifies the Web Crypto JWT signature.
+   - If invalid, it returns an immediate HTTP 302 redirect to `/admin/login`.
+   - If valid, the middleware injects identity headers (`x-admin-id`, `x-admin-email`, `x-admin-role`) and the request path header (`x-pathname: /admin/inquiries`).
+   - Root layout (`src/app/layout.js`) reads `x-pathname` via `next/headers` to conditionally bypass public headers/footers and render the `AdminLayoutShell`.
 
-3. **Inquiry Form Submission & Queue Pipeline:**
-   A visitor fills out the contact form. The client component posts to `/api/contact`. The endpoint parses the input, creates an `Inquiry` document in MongoDB, and logs details. It then triggers `email.service.js` to queue a thank-you confirmation email for the client. The service translates templates, inserts variables, and inserts a pending document into the `EmailQueue` collection. An asynchronous worker (`email-worker.js`) polls this collection every 15 seconds. If SMTP is configured, it fires via Nodemailer; in development, it writes compiled HTML templates directly to local files under `/scratch/emails/`. Upon success, the queue status updates to `sent`.
-
-4. **Dynamic Layout Selection & Request Context:**
-   To determine whether to display public elements (`Navbar`, `Footer`, `NewsletterStrip`, and smooth scroll `LenisProvider`) or serve a clean layout workspace for administrative tools, the system checks the pathname context inside the root layout (`src/app/layout.js`). Since Next.js Server Components do not natively expose the request URL/pathname to layout structures, the edge-middleware (`src/middleware.js`) intercepts all requests matching `/admin/:path*` and injects an `x-pathname` header containing the current route. The root layout then reads this header via `headers()` from `next/headers` to dynamically set `isAdmin = pathname.startsWith('/admin')` and render the appropriate layout shell.
+3. **Inquiry Submission & Email Queue Execution:**
+   - Visitor submits a contact form.
+   - Client sends JSON payload to `POST /api/contact`.
+   - `contact.validator.js` validates payload fields; `sanitizer.js` strips malicious HTML.
+   - `inquiry.repository.js` creates a new `Inquiry` document in MongoDB.
+   - `email.service.js` compiles the `inquiry_received` template, replaces placeholders (`{{name}}`), and inserts a record into `EmailQueue`.
+   - Background worker (`email-worker.js`) picks up the record within 15s and dispatches the confirmation email.
 
 ---
 
 ## 5. Complete File & Directory Structure
 
 ```
-fglifts/
+fg-lift-website/
 ├── src/
-│   ├── app/                          # Next.js App Router — all page routes
-│   │   ├── layout.js                 # Root layout: fonts, Lenis smooth scroll, conditional Navbar & Footer
-│   │   ├── page.js                   # Home page — aggregates hero, stats, why-us, showcases, and contact
-│   │   ├── globals.css               # Design tokens, CSS variables, Tailwind theme settings, and typography
-│   │   ├── about/
-│   │   │   └── page.js               # Brand details: timeline, leadership, values, certifications
-│   │   ├── products/
-│   │   │   ├── page.js               # Products page: tab selectors, filter tags, active product card grid
-│   │   │   └── [slug]/
-│   │   │       └── page.js           # Detail view: Lift360Viewer component, specifications, brochure, CTA
-│   │   ├── gallery/
-│   │   │   └── page.js               # Gallery page: staggered projects masonry layout, detail modal
-│   │   ├── blog/
-│   │   │   ├── page.js               # Blog index: featured posts showcase, grid layout by tag/category
-│   │   │   └── [slug]/
-│   │   │       └── page.js           # Read post layout, markdown parsing, author details, inline newsletter
-│   │   ├── admin/
-│   │   │   ├── layout.js             # Shell layout: admin navigation sidebar, topbar, authorization check
-│   │   │   ├── page.js               # Root redirect page pointing users directly to /admin/dashboard
-│   │   │   ├── login/
-│   │   │   │   └── page.js           # Credentials panel validating administrators and setting JWT cookies
-│   │   │   ├── dashboard/
-│   │   │   │   └── page.js           # Main landing console: stats grid, recent leads list, system actions
-│   │   │   ├── inquiries/
-│   │   │   │   └── page.js           # Leads pipeline interface: switching kanban boards, search table, assignment
-│   │   │   ├── products/
-│   │   │   │   ├── page.js           # Products database table: list, edit status, delete triggers
-│   │   │   │   ├── new/
-│   │   │   │   │   └── page.js       # Product creator: details forms, specs builder, color panoramas settings
-│   │   │   │   └── [id]/
-│   │   │   │       └── edit/
-│   │   │   │           └── page.js   # Product metadata modifier: loads current database fields
-│   │   │   ├── gallery/
-│   │   │   │   ├── page.js           # Projects portfolio manager list view
-│   │   │   │   ├── new/
-│   │   │   │   │   └── page.js       # Project publisher: media assets, clients details, related products
-│   │   │   │   └── [id]/
-│   │   │   │       └── edit/
-│   │   │   │           └── page.js   # Project detail modifier
-│   │   │   ├── blog/
-│   │   │   │   ├── page.js           # Editorial articles manager listing
-│   │   │   │   ├── new/
-│   │   │   │   │   └── page.js       # Markdown editor page: cover images, tags, publication states
-│   │   │   │   └── [id]/
-│   │   │   │       └── edit/
-│   │   │   │           └── page.js   # BlogPost editor
-│   │   │   ├── newsletter/
-│   │   │   │   └── page.js           # Subscription manager: active subscriber grids, export utility
-│   │   │   ├── users/
-│   │   │   │   └── page.js           # Team access roster: user profiles, role mapping, state triggers
-│   │   │   ├── email-templates/
-│   │   │   │   └── page.js           # Templates editor: custom subjects, HTML bodies, code previews
-│   │   │   └── logs/
-│   │   │       └── page.js           # Read-only audit log viewer
-│   │   └── api/                      # Next.js Server Route Handlers
-│   │       ├── contact/
-│   │       │   └── route.js          # POST — Client submission to Inquiry schema & outbound queue
-│   │       ├── newsletter/
-│   │       │   └── route.js          # POST subscribe subscriber, DELETE unsubscribe subscriber
-│   │       ├── blog/
-│   │       │   └── route.js          # GET published articles (public feed)
-│   │       ├── products/
-│   │       │   └── route.js          # GET active catalog lists (public feed)
-│   │       ├── seed/
-│   │       │   └── route.js          # GET endpoint to wipe data and seed mock catalogs
-│   │       └── admin/                # Gated endpoints (JWT validation + RBAC permissions)
-│   │           ├── auth/
-│   │           │   ├── login/
-│   │           │   │   └── route.js  # Authenticates email/password, signs token, sets cookie
-│   │           │   └── logout/
-│   │           │       └── route.js  # Deletes JWT cookie on signout
-│   │           ├── inquiries/
-│   │           │   ├── route.js      # GET inquiries (scoped by role), POST new inquiries
-│   │           │   ├── [id]/
-│   │           │   │   └── route.js  # PATCH updates (status, assignment, notes), DELETE inquiry
-│   │           │   └── export/
-│   │           │       └── route.js  # GET downloads current lead pipeline as CSV
-│   │           ├── products/
-│   │           │   ├── route.js      # GET all products, POST new product
-│   │           │   └── [id]/
-│   │           │       └── route.js  # GET, PATCH, DELETE product
-│   │           ├── gallery/
-│   │           │   ├── route.js      # GET all projects, POST new project
-│   │           │   └── [id]/
-│   │           │       └── route.js  # GET, PATCH, DELETE project
-│   │           ├── blog/
-│   │           │   ├── route.js      # GET all blog posts, POST new blog post
-│   │           │   └── [id]/
-│   │           │       └── route.js  # GET, PATCH, DELETE blog post
-│   │           ├── newsletter/
-│   │           │   └── route.js      # GET subscribers list, EXPORT CSV
-│   │           ├── users/
-│   │           │   ├── route.js      # GET administrative users, POST creates user
-│   │           │   └── [id]/
-│   │           │       └── route.js  # GET, PATCH (update role/status), DELETE user
-│   │           ├── email-templates/
-│   │           │   ├── route.js      # GET all email templates
-│   │           │   └── [id]/
-│   │           │       └── route.js  # PATCH template configurations
-│   │           └── logs/
-│   │               └── route.js      # GET audit logs with filters
-│   ├── components/                   # React shared presentation library
-│   │   ├── Navbar.jsx                # Sticky responsive header with blur and mobile menu
-│   │   ├── Footer.jsx                # Responsive dark footer with corporate details
-│   │   ├── LenisProvider.jsx         # Smooth scroll setup wrapper (client-side)
-│   │   ├── PageHeroBanner.jsx        # Dark page header component
-│   │   ├── FilterPillBar.jsx         # Custom filter navigation bar
-│   │   ├── home/
-│   │   │   ├── AboutTeaser.jsx       # Side-by-side about section
-│   │   │   ├── BenefitsText.jsx      # Highlighting vertical mobility benefits
-│   │   │   ├── ConfiguratorHome.jsx  # Configurator promotion and preview banner
-│   │   │   ├── ContactSection.jsx    # Inquiry form component
-│   │   │   ├── GalleryMarquee.jsx    # Infinite loop gallery showcase
-│   │   │   ├── Hero.jsx              # Main home visual teaser
-│   │   │   ├── HomeCTA.jsx           # Home call-to-action banner
-│   │   │   ├── HomeClient.jsx        # Aggregator component for Home sections
-│   │   │   ├── Industries.jsx        # Sectors showcase grid with directional custom cursor arrow
-│   │   │   ├── PartnersMarquee.jsx   # Infinite loop ticker of logotypes
-│   │   │   ├── ProductsHome.jsx      # Products showcase overview
-│   │   │   ├── ProjectShowcase.jsx   # Horizontal scrolling showcase
-│   │   │   ├── ServicesAccordion.jsx # Vertical mobility divisions accordion
-│   │   │   ├── ServicesGrid.jsx      # Highlighting vertical mobility divisions
-│   │   │   ├── StatsGrid.jsx         # Metric cards grid
-│   │   │   ├── StatsStrip.jsx        # Key corporate metrics strip
-│   │   │   ├── Testimonials.jsx      # Sliding review quotes
-│   │   │   ├── TrustStrip.jsx        # Quality highlights banner
-│   │   │   └── WhyFG.jsx             # Grid highlight section
-│   │   ├── about/
-│   │   │   ├── AboutCTA.jsx          # Call-to-action for about page
-│   │   │   ├── AboutHero.jsx         # Corporate values and summary
-│   │   │   ├── AboutStats.jsx        # Corporate metrics layout
-│   │   │   ├── CertificationsStrip.jsx# Partnership, approvals and certificates
-│   │   │   ├── Leadership.jsx        # Board of directors and management
-│   │   │   ├── ManufacturingBlock.jsx# Facilities and engineering highlights
-│   │   │   ├── MilestoneTimeline.jsx # Timeline highlighting milestones
-│   │   │   └── VisionMission.jsx     # Strategic mission statements
-│   │   ├── products/
-│   │   │   ├── ProductCard.jsx       # Grid list display card with interactive cursor-following arrow
-│   │   │   └── ProductGrid.jsx       # Responsive grid manager for products list
-│   │   ├── product-detail/
-│   │   │   ├── ApplicationChips.jsx  # Building applications display chips
-│   │   │   ├── FeaturesList.jsx      # Product features layout
-│   │   │   ├── Lift360Viewer.jsx     # Three.js 3D WebGL panoramic renderer component
-│   │   │   ├── ProductCTA.jsx        # Inquire callback button callout
-│   │   │   ├── ProductDetailClient.jsx# Client controller for details layout
-│   │   │   ├── ProductGallery.jsx    # Image showcase carousel
-│   │   │   ├── RelatedProducts.jsx   # Cross-linked product suggestions
-│   │   │   └── SpecsTable.jsx        # Technical specifications data tables
-│   │   ├── gallery/
-│   │   │   ├── GalleryClient.jsx     # Masonry layout controller
-│   │   │   ├── GalleryHero.jsx       # Top intro section
-│   │   │   ├── ProjectCard.jsx       # Grid project item
-│   │   │   ├── ProjectGrid.jsx       # Gallery grid manager
-│   │   │   └── ProjectModal.jsx      # Details and image carousel modal
-│   │   ├── blog/
-│   │   │   ├── BlogCard.jsx          # Article preview grid card
-│   │   │   ├── BlogClient.jsx        # Page logic coordinator
-│   │   │   ├── BlogDetail.jsx        # Read post layout coordinator
-│   │   │   ├── BlogGrid.jsx          # Grid layout for posts
-│   │   │   ├── BlogHero.jsx          # Spotlight post presentation
-│   │   │   └── BlogSidebar.jsx       # Secondary details navigation
-│   │   ├── newsletter/
-│   │   │   ├── NewsletterInline.jsx  # Inline signup component
-│   │   │   └── NewsletterStrip.jsx   # Subscription banner
-│   │   └── admin/
-│   │       ├── AdminSidebar.jsx      # Left workspace navigation menu
-│   │       ├── AdminTopbar.jsx       # User profiles header with notifications
-│   │       ├── AuditLogTable.jsx     # Searchable logs dashboard
-│   │       ├── BlogEditor.jsx        # Markdown editor component for admin panel
-│   │       ├── ConfirmModal.jsx      # Generic confirmation prompt
-│   │       ├── EmailTemplateEditor.jsx# Rich HTML template customizer
-│   │       ├── GalleryProjectForm.jsx# Portfolio creator/editor form
-│   │       ├── InquiriesKanban.jsx   # Interactive Kanban drag-and-drop lead board
-│   │       ├── InquiriesTable.jsx    # Leads list with filter / sorting controls
-│   │       ├── InquiryDetailModal.jsx# CRM lead action and comments manager
-│   │       ├── ProductForm.jsx       # Product metadata builder with 3D swatches
-│   │       ├── StatCard.jsx          # Server Component stat renderer
-│   │       ├── SubscriberTable.jsx   # Roster of newsletter leads
-│   │       ├── UserForm.jsx          # User generator / modifier form
-│   │       └── View360Uploader.jsx   # Panorama 360 texture manager
-│   ├── models/                       # Mongoose database schema models
-│   │   ├── Admin.js                  # User credentials and permissions overrides
-│   │   ├── AuditLog.js               # Record of administrative modifications
-│   │   ├── BlogPost.js               # Article details, markdown content, and pre-save read-timer
-│   │   ├── EmailQueue.js             # Outbound spool tracking delivery status
-│   │   ├── EmailTemplate.js          # Core HTML template definitions
-│   │   ├── GalleryProject.js         # Portfolios data structure
-│   │   ├── Inquiry.js                # Customer inquiries, tracking statuses, and notes
-│   │   ├── Product.js                # Elevator catalogs, specifications, and 3D variants
-│   │   └── Subscriber.js             # Newsletter subscriber records
-│   ├── repositories/                 # Data access layer (no direct mongoose inside pages)
-│   │   ├── admin.repository.js       # Admin queries: get, update, create
-│   │   ├── auditLog.repository.js    # Immutable logging methods
-│   │   ├── blog.repository.js        # Articles querying and updates
-│   │   ├── emailQueue.repository.js  # Mail spool management
-│   │   ├── emailTemplate.repository.js# Templates database operations
-│   │   ├── gallery.repository.js     # Portfolio database queries
-│   │   ├── inquiry.repository.js     # Leads CRM database operations
-│   │   ├── product.repository.js     # Catalog database queries
-│   │   └── subscriber.repository.js  # Newsletter database queries
-│   ├── permissions/
-│   │   └── roles.js                  # Definitions of ROLES, PERMISSIONS, and maps
-│   ├── services/
-│   │   └── email/
-│   │       └── email.service.js      # Core template compiler and email queue manager
-│   ├── lib/
-│   │   ├── mongodb.js                # Connection pool configuration + email worker initializers
-│   │   ├── auth.js                   # JWT validations, Web Crypto encoders, password hashing
-│   │   ├── motion.js                 # Framer Motion transitions configuration
-│   │   └── email-worker.js           # Async background mail queue loop polling
-│   ├── scripts/
-│   │   └── seed.js                   # Standalone database initialization script
-│   └── middleware.js                 # Edge runtime authentication gate
+│   ├── adapters/                     # Third-party integration adapters
+│   │   ├── email.adapter.js          # Nodemailer SMTP and scratch file adapter
+│   │   └── storage.adapter.js        # Local & CDN asset URL resolver
+│   ├── app/                          # Next.js App Router Pages & API Endpoints
+│   │   ├── about/                    # Public About Page
+│   │   ├── admin/                    # Admin Workspace Console Pages
+│   │   │   ├── blog/                 # Editorial CMS
+│   │   │   ├── dashboard/            # High-level CRM/CMS dashboard
+│   │   │   ├── email-templates/      # HTML Email template customizer
+│   │   │   ├── forgot-password/      # Password reset flow
+│   │   │   ├── gallery/              # Portfolio manager
+│   │   │   ├── home-lifts/           # Specialized Home Lifts showcase editor
+│   │   │   ├── inquiries/            # CRM Kanban & List lead pipeline
+│   │   │   ├── login/                # Admin authentication login view
+│   │   │   ├── logs/                 # Immutable audit logs vault
+│   │   │   ├── products/             # Product Information Management (PIM)
+│   │   │   ├── settings/             # Dynamic site settings & corporate details
+│   │   │   ├── testimonials/         # Client reviews manager
+│   │   │   └── users/                # Team RBAC roster & access rights
+│   │   ├── api/                      # Next.js Server Route Handlers
+│   │   │   ├── admin/                # Gated Admin Endpoints (Auth, CRM, CMS, PIM, Settings)
+│   │   │   ├── blog/                 # Public blog articles feed
+│   │   │   ├── contact/              # Public lead submission endpoint
+│   │   │   ├── media/                # Asset upload & media library route
+│   │   │   ├── newsletter/           # Public newsletter opt-in/opt-out
+│   │   │   ├── products/             # Public elevator catalog feed
+│   │   │   ├── seed/                 # Database initialization & wiped seeder endpoint
+│   │   │   ├── settings/             # Public site configuration values
+│   │   │   └── testimonials/         # Public client reviews feed
+│   │   ├── blog/                     # Public Editorial Blog & Article views
+│   │   ├── gallery/                  # Public Portfolio Gallery & Project Modal
+│   │   ├── home-lift/                # Public Villa Home Lifts interactive showcase
+│   │   ├── products/                 # Public Elevators Catalog & 360 Customizer
+│   │   ├── error.js                  # Global app error boundary
+│   │   ├── global-error.js           # Critical system error boundary
+│   │   ├── globals.css               # Design tokens, CSS custom properties & Tailwind setup
+│   │   ├── layout.js                 # Root layout with 12-Provider stack & dynamic shell logic
+│   │   ├── loading.js                # Global route loading skeleton
+│   │   ├── not-found.js              # Custom 404 page
+│   │   ├── page.js                   # Public Home Page
+│   │   ├── robots.js                 # Dynamic SEO robots.txt generator
+│   │   └── sitemap.js                # Dynamic SEO sitemap.xml generator
+│   ├── components/                   # React Presentation Components
+│   │   ├── 360/                      # Three.js 3D WebGL Configurator & Texture Canvas
+│   │   ├── about/                    # About page timeline, values, leadership, manufacturing
+│   │   ├── admin/                    # Admin UI components (Kanban, Tables, Modals, Forms)
+│   │   │   └── pim/                  # Specialized PIM sections (Media, Specs, Configurator)
+│   │   ├── blog/                     # Editorial blog grids, cards, sidebars
+│   │   ├── composition/              # Complex UI compositions & section wrappers
+│   │   ├── errors/                   # UI error alert cards
+│   │   ├── forms/                    # Input elements, dropzones, selectors
+│   │   ├── gallery/                  # Portfolio masonry, cards, carousel modals
+│   │   ├── home/                     # Landing page sections (Hero, Stats, Showcases, CTA)
+│   │   ├── home-lift/                # Dedicated Home Lift sections (ArtWalls, Cabins, Systems)
+│   │   ├── intro/                    # Video preloader scrubbing animation
+│   │   ├── layouts/                  # Reusable Section, Container, and Grid primitives
+│   │   ├── loading/                  # Shimmer skeletons & spinners
+│   │   ├── newsletter/               # Subscription strip & inline forms
+│   │   ├── product-detail/           # Lift360Viewer, Specs table, Application chips
+│   │   ├── products/                 # Product cards, filter pillbars, grid managers
+│   │   ├── typography/               # Standardized heading & body typography wrappers
+│   │   ├── ui/                       # Design system buttons, badges, inputs
+│   │   ├── FilterPillBar.jsx         # Animated pillbar selector
+│   │   ├── Footer.jsx                # Responsive enterprise footer
+│   │   └── Navbar.jsx                # Sticky responsive header with blur effect
+│   ├── config/                       # Static app configurations
+│   │   ├── auth.js                   # JWT duration & cookie parameters
+│   │   ├── company.js                # Corporate metadata, office address, contact numbers
+│   │   ├── email.js                  # Default email queue retry parameters
+│   │   ├── navigation.js             # Public header & admin sidebar menu trees
+│   │   ├── routes.js                 # Application route map
+│   │   ├── socials.js                # Social media channel links
+│   │   └── storage.js                # Storage path parameters
+│   ├── constants/                    # System-wide enum constants
+│   ├── design-system/                # Design System Tokens
+│   │   └── tokens/                   # Raw token JS definitions
+│   │       ├── colors.js             # Color palette tokens
+│   │       ├── radius.js             # Corner radius tokens
+│   │       └── transitions.js        # Easing and timing tokens
+│   ├── hooks/                        # Custom React Hooks
+│   │   └── useDebounce.js            # Input debouncing hook
+│   ├── lib/                          # Core Utilities & System Libraries
+│   │   ├── auth.js                   # JWT Web Crypto signing/verification & bcrypt hashing
+│   │   ├── email-worker.js           # Async background mail queue polling loop
+│   │   ├── mongodb.js                # Cached Mongoose connection pool
+│   │   └── motion.js                 # Framer Motion transitions presets
+│   ├── mappers/                      # DTO Data Transformation Layer
+│   │   ├── admin.mapper.js           # Admin user profile sanitizer
+│   │   ├── gallery.mapper.js         # Project portfolio mapper
+│   │   ├── inquiry.mapper.js         # Lead submission DTO mapper
+│   │   ├── product.mapper.js         # Elevator catalog DTO mapper
+│   │   └── testimonial.mapper.js     # Client review mapper
+│   ├── models/                       # Mongoose Database Models (11 Schemas)
+│   │   ├── Admin.js                  # Admin user credentials & role permissions
+│   │   ├── AuditLog.js               # Immutable audit log records
+│   │   ├── BlogPost.js               # Editorial blog articles schema
+│   │   ├── EmailQueue.js             # Outbound email queue records
+│   │   ├── EmailTemplate.js          # HTML Email templates schema
+│   │   ├── GalleryProject.js         # Portfolio projects schema
+│   │   ├── Inquiry.js                # Customer inquiries & CRM notes
+│   │   ├── MediaUpload.js            # Uploaded media assets schema
+│   │   ├── Product.js                # Product catalog & 360 variants schema
+│   │   ├── SiteSettings.js           # Dynamic site settings schema
+│   │   ├── Subscriber.js             # Newsletter subscriber records
+│   │   └── Testimonial.js            # Client review reviews schema
+│   ├── performance/                  # Performance Optimization Helpers
+│   │   └── cache.js                  # In-memory TTL caching helper
+│   ├── permissions/                  # Security RBAC Definition Layer
+│   │   └── roles.js                  # Enterprise roles & 28+ permission flags matrix
+│   ├── providers/                    # React Context Providers Stack (12 Providers)
+│   │   ├── AnimationProvider.jsx     # Animation state provider
+│   │   ├── AppProvider.jsx           # Global master provider aggregator
+│   │   ├── CursorProvider.jsx        # Dynamic interactive cursor position
+│   │   ├── LenisProvider.jsx         # Smooth scroll provider
+│   │   ├── LoadingProvider.jsx       # Global page transition loader
+│   │   ├── ModalProvider.jsx         # Dialog modal provider
+│   │   ├── NavigationProvider.jsx    # Header navigation state
+│   │   ├── ScrollProvider.jsx        # Scroll position telemetry
+│   │   ├── SessionProvider.jsx       # Admin session context
+│   │   ├── ThemeProvider.jsx         # Color mode provider
+│   │   ├── ToastProvider.jsx         # Notification toasts provider
+│   │   └── ViewportProvider.jsx      # Screen breakpoint listener
+│   ├── repositories/                 # Data Access Layer (Repository Pattern)
+│   │   ├── admin.repository.js       # Admin user DB operations
+│   │   ├── auditLog.repository.js    # Audit log creation & query
+│   │   ├── emailQueue.repository.js  # Queue polling & update operations
+│   │   ├── emailTemplate.repository.js# Template query operations
+│   │   ├── gallery.repository.js     # Portfolio DB operations
+│   │   ├── inquiry.repository.js     # Lead CRM DB operations
+│   │   ├── product.repository.js     # Products DB operations
+│   │   ├── siteSettings.repository.js# Site settings DB operations
+│   │   ├── subscriber.repository.js  # Subscriber DB operations
+│   │   └── testimonial.repository.js # Testimonial DB operations
+│   ├── scripts/                      # System CLI Scripts
+│   │   └── seed.js                   # Idempotent database seeder script
+│   ├── security/                     # Security Protection Layer
+│   │   ├── rateLimit.js              # Sliding window rate limiter
+│   │   └── sanitizer.js              # Anti-XSS HTML sanitizer
+│   ├── seo/                          # SEO Engine Modules
+│   │   ├── jsonld.js                 # Schema.org JSON-LD generator
+│   │   ├── schema.js                 # Metadata schema helper
+│   │   └── sitemap.js                # Sitemap XML generator
+│   ├── services/                     # Business Logic Services
+│   │   └── email/                    # Email service package
+│   │       └── email.service.js      # Template compiler & queue enqueuer
+│   ├── utils/                        # Common Utilities
+│   │   ├── image.js                  # Image path optimization helper
+│   │   ├── mediaUpload.js            # Client-side asset upload helper
+│   │   └── string.js                 # String formatting & slugifiers
+│   ├── validators/                   # Input Data Validation Layer
+│   │   ├── admin.validator.js        # User payload validator
+│   │   ├── contact.validator.js      # Lead inquiry validator
+│   │   ├── email.validator.js        # Email template validator
+│   │   ├── gallery.validator.js      # Portfolio validator
+│   │   ├── login.validator.js        # Auth login validator
+│   │   ├── product.validator.js      # Product catalog validator
+│   │   ├── testimonial.validator.js  # Testimonial validator
+│   │   └── validation.helper.js      # Core regex & type validator
+│   └── middleware.js                 # Edge Runtime Authentication Gate
 ├── scratch/
-│   └── emails/                       # Development email outputs directory (gitignored)
+│   └── emails/                       # Development email output files (gitignored)
 ├── public/
-│   └── images/                       # Assets: mock cabin textures, project photos
-├── .env.local                        # Active environment parameters (gitignored)
-├── .env.example                      # Template for setup parameters
-├── eslint.config.mjs                 # Flat ESLint configuration file
-├── jsconfig.json                     # JS project compilation & path configurations
-├── next.config.mjs                   # Next.js configuration rules
-├── postcss.config.mjs                # PostCSS configuration including Tailwind CSS v4
-└── package.json                      # Build scripts and dependencies tree
+│   └── images/                       # Static public assets & panoramas
+├── .env.example                      # Template environment configuration
+├── eslint.config.mjs                 # Flat ESLint configuration
+├── jsconfig.json                     # JS path alias configuration (`@/*`)
+├── next.config.mjs                   # Next.js compiler & security rules
+├── package.json                      # Build scripts and dependencies
+└── postcss.config.mjs                # PostCSS configuration with Tailwind v4
 ```
 
 ---
 
 ## 6. Database Schema Architecture
 
-The relational structure of the Mongoose models is mapped out in the following Entity-Relationship Diagram (ERD):
+### 6A. Entity-Relationship Diagram (11 Mongoose Schemas)
 
 ```mermaid
 erDiagram
-    Admin {
-        ObjectId  _id PK
-        string    name
-        string    email
-        string    password "bcrypt hashed"
-        string    role "SUPER_ADMIN|SALES_MANAGER|SALES_EXECUTIVE|MARKETING_MANAGER|CONTENT_EDITOR"
-        boolean   isActive
-        array     permissions "optional overrides"
-        date      lastLoginAt
-        ObjectId  createdBy FK
-    }
-
-    Inquiry {
-        ObjectId  _id PK
-        string    name
-        string    email
-        string    phone
-        string    company
-        string    city
-        string    elevatorType
-        string    floorCount
-        string    message
-        string    status "New|Contacted|Qualified|Closed|Rejected"
-        array     notes "text, adminName, adminId, createdAt"
-        ObjectId  assignedTo FK
-        ObjectId  assignedBy FK
-        date      assignedAt
-        string    source
-    }
-
-    Product {
-        ObjectId  _id PK
-        string    slug UK
-        string    name
-        string    tagline
-        string    category
-        string    tabGroup "Systems|Cabins|Components"
-        string    description
-        array     specifications "key-value pairs"
-        array     features
-        array     applications
-        array     images "url + alt"
-        string    brochureUrl
-        boolean   has360View
-        string    defaultColor
-        string    defaultFinish
-        array     colorVariants "name, hex, panoramaImages, isActive"
-        array     finishVariants "name, isActive"
-        boolean   isFeatured
-        string    badge
-        boolean   isActive
-        number    sortOrder
-    }
-
-    GalleryProject {
-        ObjectId  _id PK
-        string    title
-        string    location
-        string    clientType
-        string    category
-        number    year
-        string    description
-        string    coverImage
-        array     images
-        array     relatedProductSlugs
-        boolean   isActive
-        number    sortOrder
-    }
-
-    BlogPost {
-        ObjectId  _id PK
-        string    slug UK
-        string    title
-        string    excerpt
-        string    coverImage
-        string    content "HTML from Markdown"
-        string    category
-        array     tags
-        object    author "name, avatar, title"
-        number    readTime "auto-calculated"
-        boolean   isPublished
-        boolean   isFeatured
-        date      publishedAt
-        number    views
-        array     relatedSlugs
-    }
-
-    Subscriber {
-        ObjectId  _id PK
-        string    email UK
-        string    name
-        string    source
-        boolean   isActive
-        date      confirmedAt
-        date      unsubscribedAt
-        array     tags
-    }
-
-    EmailTemplate {
-        ObjectId  _id PK
-        string    name UK "inquiry_received|lead_assigned|newsletter_welcome"
-        string    subject
-        string    body "HTML with placeholders"
-        array     variables
-        boolean   isActive
-    }
-
-    EmailQueue {
-        ObjectId  _id PK
-        string    to
-        string    subject
-        string    body "compiled HTML"
-        string    status "pending|sent|failed"
-        number    attempts
-        number    maxAttempts
-        date      lastAttemptAt
-        date      sentAt
-        string    error
-        string    templateName
-        string    relatedId
-    }
-
-    AuditLog {
-        ObjectId  _id PK
-        string    action
-        object    performedBy "adminId, name, email, role"
-        string    targetId
-        string    targetType
-        mixed     details
-        string    ipAddress
-        date      createdAt
-    }
-
     Admin ||--o{ Inquiry : "assigned to"
     Admin ||--o{ Inquiry : "assigned by"
     Admin ||--o{ AuditLog : "performed by"
+    Admin ||--o{ MediaUpload : "uploaded by"
+
+    Product ||--o{ GalleryProject : "linked in case studies"
+    Product ||--o{ Inquiry : "referenced in inquiries"
+
+    Admin {
+        ObjectId _id PK
+        string name
+        string email UK
+        string password
+        string role
+        boolean isActive
+        array permissions
+        date lastLoginAt
+    }
+
+    Inquiry {
+        ObjectId _id PK
+        string name
+        string email
+        string phone
+        string company
+        string city
+        string elevatorType
+        string floorCount
+        string message
+        string status
+        array notes
+        ObjectId assignedTo FK
+        ObjectId assignedBy FK
+        date assignedAt
+        string source
+    }
+
+    Product {
+        ObjectId _id PK
+        string slug UK
+        string name
+        string tagline
+        string category
+        string tabGroup
+        string description
+        array specifications
+        array features
+        array applications
+        array images
+        string brochureUrl
+        boolean has360View
+        string defaultColor
+        string defaultFinish
+        array colorVariants
+        array finishVariants
+        boolean isFeatured
+        boolean isActive
+        number sortOrder
+    }
+
+    GalleryProject {
+        ObjectId _id PK
+        string title
+        string location
+        string clientType
+        string category
+        number year
+        string description
+        string coverImage
+        array images
+        array relatedProductSlugs
+        boolean isActive
+        number sortOrder
+    }
+
+    BlogPost {
+        ObjectId _id PK
+        string slug UK
+        string title
+        string excerpt
+        string coverImage
+        string content
+        string category
+        array tags
+        object author
+        number readTime
+        boolean isPublished
+        boolean isFeatured
+        date publishedAt
+        number views
+    }
+
+    Subscriber {
+        ObjectId _id PK
+        string email UK
+        string name
+        string source
+        boolean isActive
+        date confirmedAt
+        date unsubscribedAt
+    }
+
+    EmailTemplate {
+        ObjectId _id PK
+        string name UK
+        string subject
+        string body
+        array variables
+        boolean isActive
+    }
+
+    EmailQueue {
+        ObjectId _id PK
+        string to
+        string subject
+        string body
+        string status
+        number attempts
+        number maxAttempts
+        date lastAttemptAt
+        date sentAt
+        string error
+    }
+
+    AuditLog {
+        ObjectId _id PK
+        string action
+        object performedBy
+        string targetId
+        string targetType
+        mixed details
+        string ipAddress
+    }
+
+    MediaUpload {
+        ObjectId _id PK
+        string filename
+        string url
+        string mimeType
+        number size
+        object dimensions
+        ObjectId uploadedBy FK
+    }
+
+    SiteSettings {
+        ObjectId _id PK
+        string companyName
+        string phone
+        string email
+        string address
+        object socialLinks
+        object heroBanner
+        boolean maintenanceMode
+    }
+
+    Testimonial {
+        ObjectId _id PK
+        string clientName
+        string company
+        string role
+        string content
+        number rating
+        string avatar
+        boolean isFeatured
+    }
 ```
 
-### Models Definitions
+### 6B. Model Field Specifications
 
-#### `Admin`
-Stores accounts for managers, executives, and editor staff.
-
+#### 1. `Admin`
 | Field | Type | Constraints | Description |
 |---|---|---|---|
-| `_id` | ObjectId | Auto PK | Unique identifier |
+| `_id` | ObjectId | Auto PK | Unique account identifier |
 | `name` | String | Required | Full display name |
-| `email` | String | Required, Unique, Lowercase | Primary contact and login identifier |
+| `email` | String | Required, Unique, Lowercase | Primary contact and login email |
 | `password` | String | Required | 12-round bcrypt hash |
-| `role` | String | Enum, Required | One of ROLES (SUPER_ADMIN, etc.) |
-| `isActive` | Boolean | Default: `true` | Status flag |
-| `permissions`| Array (String) | Optional overrides | Extra rights configuration |
-| `lastLoginAt`| Date | — | Timestamp of last authenticated session |
+| `role` | String | Enum, Required | One of ROLES (`SUPER_ADMIN`, `SALES_MANAGER`, etc.) |
+| `isActive` | Boolean | Default: `true` | Active status flag |
+| `permissions`| Array (String)| Optional | Explicit permission overrides |
+| `lastLoginAt` | Date | — | Timestamp of last authenticated session |
 
-#### `Inquiry`
-Contains information from home contact and detail pages lead submissions.
-
+#### 2. `Inquiry`
 | Field | Type | Constraints | Description |
 |---|---|---|---|
-| `_id` | ObjectId | Auto PK | Unique identifier |
-| `name` | String | Required | Lead contact name |
-| `email` | String | Required, Lowercase | Lead email address |
-| `phone` | String | Required | Lead telephone number |
-| `company` | String | Optional | Lead organization name |
-| `city` | String | Optional | Lead geographical origin |
-| `elevatorType`| String | Optional | Selected lift category |
-| `floorCount` | String | Optional | Project vertical requirements |
-| `message` | String | Optional | Message details |
-| `status` | String | Enum, Default: `'New'` | CRM state (`'New'`, `'Contacted'`, `'Qualified'`, `'Closed'`, `'Rejected'`) |
-| `source` | String | Default: `'Website...'` | Origin tracker |
-| `assignedTo` | ObjectId | Ref: `'Admin'` | Assigned account |
+| `_id` | ObjectId | Auto PK | Unique lead identifier |
+| `name` | String | Required | Client contact name |
+| `email` | String | Required, Lowercase | Client email address |
+| `phone` | String | Required | Client phone number |
+| `company` | String | Optional | Lead organization |
+| `city` | String | Optional | Lead geographical city |
+| `elevatorType`| String | Optional | Selected elevator system |
+| `floorCount` | String | Optional | Project floor count requirement |
+| `message` | String | Optional | Client message body |
+| `status` | String | Enum, Default: `'New'`| CRM status (`'New'`, `'Contacted'`, `'Qualified'`, `'Closed'`, `'Rejected'`) |
+| `notes` | Array (Object)| Embedded schema | CRM notes history (`text`, `adminName`, `adminId`, `createdAt`) |
+| `assignedTo` | ObjectId | Ref: `'Admin'` | Assigned sales executive |
 | `assignedBy` | ObjectId | Ref: `'Admin'` | Assigning manager |
 | `assignedAt` | Date | — | Assignment timestamp |
-| `notes` | Array (Object) | Embedded schema | CRM notes: `text` (String), `adminName` (String), `adminId` (ObjectId), `createdAt` (Date) |
+| `source` | String | Default: `'Website'`| Lead source tracking tag |
 
-#### `Product`
-Houses specifications, visual variants, and assets for elevators and components.
-
+#### 3. `Product`
 | Field | Type | Constraints | Description |
 |---|---|---|---|
-| `_id` | ObjectId | Auto PK | Unique identifier |
-| `slug` | String | Required, Unique, Lowercase | URL path token |
-| `name` | String | Required | Product display title |
-| `tagline` | String | Optional | Accompanying highlight tag |
-| `category` | String | Required | Major category: `'Passenger'`, `'Capsule'`, etc. |
-| `subCategory`| String | Optional | Fine-grain sub-classification |
-| `tabGroup` | String | Enum, Default: `'Systems'`| One of `'Systems'`, `'Cabins'`, `'Components'` |
-| `description`| String | Optional | Rich text CMS summary |
-| `specifications`| Array (Object) | Nested key/value | Technical specifications |
-| `features` | Array (String) | Optional | Highlight points list |
-| `applications`| Array (String) | Optional | Building uses (Residential, etc.) |
-| `images` | Array (Object) | Nested url/alt | Product visual assets |
-| `brochureUrl`| String | Optional | PDF download reference |
-| `has360View` | Boolean | Default: `false` | Displays 360 viewer component flag |
-| `defaultColor`| String | Optional | Default active color variant key |
-| `defaultFinish`| String | Optional | Default active finish variant key |
-| `colorVariants`| Array (Object) | Nested configuration | 360-configurator files mapping |
-| `finishVariants`| Array (Object)| Nested configuration | Standard finish selectors |
-| `isFeatured` | Boolean | Default: `false` | Landing grid showcase status |
-| `badge` | String | Optional | Banner tag (e.g. `'NEW'`) |
-| `isActive` | Boolean | Default: `true` | Live visibility status |
-| `sortOrder` | Number | Default: `0` | Sequence control index |
+| `_id` | ObjectId | Auto PK | Unique product identifier |
+| `slug` | String | Required, Unique, Lowercase | URL slug identifier |
+| `name` | String | Required | Elevator model name |
+| `tagline` | String | Optional | Highlight summary tagline |
+| `category` | String | Required | Product category (`Passenger`, `Capsule`, `Home`, etc.) |
+| `tabGroup` | String | Enum, Default: `'Systems'`| Filter tab group (`Systems`, `Cabins`, `Components`) |
+| `description` | String | Optional | Detailed HTML/CMS description |
+| `specifications`| Array (Object)| Nested key-value | Technical specifications pairs |
+| `features` | Array (String)| Optional | List of feature highlights |
+| `applications`| Array (String)| Optional | Building application tags |
+| `images` | Array (Object)| Nested url/alt | Product visual assets |
+| `brochureUrl` | String | Optional | Downloadable PDF URL |
+| `has360View` | Boolean | Default: `false` | Enables WebGL 360° cabin customizer |
+| `colorVariants`| Array (Object)| Nested schema | Swatch configurations & panorama maps (`name`, `hex`, `panoramaImages`) |
+| `finishVariants`| Array (Object)| Nested schema | Finishing variants (`name`, `isActive`) |
+| `isFeatured` | Boolean | Default: `false` | Showcase highlight status |
+| `isActive` | Boolean | Default: `true` | Public listing status |
+| `sortOrder` | Number | Default: `0` | Grid sequence index |
 
-#### `GalleryProject`
-Case studies, installations, and builder accomplishments.
-
+#### 4. `GalleryProject`
 | Field | Type | Constraints | Description |
 |---|---|---|---|
-| `_id` | ObjectId | Auto PK | Unique identifier |
+| `_id` | ObjectId | Auto PK | Unique project identifier |
 | `title` | String | Required | Project display title |
-| `location` | String | Optional | Geographic context |
-| `clientType` | String | Optional | Sector category (Residential, Commercial, etc.) |
-| `category` | String | Optional | Staggered grid filter tag |
-| `year` | Number | Optional | Construction year |
-| `description`| String | Optional | Case study text |
-| `coverImage` | String | Required | Grid primary asset URL |
-| `images` | Array (String) | Optional | Modal carousel asset URLs |
-| `relatedProductSlugs`| Array (String)| Optional | Cross-linked product identifiers |
-| `isActive` | Boolean | Default: `true` | Show status |
-| `sortOrder` | Number | Default: `0` | Order control |
+| `location` | String | Optional | Installation city/state |
+| `clientType` | String | Optional | Client sector tag |
+| `category` | String | Optional | Masonry filter category |
+| `year` | Number | Optional | Installation year |
+| `description` | String | Optional | Case study details |
+| `coverImage` | String | Required | Grid cover image asset URL |
+| `images` | Array (String)| Optional | Carousel slide image asset URLs |
+| `relatedProductSlugs`| Array (String)| Optional | Linked product slugs |
+| `isActive` | Boolean | Default: `true` | Visibility flag |
 
-#### `BlogPost`
-Editorial content, technical articles, and announcements.
-
+#### 5. `BlogPost`
 | Field | Type | Constraints | Description |
 |---|---|---|---|
-| `_id` | ObjectId | Auto PK | Unique identifier |
-| `slug` | String | Required, Unique, Lowercase | Post URL path token |
+| `_id` | ObjectId | Auto PK | Unique article identifier |
+| `slug` | String | Required, Unique, Lowercase | Article URL slug |
 | `title` | String | Required | Article display title |
-| `excerpt` | String | Optional | Grid list card intro snippet |
-| `coverImage` | String | Optional | Primary header layout image |
-| `coverImageAlt`| String | Default: `''` | SEO image accessibility text |
-| `content` | String | Optional | Full body text written in Markdown |
-| `category` | String | Optional | Section categorizer |
-| `tags` | Array (String)| Optional | Post tags |
-| `author` | Object | Nested fields | `name` (String), `avatar` (String), `title` (String) |
-| `readTime` | Number | Computed on Save | Calculated reading estimate |
-| `isPublished`| Boolean | Default: `false` | Live site publication flag |
-| `isFeatured` | Boolean | Default: `false` | Landing banner spotlight status |
-| `publishedAt`| Date | — | Timestamp of publication |
-| `views` | Number | Default: `0` | Hit tracker |
-| `relatedSlugs`| Array (String)| Optional | Cross-linked article slugs |
+| `excerpt` | String | Optional | Card summary intro snippet |
+| `coverImage` | String | Optional | Cover image asset URL |
+| `content` | String | Optional | Markdown formatted body content |
+| `category` | String | Optional | Section categorizer tag |
+| `tags` | Array (String)| Optional | Article tags |
+| `author` | Object | Nested schema | Author profile (`name`, `avatar`, `title`) |
+| `readTime` | Number | Computed on save | Auto-calculated read time in minutes |
+| `isPublished` | Boolean | Default: `false` | Publication status flag |
 
-#### `Subscriber`
-Newsletter campaign contact pool database.
-
+#### 6. `Subscriber`
 | Field | Type | Constraints | Description |
 |---|---|---|---|
-| `_id` | ObjectId | Auto PK | Unique identifier |
-| `email` | String | Required, Unique, Lowercase | Recipient address |
-| `name` | String | Optional | Contact name |
-| `source` | String | Default: `'Footer...'` | Subscription origin |
+| `_id` | ObjectId | Auto PK | Unique subscriber identifier |
+| `email` | String | Required, Unique, Lowercase | Newsletter email address |
+| `name` | String | Optional | Subscriber name |
 | `isActive` | Boolean | Default: `true` | Subscription state |
-| `confirmedAt`| Date | — | Opt-in timestamp |
-| `unsubscribedAt`| Date | — | Opt-out timestamp |
-| `tags` | Array (String)| Optional | Interest segmentation tags |
+| `confirmedAt` | Date | — | Opt-in timestamp |
 
-#### `EmailTemplate`
-Bespoke templates parsed with dynamic variables for notifications.
-
+#### 7. `EmailTemplate`
 | Field | Type | Constraints | Description |
 |---|---|---|---|
-| `_id` | ObjectId | Auto PK | Unique identifier |
-| `name` | String | Required, Unique | Lookup key (e.g. `'inquiry_received'`) |
-| `subject` | String | Required | Email subject line with template markers |
-| `body` | String | Required | HTML body with double curly-brace variables |
-| `variables` | Array (String)| Optional | List of matching parameters |
-| `isActive` | Boolean | Default: `true` | Live compilation availability status |
+| `_id` | ObjectId | Auto PK | Unique template identifier |
+| `name` | String | Required, Unique | Code lookup key (e.g. `inquiry_received`) |
+| `subject` | String | Required | Subject template string with placeholders |
+| `body` | String | Required | HTML body string with `{{placeholders}}` |
+| `variables` | Array (String)| Optional | List of dynamic template keys |
 
-#### `EmailQueue`
-Mail tracking queue.
-
+#### 8. `EmailQueue`
 | Field | Type | Constraints | Description |
 |---|---|---|---|
-| `_id` | ObjectId | Auto PK | Unique identifier |
-| `to` | String | Required | Destination address |
-| `subject` | String | Required | Output subject line |
-| `body` | String | Required | Fully rendered HTML body |
-| `status` | String | Enum, Default: `'pending'`| Delivery state (`'pending'`, `'sent'`, `'failed'`) |
-| `attempts` | Number | Default: `0` | Resend iteration tracker |
+| `_id` | ObjectId | Auto PK | Unique queue item identifier |
+| `to` | String | Required | Recipient email address |
+| `subject` | String | Required | Rendered subject line |
+| `body` | String | Required | Rendered HTML body |
+| `status` | String | Enum, Default: `'pending'`| Status (`'pending'`, `'sent'`, `'failed'`) |
+| `attempts` | Number | Default: `0` | Delivery attempt counter |
 | `maxAttempts` | Number | Default: `3` | Maximum retry limit |
-| `lastAttemptAt`| Date | — | Last attempt timestamp |
-| `sentAt` | Date | — | Successful delivery timestamp |
-| `error` | String | Optional | Error details |
-| `templateName`| String | Optional | Source template log |
-| `relatedId` | String | Optional | Origin document index (lead, sub, user) |
 
-#### `AuditLog`
-Immutable system records.
-
+#### 9. `AuditLog`
 | Field | Type | Constraints | Description |
 |---|---|---|---|
-| `_id` | ObjectId | Auto PK | Unique identifier |
-| `action` | String | Required | Action code (e.g., `'product_created'`) |
-| `performedBy` | Object | Nested fields | `adminId` (ObjectId), `name` (String), `email` (String), `role` (String) |
-| `targetId` | String | Optional | Affected document ID |
-| `targetType` | String | Optional | Target model name |
-| `details` | Mixed | Optional | State details object |
-| `ipAddress` | String | Optional | Performed IP address |
+| `_id` | ObjectId | Auto PK | Unique audit log identifier |
+| `action` | String | Required | Code action string (e.g. `inquiry_assigned`) |
+| `performedBy` | Object | Nested schema | Executor admin details (`adminId`, `name`, `email`, `role`) |
+| `targetId` | String | Optional | Target document ID |
+| `targetType` | String | Optional | Target schema collection |
+| `details` | Mixed | Optional | State snapshot JSON |
+| `ipAddress` | String | Optional | Client IP address |
+
+#### 10. `MediaUpload`
+| Field | Type | Constraints | Description |
+|---|---|---|---|
+| `_id` | ObjectId | Auto PK | Unique media identifier |
+| `filename` | String | Required | Original asset filename |
+| `url` | String | Required | Accessible public URL |
+| `mimeType` | String | Required | Asset MIME type (`image/jpeg`, `image/png`, etc.) |
+| `size` | Number | Required | File size in bytes |
+| `uploadedBy` | ObjectId | Ref: `'Admin'` | Uploading user ID |
+
+#### 11. `SiteSettings`
+| Field | Type | Constraints | Description |
+|---|---|---|---|
+| `_id` | ObjectId | Auto PK | Unique settings document |
+| `companyName` | String | Default: `'FG Lift Pvt. Ltd.'`| Corporate title |
+| `phone` | String | Optional | Primary corporate telephone |
+| `email` | String | Optional | Primary corporate email |
+| `address` | String | Optional | Registered office address |
+| `socialLinks` | Object | Nested links | Social media channel links |
+| `maintenanceMode`| Boolean| Default: `false` | System maintenance mode toggle |
+
+#### 12. `Testimonial`
+| Field | Type | Constraints | Description |
+|---|---|---|---|
+| `_id` | ObjectId | Auto PK | Unique review identifier |
+| `clientName` | String | Required | Client/Architect display name |
+| `company` | String | Optional | Client company/firm name |
+| `role` | String | Optional | Client designation |
+| `content` | String | Required | Review quote text |
+| `rating` | Number | Default: `5` | Rating score (1–5) |
+| `isFeatured` | Boolean | Default: `false` | Landing page showcase status |
 
 ---
 
-## 7. RBAC — Roles & Permissions
+## 7. RBAC — Roles & Permissions Matrix
 
-The system implements a granular **Role-Based Access Control (RBAC)** model. Security permissions are verified at the edge by the middleware, evaluated in Layout contexts, and enforced inside API routes before data operations run.
+Security rights are declared in `src/permissions/roles.js` and enforced across Middleware, Layout components, and Server Route Handlers.
 
-### Role Descriptions
+### Role Profiles
+- **`SUPER_ADMIN`**: Full structural control across all domain models, users, site settings, logs, and email templates. Cannot delete or deactivate self.
+- **`SALES_MANAGER`**: Full access to the CRM inquiry pipeline, lead assignments, executive filtering, lead notes, CSV export, and audit log inspection.
+- **`SALES_EXECUTIVE`**: Gated access restricted strictly to customer inquiries assigned directly to their account ID (`assignedTo === admin.id`).
+- **`MARKETING_MANAGER`**: Access to newsletter subscriber lists, subscriber export, email template customization, and blog editorial publishing.
+- **`CONTENT_EDITOR`**: Access to Product Information Management (PIM), Home Lift showcases, portfolio galleries, and blog publishing.
 
-- **Super Admin:** Holds complete structural ownership. Able to write/modify users, assign leads, adjust CRM entries, configure and update global email templates, modify marketing feeds, and inspect system log files. Cannot delete or deactivate their own active profile.
-- **Sales Manager:** Owns CRM pipeline operations. Able to see all customer inquiries, assign leads to executives, change lead statuses, write CRM logs, export lead databases, and inspect audit logs. Cannot modify products, portfolio galleries, blog posts, email templates, or user profiles.
-- **Sales Executive:** Gated to their own operations. Allowed to see and edit only inquiries assigned to them, add notes, and modify lead statuses. Forbidden from accessing other executives' portfolios, deleting files, exporting databases, or accessing email templates or blog layouts.
-- **Marketing Manager:** Drives subscriber outreach and brand campaigns. Gated to newsletter subscriber grids, subscriber exports, email templates, and corporate blog content. Forbidden from accessing the inquiries pipeline, database updates, or user accounts.
-- **Content Editor:** Gated to website content updates. Holds creation, edit, publication, and deletion access for products, portfolio galleries, and blog articles. Forbidden from viewing customer inquiries, templates, logs, or user rosters.
+### Permissions Matrix (28+ Permission Flags)
 
-### Permissions Matrix
-
-The permissions are defined in [roles.js](file:///Users/krishna/fg%20trail/fg-lift-website/src/permissions/roles.js):
-
-| Permission | Super Admin | Sales Manager | Sales Executive | Marketing Manager | Content Editor |
+| Permission Flag | Super Admin | Sales Manager | Sales Executive | Marketing Manager | Content Editor |
 |---|:---:|:---:|:---:|:---:|:---:|
-| **`VIEW_ALL_INQUIRIES`** | ✅ | ✅ | ❌ | ❌ | ❌ |
-| **`VIEW_OWN_INQUIRIES`** | ✅ | ✅ | ✅ | ❌ | ❌ |
-| **`ASSIGN_INQUIRY`** | ✅ | ✅ | ❌ | ❌ | ❌ |
-| **`UPDATE_INQUIRY_STATUS`** | ✅ | ✅ | ✅ | ❌ | ❌ |
-| **`ADD_INQUIRY_NOTE`** | ✅ | ✅ | ✅ | ❌ | ❌ |
-| **`DELETE_INQUIRY`** | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **`EXPORT_CRM`** | ✅ | ✅ | ❌ | ❌ | ❌ |
-| **`VIEW_PRODUCTS`** | ✅ | ✅ | ✅ | ❌ | ✅ |
-| **`CREATE_PRODUCT`** | ✅ | ❌ | ❌ | ❌ | ✅ |
-| **`EDIT_PRODUCT`** | ✅ | ❌ | ❌ | ❌ | ✅ |
-| **`DELETE_PRODUCT`** | ✅ | ❌ | ❌ | ❌ | ✅ |
-| **`VIEW_GALLERY`** | ✅ | ✅ | ❌ | ❌ | ✅ |
-| **`CREATE_GALLERY`** | ✅ | ❌ | ❌ | ❌ | ✅ |
-| **`EDIT_GALLERY`** | ✅ | ❌ | ❌ | ❌ | ✅ |
-| **`DELETE_GALLERY`** | ✅ | ❌ | ❌ | ❌ | ✅ |
-| **`VIEW_BLOG`** | ✅ | ✅ | ❌ | ✅ | ✅ |
-| **`CREATE_BLOG`** | ✅ | ❌ | ❌ | ❌ | ✅ |
-| **`EDIT_BLOG`** | ✅ | ❌ | ❌ | ❌ | ✅ |
-| **`DELETE_BLOG`** | ✅ | ❌ | ❌ | ❌ | ✅ |
-| **`PUBLISH_BLOG`** | ✅ | ❌ | ❌ | ❌ | ✅ |
-| **`VIEW_SUBSCRIBERS`** | ✅ | ✅ | ❌ | ✅ | ❌ |
-| **`EXPORT_SUBSCRIBERS`** | ✅ | ❌ | ❌ | ✅ | ❌ |
-| **`VIEW_USERS`** | ✅ | ✅ | ❌ | ❌ | ❌ |
-| **`CREATE_USER`** | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **`EDIT_USER`** | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **`DELETE_USER`** | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **`VIEW_EMAIL_TEMPLATES`**| ✅ | ❌ | ❌ | ✅ | ❌ |
-| **`EDIT_EMAIL_TEMPLATES`**| ✅ | ❌ | ❌ | ✅ | ❌ |
-| **`VIEW_LOGS`** | ✅ | ✅ | ❌ | ✅ | ❌ |
+| `VIEW_ALL_INQUIRIES` | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `VIEW_OWN_INQUIRIES` | ✅ | ✅ | ✅ | ❌ | ❌ |
+| `ASSIGN_INQUIRY` | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `UPDATE_INQUIRY_STATUS` | ✅ | ✅ | ✅ | ❌ | ❌ |
+| `ADD_INQUIRY_NOTE` | ✅ | ✅ | ✅ | ❌ | ❌ |
+| `DELETE_INQUIRY` | ✅ | ❌ | ❌ | ❌ | ❌ |
+| `EXPORT_CRM` | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `VIEW_PRODUCTS` | ✅ | ✅ | ✅ | ❌ | ✅ |
+| `CREATE_PRODUCT` | ✅ | ❌ | ❌ | ❌ | ✅ |
+| `EDIT_PRODUCT` | ✅ | ❌ | ❌ | ❌ | ✅ |
+| `DELETE_PRODUCT` | ✅ | ❌ | ❌ | ❌ | ✅ |
+| `VIEW_GALLERY` | ✅ | ✅ | ❌ | ❌ | ✅ |
+| `CREATE_GALLERY` | ✅ | ❌ | ❌ | ❌ | ✅ |
+| `EDIT_GALLERY` | ✅ | ❌ | ❌ | ❌ | ✅ |
+| `DELETE_GALLERY` | ✅ | ❌ | ❌ | ❌ | ✅ |
+| `VIEW_BLOG` | ✅ | ✅ | ❌ | ✅ | ✅ |
+| `CREATE_BLOG` | ✅ | ❌ | ❌ | ❌ | ✅ |
+| `EDIT_BLOG` | ✅ | ❌ | ❌ | ❌ | ✅ |
+| `DELETE_BLOG` | ✅ | ❌ | ❌ | ❌ | ✅ |
+| `PUBLISH_BLOG` | ✅ | ❌ | ❌ | ❌ | ✅ |
+| `VIEW_SUBSCRIBERS` | ✅ | ✅ | ❌ | ✅ | ❌ |
+| `EXPORT_SUBSCRIBERS` | ✅ | ❌ | ❌ | ✅ | ❌ |
+| `VIEW_USERS` | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `CREATE_USER` | ✅ | ❌ | ❌ | ❌ | ❌ |
+| `EDIT_USER` | ✅ | ❌ | ❌ | ❌ | ❌ |
+| `DELETE_USER` | ✅ | ❌ | ❌ | ❌ | ❌ |
+| `VIEW_EMAIL_TEMPLATES`| ✅ | ❌ | ❌ | ✅ | ❌ |
+| `EDIT_EMAIL_TEMPLATES`| ✅ | ❌ | ❌ | ✅ | ❌ |
+| `MANAGE_SETTINGS` | ✅ | ❌ | ❌ | ❌ | ❌ |
+| `VIEW_LOGS` | ✅ | ✅ | ❌ | ✅ | ❌ |
 
 ---
 
 ## 8. Complete API Reference
 
-### Public API Routes
+### 8A. Public API Endpoints
 
-| Method | Route | Auth | Required Body / Query | Success Response | Description |
-|---|---|---|---|---|---|
-| **POST** | `/api/contact` | None | `{ name, email, phone, company, city, elevatorType, floorCount, message }` | `{ success: true, inquiryId }` | Submits inquiry, writes to DB, queues confirmation email. |
-| **POST** | `/api/newsletter` | None | `{ email, name }` | `{ success: true }` | Subscribes email address to newsletter database. |
-| **DELETE**| `/api/newsletter` | None | Query: `?email=user@domain.com` | `{ success: true }` | Unsubscribes email address (sets active flag to false). |
-| **GET** | `/api/blog` | None | Query: `?category=...&tag=...&page=...` | `{ success: true, posts, pagination }` | Returns a paginated list of published articles. |
-| **GET** | `/api/products` | None | Query: `?tabGroup=...&category=...` | `{ success: true, products }` | Returns active product catalogs from DB. |
-
----
-
-### Admin API Routes
-
-All routes below require a valid HTTP-Only JWT Cookie (`fg_admin_token`).
-
-| Method | Route | Permission | Request Body / Query | Success Response | Description |
-|---|---|---|---|---|---|
-| **POST** | `/api/admin/auth/login` | None | `{ email, password }` | `{ success: true, admin }` | Validates credentials, sets `fg_admin_token` cookie. |
-| **POST** | `/api/admin/auth/logout`| None | — | `{ success: true }` | Wipes the authentication token cookie. |
-| **GET** | `/api/admin/inquiries` | `VIEW_*_INQUIRIES`| Query: `?status=...&assignedTo=...` | `{ success: true, inquiries }` | Lists CRM inquiries, filtered by role bounds. |
-| **PATCH**| `/api/admin/inquiries/[id]`| `UPDATE_INQUIRY_STATUS` or `ASSIGN_INQUIRY` | `{ status, assignedTo, noteText }` | `{ success: true, inquiry }` | Updates CRM status, assignments, or appends notes. |
-| **DELETE**| `/api/admin/inquiries/[id]`| `DELETE_INQUIRY` | — | `{ success: true }` | Permanently deletes a lead entry from the CRM database. |
-| **GET** | `/api/admin/inquiries/export`| `EXPORT_CRM` | — | Raw CSV Stream output | Downloads current leads database as a formatted CSV file. |
-| **GET** | `/api/admin/products` | `VIEW_PRODUCTS` | — | `{ success: true, products }` | Returns all products in the database. |
-| **POST** | `/api/admin/products` | `CREATE_PRODUCT` | Product JSON metadata | `{ success: true, product }` | Creates a new catalog item. |
-| **PATCH**| `/api/admin/products/[id]`| `EDIT_PRODUCT` | Product JSON metadata | `{ success: true, product }` | Updates catalog details. |
-| **DELETE**| `/api/admin/products/[id]`| `DELETE_PRODUCT` | — | `{ success: true }` | Removes catalog item. |
-| **GET** | `/api/admin/gallery` | `VIEW_GALLERY` | — | `{ success: true, projects }` | Returns case study installations catalog. |
-| **POST** | `/api/admin/gallery` | `CREATE_GALLERY` | Project JSON metadata | `{ success: true, project }` | Creates portfolio entry. |
-| **PATCH**| `/api/admin/gallery/[id]`| `EDIT_GALLERY` | Project JSON metadata | `{ success: true, project }` | Modifies portfolio details. |
-| **DELETE**| `/api/admin/gallery/[id]`| `DELETE_GALLERY` | — | `{ success: true }` | Deletes portfolio entry. |
-| **GET** | `/api/admin/blog` | `VIEW_BLOG` | — | `{ success: true, posts }` | Returns all draft and published blog articles. |
-| **POST** | `/api/admin/blog` | `CREATE_BLOG` | BlogPost JSON metadata | `{ success: true, post }` | Creates a new draft blog article. |
-| **PATCH**| `/api/admin/blog/[id]` | `EDIT_BLOG` or `PUBLISH_BLOG` | BlogPost JSON metadata | `{ success: true, post }` | Updates or publishes an article. |
-| **DELETE**| `/api/admin/blog/[id]` | `DELETE_BLOG` | — | `{ success: true }` | Permanently deletes a blog article. |
-| **GET** | `/api/admin/newsletter` | `VIEW_SUBSCRIBERS` | Query: `?status=...&export=true` | CSV Stream or JSON payload | Returns newsletter roster details or exports CSV. |
-| **GET** | `/api/admin/users` | `VIEW_USERS` | — | `{ success: true, users }` | Lists all administrative accounts. |
-| **POST** | `/api/admin/users` | `CREATE_USER` | `{ name, email, password, role }` | `{ success: true, user }` | Generates a new administrative profile. |
-| **PATCH**| `/api/admin/users/[id]` | `EDIT_USER` | `{ name, email, role, isActive }` | `{ success: true, user }` | Updates administrative profiles. |
-| **DELETE**| `/api/admin/users/[id]` | `DELETE_USER` | — | `{ success: true }` | Removes administrative account. |
-| **GET** | `/api/admin/email-templates`| `VIEW_EMAIL_TEMPLATES`| — | `{ success: true, templates }` | Returns notification templates list. |
-| **PATCH**| `/api/admin/email-templates/[id]`| `EDIT_EMAIL_TEMPLATES`| `{ subject, body }` | `{ success: true, template }` | Updates template HTML code definitions. |
-| **GET** | `/api/admin/logs` | `VIEW_LOGS` | Query: `?action=...&performedBy=...` | `{ success: true, logs }` | Returns system audit trails list. |
-
----
-
-### Request & Response Specifications
-
-#### Public Inquiry Submission (`POST /api/contact`)
-- **Headers:** `Content-Type: application/json`
-- **Request Body JSON:**
-```json
-{
-  "name": "Krishna Patel",
-  "email": "krishna@example.com",
-  "phone": "+91 98765 43210",
-  "company": "Patel Builders",
-  "city": "Surat",
-  "elevatorType": "Capsule",
-  "floorCount": "6",
-  "message": "Interested in a customized premium glass capsule lift."
-}
-```
-- **Success Response (201 Created):**
-```json
-{
-  "success": true,
-  "message": "Inquiry submitted successfully.",
-  "inquiryId": "65b4f8a12d8a4f6c4c00010a"
-}
-```
-- **Error Response (400 Bad Request):**
-```json
-{
-  "error": "Name, email, and phone are required fields."
-}
-```
-
-#### Admin Login Verification (`POST /api/admin/auth/login`)
-- **Headers:** `Content-Type: application/json`
-- **Request Body JSON:**
-```json
-{
-  "email": "admin@fglifts.com",
-  "password": "FGLift@Admin2025!"
-}
-```
-- **Success Response (200 OK):**
-```json
-{
-  "success": true,
-  "admin": {
-    "id": "65b4f8a12d8a4f6c4c000001",
-    "name": "Super Admin",
-    "email": "admin@fglifts.com",
-    "role": "SUPER_ADMIN"
-  }
-}
-```
-*(Sets HttpOnly cookie `fg_admin_token` containing the signed JWT payload).*
-- **Error Response (401 Unauthorized):**
-```json
-{
-  "error": "Invalid email or password."
-}
-```
-
----
-
-## 9. Design System
-
-The system design tokens are defined in [globals.css](file:///Users/krishna/fg%20trail/fg-lift-website/src/app/globals.css) and registered in Tailwind CSS v4's theme inline config block.
-
-### Color Tokens
-
-| Variable | Tailwind Hex | Usage |
+| Method | Endpoint | Description |
 |---|---|---|
-| `--bg-cream` | `#F5F0EB` | Primary body background (light sections) |
-| `--bg-cream-alt` | `#EDE8E2` | Secondary body background (alternating layout stripes) |
-| `--bg-dark` | `#111111` | Primary dark background (hero units, navigation menu, footers) |
-| `--bg-dark-2` | `#1A1A1A` | Dark card backgrounds |
-| `--fg-blue` | `#0E4FB3` | Accent blue (brand mark, action links, select buttons, stat accents) |
-| `--fg-blue-light` | `#E8F0FC` | Accent blue background panels |
-| `--fg-red` | `#D72638` | System warning states, delete buttons, error alerts |
-| `--fg-orange` | `#E8600A` | System pending alerts, orange highlight states |
-| `--text-dark` | `#111111` | Primary text color for light panels |
-| `--text-body` | `#3D3D3D` | Content copy body text color |
-| `--text-muted` | `#7A7A7A` | Muted subtitle text color |
-| `--text-cream` | `#F5F0EB` | Text highlights inside dark backgrounds |
-| `--border-light` | `#E0D9D0` | Standard layout dividers |
-| `--border-dark` | `rgba(255,255,255,0.1)`| Dividers inside dark sections |
+| **POST** | `/api/contact` | Submit lead inquiry, save to DB, queue confirmation email |
+| **POST** | `/api/newsletter` | Opt-in email address to newsletter database |
+| **DELETE**| `/api/newsletter?email=...` | Opt-out email address from newsletter database |
+| **GET** | `/api/blog` | Fetch paginated published articles (`?category=...&tag=...`) |
+| **GET** | `/api/products` | Fetch active catalog items (`?tabGroup=...&category=...`) |
+| **GET** | `/api/settings` | Fetch public corporate settings and metadata |
+| **GET** | `/api/testimonials` | Fetch active client reviews and ratings |
+| **POST** | `/api/media` | Upload media asset to central library |
 
-### Typography
+### 8B. Admin Gated API Endpoints (`/api/admin/*`)
 
-| Font Family | Style Variable | Usage |
-|---|---|---|
-| **DM Serif Display** | `--font-display` | Primary page title, layout headers, stats text, quotes |
-| **DM Sans** | `--font-sans` | Standard paragraph text, navigation list, input elements, buttons |
-| **JetBrains Mono** | `--font-mono` | Technical stats, metrics tables, system log codes, metadata tags |
+*Requires HTTP-Only cookie `fg_admin_token` and verified RBAC permission flag.*
 
-### Animation Presets
-
-The motion presets are exported from [motion.js](file:///Users/krishna/fg%20trail/fg-lift-website/src/lib/motion.js):
-
-- **`fadeIn`**: Fades elements from opacity 0 to 1 over 0.6s.
-  *Usage:* `<motion.div variants={fadeIn} initial="hidden" animate="visible" />`
-- **`slideUp`**: Slides elements upward from y: 30 to y: 0.
-  *Usage:* `<motion.div variants={slideUp} initial="hidden" whileInView="visible" viewport={{ once: true }} />`
-- **`staggerContainer`**: Parents block orchestrating delayed staggered triggers for child items.
-  *Usage:* `<motion.div variants={staggerContainer} initial="hidden" whileInView="show" />`
-- **`staggerItem`**: Child fade-and-rise animation variant triggering in sequence.
-  *Usage:* `<motion.div variants={staggerItem} />`
-
-### Layout Rules
-
-To preserve aesthetic consistency, developers must align page elements with the following structural layout patterns:
-- **Hero units and landing titles:** Must use dark backgrounds (`--bg-dark` / `#111111`) with high contrast text.
-- **Section backgrounds:** Must alternate between light cream (`--bg-cream` / `#F5F0EB`) and slightly darker cream (`--bg-cream-alt` / `#EDE8E2`) to break up scroll sections.
-- **Important metrics strips:** Use solid primary blue backgrounds (`--fg-blue` / `#0E4FB3`) with white text highlights.
-- **Global footer bands:** Always use the deep dark shade (`--bg-dark` / `#111111`).
-- **Admin panel layout:** Main backdrop uses admin grey (`--admin-bg` / `#F4F6F9`), cards use clean white (`#FFFFFF`) with thin borders, and the sidebar uses deep charcoal (`#111827`).
-
----
-
-## 10. Three.js 360° Cabin Viewer
-
-The **`Lift360Viewer.jsx`** component is a WebGL-based cabin virtual tour application integrated on `/products/[slug]`.
-
-### How It Works
-- **WebGL Geometry:** Utilizes a Three.js `THREE.SphereGeometry` with inverted normals (`sphere.geometry.scale(-1, 1, 1)`), which projects textures onto the inside surface of the sphere rather than the outside.
-- **Environment Texture Mapping:** Projects high-resolution equirectangular panorama textures onto the sphere material.
-- **Camera Positioning:** The camera is locked at coordinates `(0, 0, 0)` at the center of the sphere, looking outward.
-
-### Interactive Configurator & Textures
-- When the user selects a different color swatch, a state change occurs in the parent component.
-- The viewer intercepts the updated color configuration and uses `THREE.TextureLoader` to fetch the new panorama asset (e.g., `/images/cabin_gold_panorama.png`).
-- To prevent GPU resource leaks, the old texture is completely freed from memory (`oldTexture.dispose()`) before the new one is applied and rendered.
-- **Default Fallback:** The viewer checks if a variant asset is defined in the database. If missing, it dynamically falls back to `/images/cabin_silver_panorama.png` rather than hardcoding texture files.
-
-### Camera Controls & Interaction
-- The camera rotates based on click-and-drag (mouse) or touch-and-drag (mobile) gestures.
-- The drag delta modifies two target variables: `targetLon` (longitude) and `targetLat` (latitude).
-- Inside the animation tick loop, the coordinates are lerped toward their targets:
-  ```javascript
-  lon += (targetLon - lon) * 0.15;
-  lat += (targetLat - lat) * 0.15;
-  ```
-  This creates smooth, decelerating motion when the user releases their click/touch.
-
-### Transition Animations
-- Custom elevator door slide panels (styled with absolute CSS transitions and `translateX`) simulate cabin doors opening.
-- Once the texture loader finishes, it delays for `800ms` before sliding the panels open, revealing the interactive 3D WebGL interior.
-- **React Strict Mode Guard:** React 18+ runs layout effects twice in development. To prevent double-instantiating the WebGL canvas, the component uses a `mountedRef.current` guard:
-  ```javascript
-  if (mountedRef.current) return;
-  mountedRef.current = true;
-  ```
-
-### Disposal and Cleanup
-Upon component unmounting, all WebGL objects are fully disposed of to avoid memory leaks:
-```javascript
-renderer.dispose();
-geometry.dispose();
-material.dispose();
-texture.dispose();
-cancelAnimationFrame(animationFrameId);
-container.removeChild(renderer.domElement);
-```
-
-### Configuring a New 360° Product
-To make a product 360°-viewable in the store:
-1. Upload your equirectangular spherical panorama image (e.g., `gold.png`) to public folder assets.
-2. In the Admin Panel, select/create the product.
-3. Check the **Has 360° Configurator** option.
-4. Under **Configurator Color Finishes**, add your color variant (name, hex code) and define the texture files mapping. Save.
-
----
-
-## 11. Email System
-
-The outbound email pipeline processes system alerts and client communications asynchronously.
-
-```
-Form Submit / Admin Action
-        ↓
-email.service.js — queueEmail()
-        ↓
-Fetches EmailTemplate from DB → compiles {{placeholders}}
-        ↓
-Writes document to EmailQueue collection (status: pending)
-        ↓
-email-worker.js polls every 15 seconds
-        ↓
-        ├── SMTP configured → sends via Nodemailer → status: sent
-        └── SMTP missing (dev) → writes HTML to /scratch/emails/ → status: sent
-```
-
-### Available Email Templates
-
-| Template Name | Trigger | Recipient | Variables |
+| Method | Endpoint | Required Permission | Description |
 |---|---|---|---|
-| **`inquiry_received`** | Customer submits public contact form. | Client (lead) | `{{name}}`, `{{product}}`, `{{referenceId}}` |
-| **`lead_assigned`** | Sales Manager assigns lead to an executive. | Sales Executive | `{{executiveName}}`, `{{clientName}}`, `{{assignedBy}}` |
-| **`newsletter_welcome`**| Subscriber signs up via newsletter form. | Subscriber | `{{name}}` |
-
-### Adding a New Template
-1. Go to `/admin/email-templates`.
-2. Click **Create Template** (requires SUPER_ADMIN privileges).
-3. Assign a unique name code (e.g., `quote_followup`), write your subject line, and enter the raw HTML body.
-4. Define dynamic parameters using `{{variableName}}` markers.
-5. In your API route or repository, trigger delivery:
-   ```javascript
-   await queueEmail({
-     to: recipientEmail,
-     templateName: 'quote_followup',
-     variables: { variableName: 'Dynamic Value' },
-     relatedId: documentId
-   });
-   ```
-
----
-
-## 12. Admin Panel Guide
-
-The administrative console is located at `/admin`. 
-
-### Page Walkthroughs
-
-#### Dashboard
-- **Access:** `SUPER_ADMIN`, `SALES_MANAGER`, `MARKETING_MANAGER`, `CONTENT_EDITOR`
-- **Function:** Displays high-level CRM and CMS statistics: total leads, new leads (30 days), active products count, newsletter subscribers count, published articles, and pending emails. It also displays a list of the 5 most recent inquiries.
-- **Actions:** Quick links to jump to CRM, add new catalog products, or write blog posts.
-
-#### Inquiries (CRM Pipeline)
-- **Access:** `SUPER_ADMIN`, `SALES_MANAGER`, `SALES_EXECUTIVE`
-- **Function:** The primary lead tracking interface. Includes a Kanban Board showing leads grouped by status columns, and a tabular list view with search, filter, and sort capabilities.
-- **Actions:** Drag-and-drop leads between status columns to update them instantly. Click a lead card to open the detail panel, update status dropdowns, assign the lead to a Sales Executive, write notes, or delete the inquiry entry (Super Admin only). Export the pipeline as a CSV file.
-- **Restrictions:** Sales Executives can only view, update, and add notes to inquiries assigned to them. The Kanban and list views automatically filter by executive ID at the database level.
-
-#### Products (CMS Catalog)
-- **Access:** `SUPER_ADMIN`, `CONTENT_EDITOR`
-- **Function:** List, create, and edit products, cabin enclosures, and components.
-- **Actions:** Update product details (tags, categories, specifications, color variants, and 360° panorama maps). Add image assets by URL, build specification tables, toggle featured flags, or delete catalog items.
-
-#### Gallery (Portfolio CMS)
-- **Access:** `SUPER_ADMIN`, `CONTENT_EDITOR`
-- **Function:** Portfolio showcase manager.
-- **Actions:** Create, update, or delete case studies. Set titles, client sectors, location fields, construction years, cover image assets, carousel slide details, and related product mappings.
-
-#### Blog (CMS Editorial)
-- **Access:** `SUPER_ADMIN`, `CONTENT_EDITOR`, `MARKETING_MANAGER`
-- **Function:** Editorial manager.
-- **Actions:** Write articles using a split markdown and code editor. Toggle draft/published states, upload cover graphics, add category tags, set author profiles, and link related posts.
-- **Features:** Dynamically calculates article read time upon save.
-
-#### Newsletter (Subscriptions)
-- **Access:** `SUPER_ADMIN`, `SALES_MANAGER`, `MARKETING_MANAGER`
-- **Function:** Lists newsletter subscribers with subscription dates, status filters, and active tags.
-- **Actions:** Manually add subscribers, toggle subscription status, and export the mailing list as a CSV.
-
-#### Users (RBAC Roster)
-- **Access:** `SUPER_ADMIN`
-- **Function:** Security control panel for managing admin accounts and RBAC roles.
-- **Actions:** Create new accounts, modify existing profiles (change roles or toggle activity flags), and reset passwords.
-- **Self-Protection Rules:** Logged-in admins cannot delete or deactivate their own profiles. The final remaining account with a `SUPER_ADMIN` role cannot be deleted or deactivated.
-
-#### Email Templates (HTML Customizer)
-- **Access:** `SUPER_ADMIN`, `MARKETING_MANAGER`
-- **Function:** Customizer for system-generated email templates.
-- **Actions:** Edit HTML templates, adjust subjects, and reference dynamic variables.
-- **Features:** Render template previews inside an sandbox iframe using mock data.
-
-#### Audit Logs (Immutable Trail)
-- **Access:** `SUPER_ADMIN`, `SALES_MANAGER`, `MARKETING_MANAGER`
-- **Function:** Immutable audit trail showing system-wide operational changes.
-- **Actions:** Filter log items by action code, administrator name, or date range.
-- **Restrictions:** The database does not expose write, edit, or delete endpoints for this collection; logs can only be created as side-effects of admin actions.
+| **POST** | `/api/admin/auth/login` | None | Authenticates user, sets `fg_admin_token` cookie |
+| **POST** | `/api/admin/auth/logout`| None | Clears authentication token cookie |
+| **GET** | `/api/admin/inquiries` | `VIEW_*_INQUIRIES` | Fetch inquiries filtered by role/executive ID |
+| **PATCH**| `/api/admin/inquiries/[id]`| `UPDATE_INQUIRY_STATUS` | Update status, assign executive, or append notes |
+| **DELETE**| `/api/admin/inquiries/[id]`| `DELETE_INQUIRY` | Permanently delete lead entry |
+| **GET** | `/api/admin/inquiries/export`| `EXPORT_CRM` | Download current pipeline as CSV stream |
+| **GET** | `/api/admin/products` | `VIEW_PRODUCTS` | Fetch all products for PIM workspace |
+| **POST** | `/api/admin/products` | `CREATE_PRODUCT` | Create catalog item with 360 variants |
+| **PATCH**| `/api/admin/products/[id]`| `EDIT_PRODUCT` | Update catalog metadata & variant assets |
+| **DELETE**| `/api/admin/products/[id]`| `DELETE_PRODUCT` | Remove catalog item |
+| **GET** | `/api/admin/gallery` | `VIEW_GALLERY` | Fetch portfolio projects |
+| **POST** | `/api/admin/gallery` | `CREATE_GALLERY` | Publish new case study entry |
+| **PATCH**| `/api/admin/gallery/[id]`| `EDIT_GALLERY` | Update portfolio project details |
+| **DELETE**| `/api/admin/gallery/[id]`| `DELETE_GALLERY` | Remove portfolio entry |
+| **GET** | `/api/admin/blog` | `VIEW_BLOG` | Fetch all draft and published articles |
+| **POST** | `/api/admin/blog` | `CREATE_BLOG` | Create new article draft |
+| **PATCH**| `/api/admin/blog/[id]` | `EDIT_BLOG` / `PUBLISH` | Edit content or toggle publication |
+| **DELETE**| `/api/admin/blog/[id]` | `DELETE_BLOG` | Delete blog post |
+| **GET** | `/api/admin/newsletter` | `VIEW_SUBSCRIBERS` | Fetch subscriber list or export CSV |
+| **GET** | `/api/admin/users` | `VIEW_USERS` | Fetch administrative account roster |
+| **POST** | `/api/admin/users` | `CREATE_USER` | Create new team member account |
+| **PATCH**| `/api/admin/users/[id]` | `EDIT_USER` | Update role, status, or reset password |
+| **DELETE**| `/api/admin/users/[id]` | `DELETE_USER` | Remove administrative account |
+| **GET** | `/api/admin/email-templates`| `VIEW_EMAIL_TEMPLATES`| Fetch HTML templates list |
+| **PATCH**| `/api/admin/email-templates/[id]`| `EDIT_EMAIL_TEMPLATES`| Modify HTML template code |
+| **GET** | `/api/admin/settings` | `MANAGE_SETTINGS` | Fetch all admin site settings |
+| **PATCH**| `/api/admin/settings` | `MANAGE_SETTINGS` | Update corporate settings & details |
+| **GET** | `/api/admin/testimonials`| `CONTENT_EDITOR` | Fetch all client reviews |
+| **POST** | `/api/admin/testimonials`| `CONTENT_EDITOR` | Add new client testimonial |
+| **GET** | `/api/admin/logs` | `VIEW_LOGS` | Fetch immutable audit trail |
 
 ---
 
-## 13. Installation & Local Setup
+## 9. Design System & Visual Tokens
+
+Design system tokens are declared in `src/app/globals.css` and JavaScript token objects in `src/design-system/tokens/`.
+
+### Color Palette
+
+| Token Variable | Hex Code | Purpose / Usage |
+|---|---|---|
+| `--bg-cream` | `#F5F0EB` | Primary body background for public pages |
+| `--bg-cream-alt` | `#EDE8E2` | Secondary alternating section background |
+| `--bg-dark` | `#111111` | Primary dark background (Hero, Navbar, Footer) |
+| `--bg-dark-2` | `#1A1A1A` | Dark card backgrounds |
+| `--fg-blue` | `#0E4FB3` | Brand accent blue (Links, Active Pills, Badges) |
+| `--fg-blue-light` | `#E8F0FC` | Accent blue panel fill |
+| `--fg-red` | `#D72638` | Danger alerts, error messages, delete buttons |
+| `--fg-orange` | `#E8600A` | Warning states, pending status badges |
+| `--text-dark` | `#111111` | High contrast primary title text |
+| `--text-body` | `#3D3D3D` | Body paragraph text |
+| `--text-muted` | `#7A7A7A` | Subtitles and meta tags |
+| `--admin-bg` | `#F4F6F9` | Admin workspace backdrop |
+
+### Typography Stack
+- **DM Serif Display (`--font-display`)**: Hero titles, section headers, stats numbers.
+- **DM Sans (`--font-sans`)**: Body text, button labels, navigation elements, form inputs.
+- **JetBrains Mono (`--font-mono`)**: Technical spec metrics, log entries, system badges.
+
+---
+
+## 10. Three.js 360° Cabin Customizer & WebGL Engine
+
+The **`Lift360Viewer.jsx`** component (located in `src/components/product-detail/`) provides an interactive 3D WebGL interior customization experience.
+
+### Technical Implementation Features
+1. **WebGL Geometry Proportions:**
+   - Supports inverted spherical projection (`THREE.SphereGeometry` with `scale(-1, 1, 1)`).
+   - Supports realistic cubic cabin geometry (`THREE.BoxGeometry(500, 833.33, 500)`), representing exact 3:5 wall-to-height proportions and 1:1 floor/ceiling ratios.
+2. **Interactive Swatch & Texture Loading:**
+   - Color swatch changes update state in parent components.
+   - The engine loads panorama images via `THREE.TextureLoader` while invoking `oldTexture.dispose()` to prevent memory leaks.
+3. **Smooth Lerp Physics:**
+   - Mouse and touch drag interactions update target coordinates `targetLon` and `targetLat`.
+   - Frame tick updates apply smooth deceleration formula:
+     ```javascript
+     lon += (targetLon - lon) * 0.15;
+     lat += (targetLat - lat) * 0.15;
+     ```
+4. **Interactive Image Cropper (`MediaGalleryModal.jsx`):**
+   - HTML5 canvas crop tool ensuring wall textures are cropped to 3:5 aspect ratio and ceilings/floors to 1:1 ratio.
+5. **React Strict Mode Guard:**
+   - Utilizes `mountedRef.current` guard to prevent double-canvas instantiation during React 19 development renders.
+
+---
+
+## 11. Enterprise Core Engines
+
+### 11A. Input Validators (`src/validators/`)
+Dedicated schema validators for contact forms, admin login, product metadata, and testimonials. Converts raw inputs into sanitized payload objects or throws structured error maps.
+
+### 11B. Security Engine (`src/security/`)
+- **Sliding Window Rate Limiter (`rateLimit.js`)**: Restricts public submission endpoints (`/api/contact`, `/api/newsletter`) to prevent automated spam abuse.
+- **XSS Sanitizer (`sanitizer.js`)**: Strips unsafe HTML tags, scripts, and attributes from inbound user text.
+
+### 11C. SEO Engine (`src/seo/`)
+- **JSON-LD Generator (`jsonld.js`)**: Generates Schema.org `Organization`, `Product`, `LocalBusiness`, and `BreadcrumbList` structured data scripts.
+- **Sitemap Generator (`sitemap.js`)**: Dynamically generates `/sitemap.xml` mapping all active products, articles, projects, and public routes.
+
+### 11D. Performance & Cache Engine (`src/performance/`)
+- **In-Memory TTL Cache (`cache.js`)**: Micro-caching layer for database product lists and site settings with configurable time-to-live expiration.
+
+### 11E. Providers Architecture (`src/providers/`)
+Centralized provider composition tree (`AppProvider.jsx`) wrapping the root layout with 12 specialized providers:
+`AppProvider` ➔ `ThemeProvider` ➔ `SessionProvider` ➔ `LoadingProvider` ➔ `NavigationProvider` ➔ `ViewportProvider` ➔ `ScrollProvider` ➔ `LenisProvider` ➔ `CursorProvider` ➔ `AnimationProvider` ➔ `ModalProvider` ➔ `ToastProvider`.
+
+---
+
+## 12. Email System & Background Worker Pipeline
+
+```
+Form Submission / Admin Action
+       ↓
+email.service.js (queueEmail)
+       ↓
+Fetch EmailTemplate from DB ➔ Compile {{variables}}
+       ↓
+Insert document into EmailQueue collection (status: 'pending')
+       ↓
+email-worker.js polls collection every 15 seconds
+       ↓
+       ├── SMTP Configured ➔ Dispatches via Nodemailer ➔ Status updated to 'sent'
+       └── Dev Mode (No SMTP) ➔ Writes compiled HTML to /scratch/emails/ ➔ Status updated to 'sent'
+```
+
+---
+
+## 13. Admin Panel Comprehensive Guide
+
+1. **Dashboard (`/admin/dashboard`)**: High-level telemetry displaying total leads, new leads, active products count, published articles, newsletter subscribers, and recent lead activity.
+2. **Inquiries CRM (`/admin/inquiries`)**: Kanban Board (`@hello-pangea/dnd`) and searchable data table for managing customer inquiries. Allows status updates, executive assignments, CRM notes, and CSV data export.
+3. **Product Information Management (`/admin/products`)**: Comprehensive catalog PIM suite for managing specifications, application tags, color swatches, 360° panorama maps, and brochure PDFs.
+4. **Home Lifts Showcase (`/admin/home-lifts`)**: Specialized manager for Villa Home Lifts showcases, art wall collections, parameters, and mechanical systems.
+5. **Portfolio Gallery (`/admin/gallery`)**: Manager for corporate project installations, builder case studies, and image carousels.
+6. **Editorial Blog (`/admin/blog`)**: Split markdown editor with live preview, author profile selector, auto-calculated reading time, and publication state toggles.
+7. **Newsletter Subscriptions (`/admin/newsletter`)**: Subscription database management and mailing list CSV export tool.
+8. **User RBAC Roster (`/admin/users`)**: Security roster for creating admin accounts, assigning roles, and toggling user access flags.
+9. **Email Templates Editor (`/admin/email-templates`)**: Customizer for HTML email templates featuring dynamic variable placeholders and sandbox preview iframes.
+10. **Site Settings Manager (`/admin/settings`)**: Interface for updating corporate phone numbers, office addresses, social links, and system maintenance mode toggles.
+11. **Client Testimonials (`/admin/testimonials`)**: Review management panel for client quotes, ratings, and showcase features.
+12. **Immutable Audit Logs (`/admin/logs`)**: Read-only activity log vault tracking system actions, executor profiles, target documents, and IP addresses.
+
+---
+
+## 14. Installation & Local Setup Guide
 
 ### Prerequisites
-- Node.js (v18 or higher recommended)
-- MongoDB running locally on port `27017` (or a MongoDB Atlas connection string)
+- Node.js `v18.0.0` or higher
+- Local MongoDB instance on port `27017` or a MongoDB Atlas connection URI
 
 ### Step-by-Step Installation
 
-1. **Clone the repository:**
+1. **Clone the Repository:**
    ```bash
-   git clone [repo-url]
+   git clone https://github.com/KrishnaHinged/FG_Lifts_Pvt_Ltd.git
    cd fg-lift-website
    ```
 
-2. **Install project dependencies:**
+2. **Install Dependencies:**
    ```bash
    npm install
    ```
 
-3. **Configure environment variables:**
+3. **Configure Environment Variables:**
    ```bash
    cp .env.example .env.local
-   # Edit .env.local — see Environment Variables section below
+   # Edit .env.local parameters (see Section 15 below)
    ```
 
-4. **Seed the database:**
-   Execute the idempotent seeder to populate default products, projects, articles, templates, and the default Super Admin account:
+4. **Seed the Database:**
+   Execute the database seeder to create default templates, initial product catalogs, and the Super Admin account:
    ```bash
-   node --env-file=.env.local src/scripts/seed.js
+   npm run seed
    ```
 
-5. **Start the development server:**
-   Launch Next.js in Turbopack development mode:
+5. **Start Development Server:**
    ```bash
    npm run dev
    ```
 
-6. **Open in your browser:**
-   - Public website: `http://localhost:3000`
-   - Admin console: `http://localhost:3000/admin`
+6. **Open Browser:**
+   - Public Showroom: `http://localhost:3000`
+   - Admin Workspace: `http://localhost:3000/admin`
 
 ---
 
-## 14. Environment Variables
+## 15. Environment Variables Reference
 
-Create an `.env.local` file in the root directory. Follow this template:
+Create an `.env.local` file in the project root:
 
 ```bash
-# ─── DATABASE ───────────────────────────────────────────
+# ─── DATABASE CONNECTION ────────────────────────────────
 MONGODB_URI=mongodb://127.0.0.1:27017/fglifts
-# For production use MongoDB Atlas:
-# MONGODB_URI=mongodb+srv://user:password@cluster.mongodb.net/fglifts
+# MongoDB Atlas Example:
+# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/fglifts
 
-# ─── AUTH ───────────────────────────────────────────────
+# ─── JWT AUTHENTICATION ─────────────────────────────────
 JWT_SECRET=replace-with-minimum-32-character-random-string
-# Generate: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+# Generate key via: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
-# ─── APP ────────────────────────────────────────────────
+# ─── APPLICATION URL ───────────────────────────────────
 NEXT_PUBLIC_URL=http://localhost:3000
-# Production: https://fglifts.com
+# Production Example: https://fglifts.com
 
-# ─── EMAIL / SMTP ───────────────────────────────────────
-# Leave blank in development — emails write to /scratch/emails/ instead
+# ─── SMTP EMAIL CONFIGURATION ──────────────────────────
+# Leave blank in local development to save HTML emails to /scratch/emails/
 SMTP_HOST=
 SMTP_PORT=587
 SMTP_USER=
 SMTP_PASS=
-# Production example (Gmail):
-# SMTP_HOST=smtp.gmail.com
-# SMTP_PORT=587
-# SMTP_USER=your-email@gmail.com
-# SMTP_PASS=your-app-password
 ```
 
 ---
 
-## 15. Deployment
+## 16. Production Deployment Guide
 
 ### Vercel + MongoDB Atlas Setup
 
-1. **Database setup:** Create a cluster on MongoDB Atlas, configure database users, enable network access (whitelist IP addresses or allow access from anywhere), and copy your connection string.
-2. **Push codebase to GitHub:**
-   ```bash
-   git add .
-   git commit -m "Configure production deployment"
-   git push origin main
-   ```
-3. **Import to Vercel:** Open the Vercel Dashboard, import your project repository, and configure the Environment Variables in the project settings:
-   - `MONGODB_URI` (Atlas connection string)
-   - `JWT_SECRET` (Strong random key string)
-   - `NEXT_PUBLIC_URL` (Production URL: `https://your-domain.com`)
-   - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` (Production SMTP details)
-4. **Deploy:** Click **Deploy**. Vercel will build and host your Next.js application.
-5. **Seed the production database:**
-   Run the seeder locally while pointing to your production database to initialize default credentials:
+1. **Configure MongoDB Atlas:** Create a production database cluster, add a database user, and whitelist application IP addresses.
+2. **Push to GitHub:** Push code updates to your primary repository branch.
+3. **Import Project to Vercel:** Connect your GitHub repository to Vercel.
+4. **Configure Environment Variables:** Add `MONGODB_URI`, `JWT_SECRET`, `NEXT_PUBLIC_URL`, and production `SMTP_*` parameters under Vercel Project Settings.
+5. **Deploy:** Click **Deploy**. Next.js will build and deploy the application.
+6. **Seed Production Database:**
    ```bash
    MONGODB_URI="mongodb+srv://..." node src/scripts/seed.js
    ```
 
-### Post-Deployment Checklist
-- [ ] Log in to `/admin` using default credentials and **immediately** change the password.
-- [ ] Submit a public contact form entry and verify it saves to the production database.
-- [ ] Confirm a confirmation email is created in the database and successfully delivered via SMTP.
-- [ ] Verify that Sales Executives can only view inquiries assigned to them.
-- [ ] Confirm that Content Editors are blocked from accessing CRM routes (`/admin/inquiries`, `/admin/users`, etc.).
-
 ---
 
-## 16. Seeder Reference
+## 17. Database Seeder Reference
 
-The database seeder is idempotent and safe to run at any stage of development.
+The database seeder (`src/scripts/seed.js`) is fully idempotent.
 
-- **Run command:**
+- **Execution Command:**
   ```bash
-  node --env-file=.env.local src/scripts/seed.js
+  npm run seed
   ```
 
-### Seeder Rules
-- **Super Admin:** Checks if `admin@fglifts.com` exists. If missing, it creates the account with the hashed password `FGLift@Admin2025!`. If it exists but has a different role, it upgrades the account to `SUPER_ADMIN`.
-- **Email Templates:** Checks if templates matching default names (e.g., `inquiry_received`) exist. Missing templates are created; existing ones are skipped to preserve modifications.
-- **Wiping Catalogs:** The seeder clears mock products, projects, and articles before re-seeding them to keep the demo environment clean.
-
-### Seeded Credentials
-- **Email:** `admin@fglifts.com`
-- **Password:** `FGLift@Admin2025!`
-- **Role:** `SUPER_ADMIN`
+### Seeder Rules & Actions
+- **Super Admin Profile:** Checks if `admin@fglifts.com` exists. If missing, it creates the account with hashed password `FGLift@Admin2025!`. If existing, it enforces `SUPER_ADMIN` role rights.
+- **Email Templates:** Seeds missing default templates (`inquiry_received`, `lead_assigned`, `newsletter_welcome`). Skips modified existing templates.
+- **Catalog Refresh:** Wipes and re-seeds mock products, projects, articles, and client reviews for clean demo instances.
 
 ---
 
-## 17. Security
+## 18. Security Principles & Policies
 
-- **Authentication:** JWT tokens are stored in secure `httpOnly` cookies with `sameSite: 'lax'` rules. This prevents access via client-side JavaScript, protecting against Cross-Site Scripting (XSS) attacks.
-- **Route Protection:** Gated routes starting with `/admin` are protected by `middleware.js` at the edge. The middleware validates the token, extracts the payload, and forwards identity headers.
-- **Endpoint Gating:** In addition to middleware routing blocks, each API route verifies the user's role and permissions against `ROLE_PERMISSIONS` before performing operations.
-- **Data Isolation:** For Sales Executives, query filters restrict database operations (e.g., `Inquiry.find({ assignedTo: admin.id })`) to isolate records at the database level rather than simply filtering them in the UI.
-- **Audit Logs:** Key admin mutations (creating/deleting products, updating leads, exporting database lists) write an immutable `AuditLog` entry tracking the action type, administrator identity, timestamp, and client IP address.
-- **Password Encryption:** Admin passwords are encrypted using `bcryptjs` with `12` salt rounds. They are never stored in plain text.
-- **Self-Protection Rules:** The system prevents logged-in administrators from deleting or deactivating their own accounts. Additionally, the last remaining `SUPER_ADMIN` profile cannot be deleted.
+- **HTTP-Only Cookies:** Auth JWT tokens are stored in `httpOnly`, `sameSite: 'lax'` cookies, completely isolating tokens from client-side JavaScript to eliminate XSS token theft.
+- **Edge Middleware Route Defense:** Protected `/admin/*` routes validate Web Crypto JWT signatures before page rendering.
+- **Database Query Isolation:** Sales Executive queries automatically enforce `assignedTo: admin.id` constraints at the Mongoose query level.
+- **Immutable Audit Trails:** Operational changes create permanent `AuditLog` documents recording administrative actions, target documents, and client IP addresses.
+- **Password Encryption:** Passwords are standard 12-round `bcryptjs` hashes.
 
 ---
 
-## 18. Development Conventions
+## 19. Development Conventions & Standard API Security Pattern
 
-To maintain a clean and maintainable codebase, developers should follow these conventions:
+### Architecture Rules
+1. **Layer Separation:** Never invoke Mongoose models directly in UI Components or Route Handlers. Always execute queries via the Repository Layer (`src/repositories/`).
+2. **ECMAScript & JSX Only:** All code must be written strictly in JavaScript (`.js` and `.jsx`). TypeScript (`.ts`/`.tsx`) is forbidden.
+3. **Design Token Consistency:** UI components must consume design tokens from `globals.css` and `src/design-system/tokens/`.
 
-### Repository Pattern
-- **Rules:** Do not import Mongoose models or run queries directly inside Next.js API route handlers or Server Components. Always go through the repository layer (`src/repositories/`).
-- **Functionality:** Repositories handle database connections internally via `connectDB()`. They query the database, convert results using `.lean()`, and return plain JavaScript objects to keep data processing separate from UI rendering.
+### Standard Admin API Security Pattern
+Every gated administrative Route Handler implements this exact pattern:
 
-### Server vs. Client Components
-- **Server Components:** Use Server Components by default for static sections, layouts, and pages that fetch data. Fetch data directly in async components without using `useEffect` hooks.
-- **Client Components:** Add the `'use client'` directive only when a component requires React hooks (`useState`, `useEffect`), handles user interaction (forms, toggles), or calls browser APIs. Pass only plain, serializable objects (no functions or classes) as props from Server to Client Components.
-
-### Naming Conventions
-- **Routing Pages:** `page.js` and `layout.js` (standard Next.js App Router conventions).
-- **React Components:** PascalCase file naming with `.jsx` extensions (e.g., `Lift360Viewer.jsx`).
-- **Helper Utilities:** camelCase file naming with `.js` extensions (e.g., `auth.js`).
-- **Database Models:** PascalCase file naming matching the collection name (e.g., `Inquiry.js`).
-- **Repositories:** File naming matching the target model (e.g., `inquiry.repository.js`).
-
-### standard API Security Pattern
-Every admin route handler must implement this authentication pattern:
 ```javascript
 import { getAdmin } from '@/lib/auth'
 import { hasPermission } from '@/permissions/roles'
 import { createLog } from '@/repositories/auditLog.repository'
+import { NextResponse } from 'next/server'
 
 export async function PATCH(req, { params }) {
-  // 1. Verify token
+  // 1. Verify authenticated JWT token
   const admin = getAdmin(req)
   if (!admin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // 2. Verify permission
+  // 2. Verify granular RBAC permission
   if (!hasPermission(admin, 'UPDATE_INQUIRY_STATUS')) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  // 3. Perform data operation
-  const data = await req.json()
-  const updatedDoc = await updateSomething(params.id, data)
+  // 3. Execute business logic & repository update
+  const payload = await req.json()
+  const updatedDocument = await updateInquiry(params.id, payload)
 
-  // 4. Log the action
+  // 4. Record immutable audit log entry
   await createLog({
-    action: 'item_updated',
+    action: 'inquiry_updated',
     performedBy: admin,
     targetId: params.id,
-    targetType: 'Item',
-    details: { changes: data }
+    targetType: 'Inquiry',
+    details: { changes: payload }
   })
 
-  return NextResponse.json({ success: true, data: updatedDoc })
+  return NextResponse.json({ success: true, data: updatedDocument })
 }
 ```
 
 ---
 
-## 19. Known Limitations & Future Improvements
+## 20. Known Limitations & Roadmap
 
-- **Asset Storage:** Image uploads are managed by saving static URL strings pointing to static public assets or external CDN links. Integrating a cloud storage provider (like Cloudinary or AWS S3) would enable drag-and-drop file uploads directly in the CMS.
-- **Two-Factor Authentication (2FA):** Admin logins rely on email/password credentials. Adding OTP verification via SMS or email would improve security for administrative access.
-- **Real-Time Pipeline Updates:** The CRM Kanban board and logs views use fetch requests on mount and manual refreshes to sync data. Adding WebSockets or Server-Sent Events (SSE) would enable real-time updates for managers and sales teams.
-- **JWT Expired Revocation:** The system uses stateless JWT tokens. If a token is compromised, it remains valid until it expires. Using Redis to maintain a token blacklist would allow immediate revocation upon logout.
-- **Rate Limiting:** Public endpoints (`/api/contact`, `/api/newsletter`) do not have rate limiting. Adding a rate-limiter package (like `upstash/ratelimit` or custom Redis sliding window) would help prevent spam submissions.
+- **Cloud Media Provider:** Media uploads save to local static storage or external URLs. Roadmap includes native AWS S3 / Cloudinary drag-and-drop integration.
+- **Real-Time WebSockets:** CRM Kanban board uses manual or component refreshes. Roadmap includes WebSockets / SSE for live team collaboration updates.
+- **Two-Factor Authentication (2FA):** Admin auth relies on credentials. Roadmap includes TOTP 2FA authenticator app integration.
 
 ---
 
-## 20. Changelog
+## 21. Version Changelog
 
 ## [2.4.0] — Repository Cleanup, Storage Optimization, ESLint & React Hook Compliance
 ### Added
@@ -1270,131 +1030,64 @@ export async function PATCH(req, { params }) {
   - Safely deleted 117 files (74 dead code files, 2 temporary development scripts, and 16 unused/duplicate static assets), reclaiming **255.45 MB** of repository storage.
   - Consolidated duplicate files such as `images/logo.jpg` and `images/about-factory.jpg` into their respective active versions.
 - **Dependency Optimization**:
-  - Pruned the unused `jsonwebtoken` package and its 14 nested sub-dependencies, reducing the `node_modules` size and footprints.
+  - Pruned unused packages and sub-dependencies, reducing `node_modules` size.
 - **ESLint & React Hook Compliance**:
-  - Refactored five active React Providers (`AnimationProvider.jsx`, `LenisProvider.jsx`, `LoadingProvider.jsx`, `NavigationProvider.jsx`, `ViewportProvider.jsx`) and client controllers to execute state synchronization asynchronously using `setTimeout(..., 0)` to resolve `react-hooks/set-state-in-effect` errors.
-  - Derived client-side project filters directly during render in `GalleryClient.jsx`, removing redundant `useEffect` hooks and states.
-  - Repositioned early returns below all hook declarations in `ProductCard.jsx` and `ProductDetailClient.jsx` to respect React's Rules of Hooks.
-  - Cached dynamic motion tags in `Typography.jsx` by using a property lookup on the pre-created `motion` object rather than instantiating new components during render.
-  - Correctly escaped all JSX unescaped entities across components.
-  - Completed validation with **0 compile errors** on both `npm run lint` and `npm run build`.
+  - Refactored active React Providers (`AnimationProvider.jsx`, `LenisProvider.jsx`, `LoadingProvider.jsx`, `NavigationProvider.jsx`, `ViewportProvider.jsx`) to execute state synchronization asynchronously using `setTimeout(..., 0)` resolving `react-hooks/set-state-in-effect` warnings.
+  - Derived client-side project filters directly during render in `GalleryClient.jsx`, removing redundant `useEffect` hooks.
+  - Repositioned early returns below all hook declarations in `ProductCard.jsx` and `ProductDetailClient.jsx` respecting React Rules of Hooks.
+  - Completed validation with **0 compile errors** on `npm run lint` and `npm run build`.
 
 ## [2.3.0] — 360° Customizer Ratios, Fullscreen Mode, Image Cropper & Products Client Refactoring
 ### Added
 - **Interactive Image Cropper & Adjuster (`MediaGalleryModal.jsx`)**:
-  - Integrated a native client-side HTML5 canvas image cropper and adjuster.
-  - Added visual drag/pan repositioning and slider zoom (100%–300%) adjustments.
-  - Implemented aspect ratio presets guaranteeing walls are cropped to 3:5 and ceiling/floor are cropped to 1:1.
-  - Exports sharp high-resolution crop images directly as Data URLs for storage.
+  - Integrated native HTML5 canvas image cropper with drag pan positioning and zoom adjustments (100%–300%).
+  - Aspect ratio presets guaranteeing walls crop to 3:5 and ceiling/floor crop to 1:1.
 - **Cubic Cabin Geometry & Fullscreen Mode (`Lift360Viewer.jsx`)**:
-  - Engineered realistic 3D elevator cabin proportions using `BoxGeometry(500, 833.33, 500)` representing a 3:5 aspect ratio for walls/doors and 1:1 aspect ratio square for ceiling/floor.
-  - Added Fullscreen mode toggle button utilizing standard HTML5 and Webkit (iOS) fullscreen APIs with dynamic canvas and camera aspect recalculations.
-- **Modular Products Refactoring (`ProductHero.jsx`, `ProductFilterBar.jsx`, `ProductTestimonials.jsx`, `ProductCTA.jsx`)**:
-  - Refactored `ProductsClient.jsx` into modular components to improve separation of concerns.
-  - Isolated the catalog banner, configurator filter dropdowns, client testimonials, and consult CTAs into separate reusable files.
+  - WebGL elevator cabin proportions using `BoxGeometry(500, 833.33, 500)` representing a 3:5 aspect ratio.
+  - Fullscreen mode toggle using HTML5 & Webkit APIs.
+- **Modular Products Refactoring**:
+  - Refactored `ProductsClient.jsx` into modular components (`ProductHero.jsx`, `ProductFilterBar.jsx`, `ProductTestimonials.jsx`, `ProductCTA.jsx`).
 
-### Fixed
-- **Stable Hook Dependencies in Lift360Viewer**:
-  - Fixed React console error: *"The final argument passed to useEffect changed size between renders"* by serializing variants and urls into a single stable primitive string dependency (`textureKey`).
-- **Global Image Stylesheet Overrides**:
-  - Fixed crop preview styling where natural images failed to fill the vertical crop box by replacing the `<img>` tag with a `<div>` utilizing `backgroundSize: 'cover'` to bypass global Next.js stylesheet overrides.
-- **Gitignore Rewrite**:
-  - Updated `.gitignore` to prevent committing env settings, editor configs (`.vscode`, `.idea`), OS artifacts (`.DS_Store`), and local server log/scratch files.
-
-## [2.2.0] — Final Enterprise Architecture & UI/UX Transformation
+## [2.2.0] — Enterprise Architecture & UI/UX Transformation
 ### Added
-- **Interactive 360° Texture Dropzone Cards & Media Gallery Picker (`View360Uploader.jsx` & `MediaGalleryModal.jsx`)**:
-  - Engineered 6-sided cubic face and equirectangular texture upload cards (Front Wall, Back Wall, Side Walls, Ceiling, Floor, Equirectangular Map) in `View360Uploader.jsx`.
-  - Built an interactive `MediaGalleryModal.jsx` component supporting 1-click stock asset selection, local file drag-and-drop file upload, and custom image URLs.
-  - Added full support for `panoramaImages.sphere` in Mongoose schema (`Product.js`), database seed routines (`seed.js`), and DTO mapper (`product.mapper.js`).
-- **Sticky Form Action Bar & UI Redesign (`ProductForm.jsx`)**:
-  - Integrated a sticky floating bottom action bar featuring glassmorphism, `Cancel` link, and `Publish Product` primary action button.
-  - Upgraded public photo gallery slideshow rows into visual dropzone cards with hover image previews and direct media gallery picking.
-- **1-Click Email Templates Seeding (`TemplatesClient.jsx` & `/api/seed`)**:
-  - Integrated default email templates (`inquiry_received`, `lead_assigned`, `newsletter_welcome`) into both `/api/seed` and `/api/admin/email-templates`.
-  - Added a 1-click **"Seed Default Email Templates"** / **"Restore Defaults"** action on `/admin/email-templates`.
-- **Enterprise Core Engines (`src/seo/`, `src/performance/`, `src/security/`)**:
-  - Dynamic JSON-LD structured data engine, OpenGraph/Twitter card generators, and sitemap builders.
-  - Multi-tier TTL cache engine, WebGL cleanup helpers (`optimization.js`), Core Web Vitals telemetry, and performance hooks.
-  - Sliding-window rate limiter, XSS sanitizer, security HTTP headers, anti-CSRF token verification, and centralized logging.
-
-### Fixed
-- **Admin Layout Trapped Window Scrolling**:
-  - Resolved window scrolling lock on all admin views (`/admin/products/new`, `/admin/inquiries`, etc.) by converting layout containers to a fixed sidebar (`w-64 h-screen z-40 fixed top-0 left-0`) and natural page body scroll container (`pl-64 min-h-screen`).
-- **Kanban Board Popover & Drag-and-Drop Invariants**:
-  - Fixed `@hello-pangea/dnd` `draggableId` string conversion error in `InquiriesKanban.jsx`.
-  - Resolved multi-card popover opening glitch by stringifying card IDs before comparison and attaching click-outside backdrop event listeners.
-- **Form Submissions via Child Buttons**:
-  - Fixed unintended form navigation during image picker opening by adding explicit `type="button"` attributes across `MediaGalleryModal.jsx` and `View360Uploader.jsx`.
-- **Missing React Key Warning**:
-  - Fixed missing `key` prop warning in `UsersClient.jsx` by stringifying user IDs (`key={String(user._id || user.id || idx)}`).
+- **Interactive 360° Texture Dropzone Cards & Media Gallery Picker**:
+  - Engineered 6-sided cubic face and equirectangular texture upload cards in `View360Uploader.jsx`.
+- **Sticky Form Action Bar & UI Redesign**:
+  - Integrated sticky floating bottom action bar with glassmorphism in `ProductForm.jsx`.
+- **1-Click Email Templates Seeding**:
+  - Integrated default templates into `/api/seed` and `/api/admin/email-templates`.
+- **Enterprise Core Engines (`src/seo/`, `src/performance/`, `src/security/`, `src/validators/`)**:
+  - Dynamic JSON-LD engine, in-memory TTL cache, rate limiter, HTML sanitizer, and 12-Provider stack.
 
 ## [2.1.2] — Interaction and Interactive Card Redesign
 ### Added
-- Redesigned **Sectors/Industries** (`Industries.jsx`) and **Product Card** (`ProductCard.jsx`) components to use an image-dominant aspect ratio (`aspect-[3/4]`), sleek hover zoom states (`scale-110`), and a dark bottom-up gradient overlay.
-- Engineered a custom floating action/arrow indicator inside cards that follows the mouse cursor with spring damping physics using Framer Motion's `useMotionValue` and `useSpring`.
-- Added dynamic rotation logic to the floating arrow using the `atan2(dy, dx)` mathematical vector angle of mouse travel velocity.
-- Added a specs drawer at the bottom of the hover cards displaying key details (Beds/Baths/SqFt style layouts adapted for vertical lift capacities, speeds, and color swatches) with inline icon badges.
-
-### Fixed
-- Restored missing `ProductGrid.jsx` to resolve Next.js compilation issues (`Module not found: Can't resolve './ProductGrid'`) under `/products`.
+- Redesigned Sectors/Industries (`Industries.jsx`) and Product Cards (`ProductCard.jsx`) with dynamic hover physics and cursor-following directional arrows.
 
 ## [2.1.1] — Environment Setup and Path Context Updates
 ### Added
-- Created a standard `.env.example` file template with local/production environment parameters.
-- Updated file and directory structure documentation to accurately reflect Next.js 16 flat configs (`eslint.config.mjs`, `next.config.mjs`, `postcss.config.mjs`, `jsconfig.json`).
-- Documented `x-pathname` middleware header injection and root layout conditional routing mechanism for administrative panel access.
+- Standard `.env.example` file template.
+- Documented `x-pathname` middleware header injection for root layout dynamic shell selection.
 
 ## [2.1.0] — Editorial Redesign & Corporate Asset Update
 ### Added
-- Complete editorial redesign of **About**, **Products**, **Gallery**, and **Blog** pages in line with a premium "Pinterest meets Apple" visual aesthetic (warm cream backgrounds, asymmetric grids, clean borders, minimal type hierarchy).
-- Integrated new supply-chain and component partner logos (Shiv Shakti, Torin Drive, Montanari, Monarch, Wittur, Fermator, Usha Martin, Arkel, GMV India) dynamically centered inside a flex-wrap container on the About page and animated infinitely inside the Home Page Partners Marquee.
-- Added corporate office building render asset (`fg-building.jpg`) and updated narrative details of the company's founding date to 1993, representing 30+ years of vertical mobility experience.
-- Installed high-resolution luxury home elevator background image (`hero-bg.jpg`) for the main home hero and products header statement.
-- Ported and redesigned the interactive **Industries** sector showcase (`Industries.jsx`) on the Home Page, featuring custom elevator transit deck animations on hover over wireframe silhouettes.
-- Ported the cinematic **IntroAnimation** video scrubbing preloader panel, utilizing dynamic frames tracking and automated `sessionStorage` session guards.
-
-### Fixed
-- Fixed GSAP ScrollTrigger hot-reload layout crash (`NotFoundError: The object can not be found here`) by wrapping horizontal scroll pinning sequences in `gsap.context()` blocks and invoking `ctx.revert()` in component unmount cleanups.
-- Resolved React invalid child object console error (`Objects are not valid as a React child`) in the Blog modules by parsing nested author database schemas safely.
-- Resolved horizontal scroll layout stutters and gaps on Home and About pages by implementing `isMounted` execution guards to prevent double-initialization of ScrollTriggers under React strict mode and refactoring DOM translations into native GSAP tween configurations with `anticipatePin: 1`.
+- Complete visual redesign of About, Products, Gallery, and Blog pages in line with premium aesthetic guidelines.
+- Integrated component partner logotypes ticker and corporate building renders.
 
 ## [2.0.0] — Phase 4 Complete
 ### Added
 - Secure Admin Console at `/admin`.
 - Role-Based Access Control (RBAC) supporting 5 distinct roles and permissions.
-- Leads pipeline featuring Kanban board views and search tables.
-- Lead assignment functionality with automatic email notifications.
-- Immutable system audit logs to track admin changes.
-- Administrator account control interface.
-- HTML Email Template Customizer with live iframe preview.
-- Newsletter subscriber management with CSV export.
-- Asynchronous background email queue worker (polls every 15 seconds).
-- Development mode email fallback that writes HTML to `/scratch/emails/`.
+- Leads pipeline Kanban board and list views with lead assignments and audit log tracking.
 
 ## [1.5.0] — Phase 3 Complete
 ### Added
-- WebGL interactive Lift360Viewer component powered by Three.js.
-- Swatch-based cabin configurator supporting dynamic asset loading.
-- Cabin entry animation with React Strict Mode double-mount guard.
-- Markdown-based editorial blog system (listings, filter categories, tags).
-- Auto-calculated reading time estimate on article save.
-- Newsletter subscription system with `/api/newsletter` endpoints.
-- NewsletterStrip component featured above the page footer.
+- WebGL interactive `Lift360Viewer` component powered by Three.js.
+- Markdown blog publication engine with reading time calculation.
 
 ## [1.0.0] — Phase 2 Complete
 ### Added
-- Corporate `/about` page featuring timeline, values, and leadership profiles.
-- Tab-categorized `/products` list with filter selectors.
-- Product details page featuring spec sheets, brochures, and related items.
-- Masonry-based portfolio `/gallery` page with details carousel modal.
-- Mongoose schemas and data repository files mapping.
+- Public Products Catalog, Detail views, and Portfolio Gallery.
 
 ## [0.1.0] — Phase 1 Complete
 ### Added
-- Home page featuring responsive GSAP horizontal scrolling showcases.
-- Global navigation header and footer layout.
-- Lenis smooth scroll and Framer Motion presets.
-- CSS layout variables and Tailwind theme configurations.
-- MongoDB connection pool helper.
-- Inquiry schema and client-facing inquiry endpoints.
+- Initial Next.js setup, Lenis smooth scrolling, GSAP ScrollTrigger timelines, and MongoDB pool establishment.

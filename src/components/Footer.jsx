@@ -40,7 +40,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className="relative bg-[#181818] overflow-hidden text-[#F5F0EB] select-none pt-[180px] pb-[60px] px-6 lg:px-12">
+    <footer className="relative bg-[#181818] overflow-hidden text-[#F5F0EB] select-none pt-16 sm:pt-24 lg:pt-[180px] pb-[60px] px-6 lg:px-12">
       {/* Blueprint Grid Overlay (< 5% opacity) */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.02] z-0"
@@ -70,7 +70,7 @@ export default function Footer() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-12 gap-y-12 lg:gap-y-0"
+          className="grid grid-cols-12 gap-y-10 lg:gap-y-0 gap-x-6"
         >
           {/* Column 1: Company Description */}
           <motion.div
@@ -91,10 +91,10 @@ export default function Footer() {
             </p>
           </motion.div>
 
-          {/* Column 2: Navigation Links (Asymmetrical Start) */}
+          {/* Column 2: Navigation Links */}
           <motion.div
             variants={columnVariants}
-            className="col-span-6 md:col-span-4 lg:col-span-2 lg:col-start-7 flex flex-col items-start"
+            className="col-span-12 sm:col-span-4 lg:col-span-2 lg:col-start-7 flex flex-col items-start"
           >
             <h4 className="font-mono text-[14px] uppercase tracking-[0.2em] text-[#F5F0EB]/40 m-0 mb-6 font-medium">
               {FOOTER.SECTIONS.NAVIGATION.TITLE}
@@ -116,7 +116,7 @@ export default function Footer() {
           {/* Column 3: Contact Details */}
           <motion.div
             variants={columnVariants}
-            className="col-span-6 md:col-span-4 lg:col-span-2 flex flex-col items-start"
+            className="col-span-12 sm:col-span-4 lg:col-span-2 flex flex-col items-start"
           >
             <h4 className="font-mono text-[14px] uppercase tracking-[0.2em] text-[#F5F0EB]/40 m-0 mb-6 font-medium">
               {FOOTER.SECTIONS.CONTACT.TITLE}
@@ -145,10 +145,10 @@ export default function Footer() {
             </ul>
           </motion.div>
 
-          {/* Column 4: Social Links with React Icons */}
+          {/* Column 4: Social Links */}
           <motion.div
             variants={columnVariants}
-            className="col-span-6 md:col-span-4 lg:col-span-2 flex flex-col items-start"
+            className="col-span-12 sm:col-span-4 lg:col-span-2 flex flex-col items-start"
           >
             <h4 className="font-mono text-[14px] uppercase tracking-[0.2em] text-[#F5F0EB]/40 m-0 mb-6 font-medium">
               {FOOTER.SECTIONS.SOCIAL.TITLE}
