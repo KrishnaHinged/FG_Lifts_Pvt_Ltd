@@ -328,7 +328,71 @@ export default function Lift360Viewer({
     e.currentTarget.style.cursor = 'grab'
   }, [])
 
-  // Native wheel listener for zooming
+  // Native Touch Handlers for Mobile: 1-finger rotate & 2-finger pinch-to-zoom
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    let touchStartDist = 0
+    let startFov = 75
+
+    const handleTouchStart = (e) => {
+      if (e.touches.length === 1) {
+        isDraggingRef.current = true
+        prevMouseRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+      } else if (e.touches.length === 2) {
+        isDraggingRef.current = false
+        const dx = e.touches[0].clientX - e.touches[1].clientX
+        const dy = e.touches[0].clientY - e.touches[1].clientY
+        touchStartDist = Math.hypot(dx, dy)
+        if (cameraRef.current) {
+          startFov = cameraRef.current.fov
+        }
+      }
+    }
+
+    const handleTouchMove = (e) => {
+      if (e.touches.length === 1 && isDraggingRef.current) {
+        if (e.cancelable) e.preventDefault()
+        const dx = e.touches[0].clientX - prevMouseRef.current.x
+        const dy = e.touches[0].clientY - prevMouseRef.current.y
+        rotationRef.current.lon -= dx * 0.25
+        rotationRef.current.lat += dy * 0.25
+        speedRef.current = { x: -dx * 0.25, y: dy * 0.25 }
+        prevMouseRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+      } else if (e.touches.length === 2 && touchStartDist > 0) {
+        if (e.cancelable) e.preventDefault()
+        const dx = e.touches[0].clientX - e.touches[1].clientX
+        const dy = e.touches[0].clientY - e.touches[1].clientY
+        const newDist = Math.hypot(dx, dy)
+        const factor = touchStartDist / newDist
+        if (cameraRef.current) {
+          const newFov = Math.max(25, Math.min(105, startFov * factor))
+          cameraRef.current.fov = newFov
+          cameraRef.current.updateProjectionMatrix()
+        }
+      }
+    }
+
+    const handleTouchEnd = () => {
+      isDraggingRef.current = false
+      touchStartDist = 0
+    }
+
+    container.addEventListener('touchstart', handleTouchStart, { passive: false })
+    container.addEventListener('touchmove', handleTouchMove, { passive: false })
+    container.addEventListener('touchend', handleTouchEnd, { passive: true })
+    container.addEventListener('touchcancel', handleTouchEnd, { passive: true })
+
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart)
+      container.removeEventListener('touchmove', handleTouchMove)
+      container.removeEventListener('touchend', handleTouchEnd)
+      container.removeEventListener('touchcancel', handleTouchEnd)
+    }
+  }, [])
+
+  // Native wheel listener for desktop zooming
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
@@ -338,7 +402,7 @@ export default function Lift360Viewer({
         e.preventDefault()
       }
       if (!cameraRef.current) return
-      cameraRef.current.fov = Math.max(30, Math.min(100, cameraRef.current.fov + e.deltaY * 0.05))
+      cameraRef.current.fov = Math.max(25, Math.min(105, cameraRef.current.fov + e.deltaY * 0.05))
       cameraRef.current.updateProjectionMatrix()
     }
 
@@ -350,13 +414,13 @@ export default function Lift360Viewer({
 
   const zoomIn = () => {
     if (!cameraRef.current) return
-    cameraRef.current.fov = Math.max(30, cameraRef.current.fov - 5)
+    cameraRef.current.fov = Math.max(25, cameraRef.current.fov - 8)
     cameraRef.current.updateProjectionMatrix()
   }
 
   const zoomOut = () => {
     if (!cameraRef.current) return
-    cameraRef.current.fov = Math.min(100, cameraRef.current.fov + 5)
+    cameraRef.current.fov = Math.min(105, cameraRef.current.fov + 8)
     cameraRef.current.updateProjectionMatrix()
   }
 
@@ -390,13 +454,13 @@ export default function Lift360Viewer({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-full min-h-[400px] overflow-hidden bg-fg-dark-2 transition-all ${
+      className={`relative w-full h-full min-h-[340px] sm:min-h-[440px] overflow-hidden bg-fg-dark-2 transition-all ${
         isFullscreen ? 'fixed inset-0 z-[99999] rounded-none' : 'rounded-2xl'
       }`}
     >
       {/* WebGL canvas container */}
       <div
-        className="absolute inset-0 cursor-grab outline-none"
+        className="absolute inset-0 cursor-grab outline-none touch-none"
         tabIndex={0}
         onFocus={() => { isFocusedRef.current = true }}
         onBlur={() => { isFocusedRef.current = false }}
@@ -420,61 +484,59 @@ export default function Lift360Viewer({
         </div>
       )}
 
-      {/* Controls - Top Right */}
-      <div className="absolute top-4 right-4 flex flex-col gap-2 z-20">
+      {/* Controls - Top Right (Optimized Touch Targets for Mobile) */}
+      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 flex flex-col gap-2 z-20">
         <button
           onClick={toggleFullscreen}
-          className="w-9 h-9 rounded-lg bg-black/60 backdrop-blur-sm border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black/80 hover:border-white/40 transition-all duration-200 shadow-md"
+          className="w-10 h-10 sm:w-9 sm:h-9 rounded-xl bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black/80 hover:border-white/40 transition-all duration-200 shadow-md active:scale-95"
           title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
         >
           {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
         </button>
         <button
           onClick={zoomIn}
-          className="w-9 h-9 rounded-lg bg-black/50 backdrop-blur-sm border border-white/10 text-white flex items-center justify-center cursor-pointer hover:bg-black/70 transition-colors duration-200"
-          title="Zoom In"
+          className="w-10 h-10 sm:w-9 sm:h-9 rounded-xl bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black/80 transition-all duration-200 active:scale-95 shadow-md"
+          title="Zoom In (+)"
         >
           <ZoomIn className="w-4 h-4" />
         </button>
         <button
           onClick={zoomOut}
-          className="w-9 h-9 rounded-lg bg-black/50 backdrop-blur-sm border border-white/10 text-white flex items-center justify-center cursor-pointer hover:bg-black/70 transition-colors duration-200"
-          title="Zoom Out"
+          className="w-10 h-10 sm:w-9 sm:h-9 rounded-xl bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black/80 transition-all duration-200 active:scale-95 shadow-md"
+          title="Zoom Out (-)"
         >
           <ZoomOut className="w-4 h-4" />
         </button>
         <button
           onClick={resetView}
-          className="w-9 h-9 rounded-lg bg-black/50 backdrop-blur-sm border border-white/10 text-white flex items-center justify-center cursor-pointer hover:bg-black/70 transition-colors duration-200"
+          className="w-10 h-10 sm:w-9 sm:h-9 rounded-xl bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center cursor-pointer hover:bg-black/80 transition-all duration-200 active:scale-95 shadow-md"
           title="Reset View"
         >
           <RotateCcw className="w-4 h-4" />
         </button>
       </div>
 
-      {/* Drag hint */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-sm border border-white/10 rounded-full px-4 py-1.5 z-20 pointer-events-none">
-        <span className="font-mono text-[10px] text-white/70 tracking-wider uppercase">
-          Drag to rotate · Scroll to zoom
+      {/* Drag / Pinch hint */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md border border-white/15 rounded-full px-4 py-1.5 z-20 pointer-events-none shadow-md">
+        <span className="font-mono text-[9px] sm:text-[10px] text-white/90 tracking-wider uppercase font-semibold">
+          Drag to rotate · Pinch or tap + / - to zoom
         </span>
       </div>
 
-
-
-      {/* Mobile Interaction Activator Overlay */}
+      {/* Mobile Interaction Overlay */}
       {isMobile && !isActivated && (
         <div 
           onClick={() => setIsActivated(true)}
           className="absolute inset-0 bg-black/50 backdrop-blur-xs z-30 flex flex-col items-center justify-center cursor-pointer select-none p-6 text-center"
         >
-          <div className="bg-black/70 border border-white/10 rounded-2xl px-6 py-5 flex flex-col items-center gap-2.5 max-w-[260px] shadow-2xl">
+          <div className="bg-black/80 border border-white/20 rounded-2xl px-6 py-5 flex flex-col items-center gap-2.5 max-w-[260px] shadow-2xl">
             <span className="font-mono text-xs text-white uppercase tracking-wider font-bold">
               360° Cabin Tour
             </span>
-            <p className="font-sans text-[11px] text-white/70 leading-relaxed mb-1">
-              Tap to enter 3D viewer and rotate cabin interior.
+            <p className="font-sans text-[11px] text-white/80 leading-relaxed mb-1">
+              Tap to enter 3D viewer, rotate, and pinch to zoom.
             </p>
-            <button className="bg-[#0E4FB3] text-white font-mono text-[10px] tracking-widest uppercase px-4 py-2.5 rounded-lg border-none cursor-pointer hover:bg-fg-blue/90 transition-all font-bold">
+            <button className="bg-[#0E4FB3] text-white font-mono text-[10px] tracking-widest uppercase px-5 py-2.5 rounded-xl border-none cursor-pointer hover:bg-fg-blue/90 transition-all font-bold shadow-md">
               Tap to View
             </button>
           </div>
