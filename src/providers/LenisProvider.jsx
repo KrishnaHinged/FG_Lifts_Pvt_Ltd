@@ -23,6 +23,9 @@ export function LenisProvider({ children }) {
       lerp: 0.08,
       smoothWheel: true,
       wheelMultiplier: 0.8,
+      smoothTouch: false,
+      syncTouch: false,
+      touchMultiplier: 1.5,
     })
 
     setTimeout(() => {
