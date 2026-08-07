@@ -28,25 +28,19 @@ export default function Navbar() {
     if (hashIndex !== -1) {
       const hash = href.substring(hashIndex)
       const targetPath = href.substring(0, hashIndex) || '/'
+      const isCurrentPage = pathname === targetPath || (pathname === '/' && (targetPath === '/' || targetPath === ''))
 
-      if (pathname === targetPath || (pathname === '/' && targetPath === '/')) {
+      if (isCurrentPage) {
         const el = document.querySelector(hash)
         if (el) {
           if (e) e.preventDefault()
           if (window.lenis && typeof window.lenis.scrollTo === 'function') {
-            window.lenis.scrollTo(el, { offset: 0, duration: 1.2 })
+            window.lenis.scrollTo(el, { offset: -60, duration: 1.0 })
           } else {
             el.scrollIntoView({ behavior: 'smooth' })
           }
           window.history.pushState(null, '', href)
           return
-        }
-      }
-    } else {
-      if (typeof window !== 'undefined') {
-        window.scrollTo(0, 0)
-        if (window.lenis && typeof window.lenis.scrollTo === 'function') {
-          window.lenis.scrollTo(0, { immediate: true })
         }
       }
     }

@@ -56,30 +56,43 @@ export function LenisProvider({ children }) {
   useEffect(() => {
     if (isAdmin || typeof window === 'undefined') return
 
-    const hash = window.location.hash
+    const getHash = () => {
+      if (window.location.hash && window.location.hash.length > 1) {
+        return window.location.hash
+      }
+      const hrefParts = window.location.href.split('#')
+      if (hrefParts.length > 1 && hrefParts[1]) {
+        return '#' + hrefParts[1]
+      }
+      return ''
+    }
+
+    const hash = getHash()
 
     if (hash && hash.length > 1) {
       let attempts = 0
-      const maxAttempts = 20
+      const maxAttempts = 30
 
       const checkAndScroll = () => {
         const targetEl = document.querySelector(hash)
         if (targetEl) {
           if (lenis && typeof lenis.scrollTo === 'function') {
-            lenis.scrollTo(targetEl, { offset: 0, duration: 1.2 })
+            lenis.scrollTo(targetEl, { offset: -60, duration: 1.0 })
           } else {
             targetEl.scrollIntoView({ behavior: 'smooth' })
           }
         } else if (attempts < maxAttempts) {
           attempts++
-          setTimeout(checkAndScroll, 50)
+          setTimeout(checkAndScroll, 60)
         }
       }
 
-      checkAndScroll()
-      return
+      // Delay slightly to let page components mount before scrolling
+      const timer = setTimeout(checkAndScroll, 80)
+      return () => clearTimeout(timer)
     }
 
+    // Only reset to top when NO hash target exists in URL
     const resetScroll = () => {
       window.scrollTo(0, 0)
       if (lenis && typeof lenis.scrollTo === 'function') {
@@ -91,12 +104,10 @@ export function LenisProvider({ children }) {
 
     const timer1 = setTimeout(resetScroll, 50)
     const timer2 = setTimeout(resetScroll, 150)
-    const timer3 = setTimeout(resetScroll, 300)
 
     return () => {
       clearTimeout(timer1)
       clearTimeout(timer2)
-      clearTimeout(timer3)
     }
   }, [pathname, lenis, isAdmin])
 
