@@ -137,7 +137,7 @@ export default function Testimonials() {
               <span>★★★★★</span>
             </div>
             <span className="font-mono text-xs text-white/90 font-semibold tracking-wider uppercase">
-              4.9 / 5.0 Rating on Google Maps
+              4.6 / 5.0 Rating on Google Maps
             </span>
             <span className="text-xs text-[#0797CE] group-hover:translate-x-0.5 transition-transform font-bold">
               →
