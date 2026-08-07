@@ -23,8 +23,11 @@ export default function LogoReveal({ companyName }) {
         Future & Growth
       </p>
 
-      {/* Volumetric glow back-panel */}
-      <div className="logo-glow absolute w-96 h-96 bg-[#0E4FB3]/10 rounded-full blur-[100px] opacity-0 pointer-events-none" />
+      {/* Volumetric glow back-panel — uses radial gradient instead of blur filter for GPU perf */}
+      <div
+        className="logo-glow absolute w-96 h-96 rounded-full opacity-0 pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(14,79,179,0.12) 0%, rgba(14,79,179,0.04) 40%, transparent 70%)' }}
+      />
     </div>
   )
 }

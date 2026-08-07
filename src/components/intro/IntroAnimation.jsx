@@ -88,11 +88,12 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
   const [showSkipButton, setShowSkipButton] = useState(false)
   const [videoSrc, setVideoSrc] = useState('/videos/intro/intro.mp4')
   const [isLowPerformance, setIsLowPerformance] = useState(false)
+  const [isUltraLow, setIsUltraLow] = useState(false)
 
-  const isPreloaded = videoReady && loaderAnimDone
+  const isPreloaded = isUltraLow ? loaderAnimDone : (videoReady && loaderAnimDone)
   const companyName = settings.companyName || 'FG Lifts'
 
-  // 1. Monitor prefers-reduced-motion and hardware performance
+  // 1. Monitor prefers-reduced-motion and hardware performance tiers
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (prefersReducedMotion) {
@@ -104,11 +105,20 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
       const isMobileOrTablet = window.innerWidth < 1024
       const ram = navigator.deviceMemory
       const cores = navigator.hardwareConcurrency
+      const isVeryLowRAM = ram && ram <= 3
+      const isVeryLowCPU = cores && cores <= 2
       const isLowRAM = ram && ram <= 4
       const isLowCPU = cores && cores <= 4
-      if (isMobileOrTablet || isLowRAM || isLowCPU) {
+
+      // Ultra-low tier: skip video entirely, pure CSS logo reveal
+      if (isVeryLowRAM || isVeryLowCPU) {
+        setIsUltraLow(true)
+        setIsLowPerformance(true)
+        setVideoReady(true) // bypass video wait
+      } else if (isMobileOrTablet || isLowRAM || isLowCPU) {
         setIsLowPerformance(true)
       }
+
       setVideoSrc(isMobileOrTablet ? '/videos/intro/intro2.mp4' : '/videos/intro/intro.mp4')
     }
   }, [onComplete])
@@ -176,8 +186,62 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
           const video = videoRef.current
           if (!pinWrapper || !scrollAnchor || !video) return
 
+          // ═══════════════ ULTRA-LOW TIER: Pure CSS, no video, no heavy GSAP ═══════════════
+          if (isUltraLow) {
+            const masterTimeline = gsap.timeline({
+              onComplete: () => {
+                if (completionTriggeredRef.current) return
+                completionTriggeredRef.current = true
+                onComplete()
+              }
+            })
+
+            // Fade out instruction immediately
+            masterTimeline.to('.intro-instruction', {
+              opacity: 0,
+              duration: 0.5,
+              ease: 'power2.inOut'
+            }, 0.3)
+
+            // Show logo reveal with simple fade
+            masterTimeline.set('.logo-reveal', { display: 'flex' }, 0.8)
+            masterTimeline.fromTo('.logo-reveal',
+              { opacity: 0 },
+              { opacity: 1, duration: 0.6, ease: 'power2.out' },
+              0.8
+            )
+            masterTimeline.fromTo('.logo-title',
+              { opacity: 0, y: 20 },
+              { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' },
+              0.9
+            )
+            masterTimeline.fromTo('.logo-subtitle',
+              { opacity: 0 },
+              { opacity: 1, duration: 0.5, ease: 'power2.out' },
+              1.2
+            )
+
+            // Fade out into home
+            masterTimeline.to('.cinematic-container', {
+              opacity: 0,
+              duration: 0.6,
+              ease: 'power2.inOut'
+            }, 2.2)
+
+            // Safety fallback
+            setTimeout(() => {
+              if (!completionTriggeredRef.current) {
+                completionTriggeredRef.current = true
+                onComplete()
+              }
+            }, 3500)
+
+            return
+          }
+
+          // ═══════════════ LOW-PERF TIER: Auto-play video, simple timeline ═══════════════
           if (isLowPerformance) {
-            // Smoothly play video sequentially (extremely lightweight on CPU/GPU)
+            // Play video linearly (no scroll scrubbing — avoids decoder stalls)
             try {
               video.currentTime = 0
               video.play().catch(() => {})
@@ -191,40 +255,40 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
               }
             })
 
-            // STEP 1: Instruction HUD fades out early (at 1.0s)
+            // Fade out instruction at 1s
             masterTimeline.to('.intro-instruction', {
               opacity: 0,
-              y: -30,
-              duration: 1.0,
+              y: -20,
+              duration: 0.8,
               ease: 'power2.inOut'
             }, 1.0)
 
-            // STEP 3: Logo Reveal fades in at 4.0s
+            // Logo reveal at 4s
             masterTimeline.set('.logo-reveal', { display: 'flex' }, 4.0)
             masterTimeline.fromTo('.logo-reveal',
               { opacity: 0 },
-              { opacity: 1, duration: 0.8, ease: 'power2.out' },
+              { opacity: 1, duration: 0.6, ease: 'power2.out' },
               4.0
             )
             masterTimeline.fromTo('.logo-title',
-              { opacity: 0, y: 30 },
-              { opacity: 1, y: 0, duration: 1.0, ease: 'power2.out' },
+              { opacity: 0, y: 20 },
+              { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' },
               4.1
             )
             masterTimeline.fromTo('.logo-subtitle',
-              { opacity: 0, y: 15 },
-              { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' },
+              { opacity: 0 },
+              { opacity: 1, duration: 0.6, ease: 'power2.out' },
               4.3
             )
 
-            // STEP 4: Cinematic Fade-Out into Home Screen at 5.5s
+            // Cinematic fade-out
             masterTimeline.to('.cinematic-container', {
               opacity: 0,
-              duration: 0.8,
+              duration: 0.6,
               ease: 'power2.inOut'
             }, 5.5)
 
-            // Safety fallback: complete after 6.5s max
+            // Safety fallback
             setTimeout(() => {
               if (!completionTriggeredRef.current) {
                 completionTriggeredRef.current = true
@@ -370,7 +434,7 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
         ctx.revert()
       }
     }
-  }, [isPreloaded, videoDuration, onComplete, isLowPerformance])
+  }, [isPreloaded, videoDuration, onComplete, isLowPerformance, isUltraLow])
 
   const handleSkip = () => {
     completionTriggeredRef.current = true
@@ -410,24 +474,36 @@ export default function IntroAnimation({ onComplete, settings = {} }) {
       )}
 
       {/* 3. Fixed Overlay Container (Animate Video Playback Here) */}
-      <div className="cinematic-container fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-40 bg-black transition-all duration-500">
+      <div className={`cinematic-container fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-40 transition-all duration-500 ${isUltraLow ? 'bg-[#040C1A]' : 'bg-black'}`}>
 
-        {/* Single H.264 intra-frame compiled MP4 video */}
-        <video
-          ref={videoRef}
-          src={videoSrc}
-          playsInline
-          muted
-          preload="auto"
-          controls={false}
-          className="absolute inset-0 w-full h-full object-cover opacity-100 z-10 pointer-events-none select-none [&::-webkit-media-controls]:!hidden [&::-webkit-media-controls-start-playback-button]:!hidden"
-        />
+        {/* Video — only render if NOT ultra-low tier */}
+        {!isUltraLow && (
+          <video
+            ref={videoRef}
+            src={videoSrc}
+            playsInline
+            muted
+            preload="auto"
+            controls={false}
+            className="absolute inset-0 w-full h-full object-cover opacity-100 z-10 pointer-events-none select-none [&::-webkit-media-controls]:!hidden [&::-webkit-media-controls-start-playback-button]:!hidden"
+          />
+        )}
+
+        {/* Ultra-low: static ambient glow instead of video */}
+        {isUltraLow && (
+          <div
+            className="absolute inset-0 z-10 pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse at 50% 40%, rgba(14,79,179,0.15) 0%, transparent 70%)' }}
+          />
+        )}
 
         {/* Subtle Dark Vignette Overlay (No blue flash) */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_50%,rgba(0,0,0,0.4)_100%)] z-15 pointer-events-none" />
+        {!isUltraLow && (
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_50%,rgba(0,0,0,0.4)_100%)] z-15 pointer-events-none" />
+        )}
 
         {/* Modular Overlays */}
-        <TypewriterInstruction />
+        {!isUltraLow && <TypewriterInstruction />}
         <LogoReveal companyName={companyName} />
         <TransitionScene />
       </div>

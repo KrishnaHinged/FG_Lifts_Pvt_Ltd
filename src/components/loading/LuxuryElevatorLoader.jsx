@@ -326,7 +326,7 @@ function DoorPanel({ side, isDark }) {
       <motion.div
         initial={{ x: '-60%' }}
         animate={{ x: '160%' }}
-        transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 0.8, ease: 'easeInOut' }}
+        transition={{ duration: 1.6, repeat: 3, repeatDelay: 0.8, ease: 'easeInOut' }}
         className="absolute inset-y-0 pointer-events-none"
         style={{
           width: '40%',
